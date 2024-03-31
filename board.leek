@@ -1,130 +1,139 @@
-include("cell");
 include("round");
+
 /******************************************************************************
- * Board 
+ * Board
+ * TODO : cas des summon
  ******************************************************************************/
 class Board {
-
-  static myId;
-  static moi;             // poireau
-  static combatMaxRange;  // int
-  static currentRound;
-  static centerCell;
   
-  static enemies  = [:];  // Map(Poireau)
-  static allies   = [:];  // Map(Poireau)
-  static poireaux;        // Map(Poireau)
-  static cells = [];      // array(cells)
-
-  static centerCellId = CENTER_CELL_ID;
+  static integer myId;
+  static integer maxAOERange;
+  static Me me;           // Me
+  static Round currentRound; // Round
+  static Cell centerCell;   // Cell
   
+  static Array<Enemy> enemies = [];  // Array(Enemy)
+  static Array<Allie> allies  = [];  // Array(Allie)
+  static Map<integer, Leek> leeks;           // Map(Leek)
+  static Array<Cell> cells = [];    // Array(Cell) par consequent Map  
+  static Array<Cell> deadEnds = []; // Array(Cell)
   
   /**
-   * init
+   * constructor
    **/
-  static init() {
+  static void init() {
     
     //
-    // add moi
+    // add me
     //
-    moi      = new Moi();
-    myId     = moi.id;
-    poireaux = [myId:moi];
-    combatMaxRange = moi.dmgMaxRange;
+    me    = new Me();
+    myId  = me.id;
+    leeks = [myId:me];
+    maxAOERange = me.maxAOERange;
     
     //
     // add enemies
     //
-    var ens = getEnemies();
-    for(var en in ens) {
-      poireaux[en] = enemies[en] = new Enemy(en);
-      (poireaux[en].dmgMaxRange > combatMaxRange) and (combatMaxRange = poireaux[en].dmgMaxRange);
+    Array<integer> ens = getEnemies();
+    for(integer en in ens) {
+      Enemy leek = new Enemy(en); 
+      leeks[en] = leek;
+      push(enemies, leek);
+      if(leek.maxAOERange > maxAOERange) { 
+        maxAOERange = leek.maxAOERange;
+      }
     }
     
     //
     // add allies
     //
     ens = getAllies();
-    for(var en in ens) {
-      (en != myId) and (allies[en] = poireaux[en] = new Friend(en));
+    for(integer en in ens) {
+      if(en != myId) {
+        leeks[en] = new Allie(en);
+        push(allies, leeks[en]);
+      }
     }
     
     //
     // cells creations
     //
-    for(var i = 0;i < NB_CELLS; i++) {
+    for(integer i = 0;i < NB_CELLS; i++) {
       push(cells, (getCellContent(i) == CELL_OBSTACLE)?new Wall(i):new FreeCell(i));
     }
-    centerCell = cells[centerCellId];
+    centerCell = cells[CENTER_CELL_ID];
     
     //
     // voisin creations
     //
-    for(var objCell in cells) {
-      for(var direction in STAR_DIRECTION) {
-        var xy = XY_DIRECTION[direction];
-        var cellId = getCellFromXY(objCell.x+xy.x,objCell.y+xy.y);
-        (cellId) and (objCell.voisins[direction] = cells[cellId]);
+    for(Cell objCell in cells) {
+      for(string direction in STAR_DIRECTION) {
+        Object xy = XY_DIRECTION[direction] as Object;
+        integer|null cellId = getCellFromXY((objCell.x+xy.x) as integer,(objCell.y+xy.y) as integer);
+        if(cellId) objCell[direction] = cells[cellId as integer];
       }
     }
     
     //
     // deadend
     //
-    var DEADEND_LOOP = true;
-    while(DEADEND_LOOP) {
-      DEADEND_LOOP = false;
-      for(var objCell in cells) {
+    boolean deadEndLoop = true;
+    while(deadEndLoop) {
+      deadEndLoop = false;
+      for(Cell objCell in cells) {
         if(objCell.isDeadEnd) continue;
-        var deadCount = 0;
-        var voisins = objCell.voisins;
-        for(var direction in LINE_DIRECTION) {
-          ((!voisins[direction]) || voisins[direction].isDeadEnd) and (deadCount++);
+        integer deadCount = 0;
+        for(string direction in LINE_DIRECTION) {
+          if((!objCell[direction]) || (objCell[direction] as Cell).isDeadEnd) deadCount++;
         }
-        (objCell.isDeadEnd = (deadCount >= 3)) and (DEADEND_LOOP = true);
+        if(deadCount >= 3) {
+          objCell.isDeadEnd = true;
+          deadEndLoop = true;
+          push(deadEnds, objCell);
+        }
       }
     }
-    GameDebug.addDeadEnd(cells,12019715); // marron
     
     //
     // define los, distance, diag and line
     //
-    for(var x = 1; x < NB_CELLS; x++) {
-      var cellFrom = cells[x];
+    for(integer x = 1; x < NB_CELLS; x++) {
+      Cell cellFrom = cells[x];
       if(cellFrom.isWall) continue;
-      for(var y = 0; y < x; y++) {
-        var cellTo = cells[y];
+      for(integer y = 0; y < x; y++) {
+        Cell cellTo = cells[y];
         if(cellTo.isWall) continue;
-        var range = getCellDistance(x, y);
+        integer range = getCellDistance(x, y);
         if(range > MAX_RANGE) continue;
-        cellFrom.cellLinkInfo[cellTo.id] = cellTo.cellLinkInfo[cellFrom.id] = 
+        cellFrom.interCellInfo[cellTo.id] = cellTo.interCellInfo[cellFrom.id] = 
           {range:range, isInsight:lineOfSight(x, y), isInline:(cellFrom.x == cellTo.x || cellFrom.y == cellTo.y), isDiag:(abs(cellFrom.x-cellTo.x) == abs(cellFrom.y-cellTo.y))};
       }
-    }
-    
+  }
+  
     //
     // first round
     //
-    currentRound = new Round(moi, allies, enemies);
-    
-    return true;
+    currentRound = new Round();
   }
   
   /**
    * update
    **/
-  static update() {
-    
-    for(var id : var poireau in poireaux) {
+  static void update() {
+  
+    //
+    // remove dead leek
+    //
+    for(integer id : Leek leek in leeks) {
       if(!isAlive(id)) {
-        mapRemove(poireaux,id);
-        if(poireau.isEnemy) mapRemove(enemies,id);
-        else if(poireau.isAllie) mapRemove(allies,id); // TODO: cas des summon a gerer
+        mapRemove(leeks,id);
+        if(leek.isEnemy) removeElement(enemies,leek);
+        else if(leek.isAllie) removeElement(allies,leek);
       }
     }
-    currentRound = new Round(moi, allies, enemies);
-    return true;
-    
+    currentRound = new Round();
+  
   }
+  
 }
 

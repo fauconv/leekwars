@@ -1,17 +1,24 @@
-include("poireau");
-/******************************************************************
+include("leek");
+/******************************************************************************
  * Cell
- * dynamic
- ******************************************************************/
+ ******************************************************************************/
 class Cell {
-
-  id; // int
-  x;  // int
-  y;  // int
-  isWall = false;    // bool
-  isDeadEnd = false; // bool
-  voisins = { }; // object(cell)
-  cellLinkInfo = [{range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
+  
+  integer id;
+  integer x;
+  integer y;
+  boolean isDeadEnd;
+  boolean isWall;
+  Cell top;
+  Cell bottom;
+  Cell left;
+  Cell right;
+  Cell leftTop;
+  Cell rightTop;
+  Cell leftBottom;
+  Cell rightBottom;
+  
+  Array<Object> interCellInfo = [
                   {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
                   {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
                   {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
@@ -623,16 +630,16 @@ class Cell {
                   {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
                   {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
                   {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false}]; // array(object)
-
+                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
+                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false}]
+  
   /**
    * constructor
    **/
-  constructor(idCell) {
+  constructor(integer idCell) {
     id = idCell;
-    x = getCellX(idCell);
-    y = getCellY(idCell);
-    for(var direction in STAR_DIRECTION) voisins[direction] = null; // pour creer l object voisin
+    x = getCellX(idCell) as integer;
+    y = getCellY(idCell) as integer;
   }
   
   /**
@@ -642,83 +649,82 @@ class Cell {
    * renvoi la liste des celules en ligne droite entre la cellule courante et endCell
    * Conformement a getPath, la cellule courante n est pas inclu dans la liste, mais endCell oui
    * O(n) n = longueur de la liste
+   *
+   * @return Array(Cell)
    **/
-  getTrajectory(endCell) {
-    var x2 = endCell.x;
-    var y2 = endCell.y;
-    var dx = x2-x;
-    var dy = y2-y;
-    var incX = 1;
-    var incY = 1;
-    var ret = [];
-
+  Array<Cell> getTrajectory(Cell endCell) {
+    integer x2 = endCell.x;
+    integer y2 = endCell.y;
+    integer dx = x2-x;
+    integer dy = y2-y;
+    integer incX = 1;
+    integer incY = 1;
+    Array<Cell> ret = [];
+    
     if(y > y2) {
       incY = -1;
       dy = y-y2;
     }
     if(x > x2) {
       incX = -1;
-      dx = x-x2;
     }
-    
-    if(dy > dx) {
-      var rap = (x2-x)/(y2-y);
-      for(var newY = y+1; newY != 0; newY=newY+incY) {
-        push(ret,Board.cells[getCellFromXY(round(newY*rap), newY)]);
+    if(abs(dy) > abs(dx)) {
+      real rap = (x2-x)/(y2-y);
+      for(integer newY = y+incY; newY != y2; newY=newY+incY) {
+        push(ret,Board.cells[getCellFromXY(round((newY-y)*rap+x), newY) as integer]);
       }
-    } else if (dx > dy || dx == dy && dx > 0) {
-      var rap = (y2-y)/(x2-x);
-      for(var newX = x+1; newX != 0; newX=newX+incX) {
-        push(ret,Board.cells[getCellFromXY(newX, round(newX*rap))]);
+    } else if (dx != 0) {
+      real rap = (y2-y)/(x2-x);
+      for(integer newX = x+incX; newX != x2; newX=newX+incX) {
+        push(ret,Board.cells[getCellFromXY(newX, round((newX-x)*rap+y)) as integer]);
       }
     }
-    push(ret, endCell);
+	push(ret,endCell);
     
     return ret;
   }
   
   /**
-   * string
+   * toString
+   *
+   * @return string
    **/
-  string() {
+  string string() {
     return "cell:{ id:"+id+"\n  x:"+x+" y:"+y+" isWall:"+isWall+"}\n";
   }
-  shortString() {
-    return "cell:(#"+id+")\n";
+  string shortString() {
+    return "cell:(#"+id+")";
   }
 }
-/************************************************************************
+
+/******************************************************************************
  * FreeCell
- * dynamic
- *
- * une case normale
- *
- ***********************************************************************/
+ ******************************************************************************/
 class FreeCell extends Cell {
-
+  
   /**
    * constructor
    **/
-  constructor(idCell) {
+  constructor(integer idCell) {
     super(idCell);
+    isWall = false;
+    isDeadEnd = false;
   }
+	
+}
 
-/************************************************************************
+/******************************************************************************
  * Wall
- * dynamic
- *
- * ne fait rien, empeche la propagation des parcour et autre
- *
- ***********************************************************************/
+ ******************************************************************************/
 class Wall extends Cell {
-
+  
   /**
    * constructor
    **/
-  constructor(idCell) {
+  constructor(integer idCell) {
     super(idCell);
     isWall = true;
     isDeadEnd = true;
   }
-
+	
 }

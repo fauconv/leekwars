@@ -1,66 +1,291 @@
-/*****************************************************************
+include("effectfunctions");
+
+/******************************************************************************
  * Effect
- * dynamic/static
  * [0:type, 1:min, 2:max, 3:turns, 4:targets, 5:modifiers]
- ******************************************************************/
-include("const");
+ ******************************************************************************/
 class Effect {
   
-  type;
-  min;
-  max;
-  mid;
-  turns;
-  targetAllie;
-  targetCaster;
-  targetEnemy;
-  targetNonSummon;
-  targetSummon;
-  modIred;
-  modMulti;
-  modNoRep;
-  modOnCast;
-  modStack;
+  string category;
+  integer type;     // Enumeration
+  integer minEffect;
+  integer maxEffect;
+  integer midEffect;
+  integer turns;
+  boolean targetAllie;
+  boolean targetCaster;
+  boolean targetSummon;
+  boolean targetNonSummon;
+  boolean targetEnemy;
+  boolean modIred;   // non utilise
+  boolean modMulti;
+  boolean modNoRep;
+  boolean modOnCast;
+  boolean modStack;
+  Function<Effect, LeekRound, LeekRound, real, real => Object> simulateShotFunction; // function (Effect obj, LeekRound shooter, LeekRound target, real AOE, real midCriticalLuck) => {integer minEffect, integer maxEffect, integer midEffect}
+  
+  Tool owner;
+  
+  static Map<integer,Function<Effect, LeekRound, LeekRound, real, real => Object>> SIMULATE_SHOT_FUNCTION = [
+    EFFECT_ABSOLUTE_SHIELD:effect_absolute_shield,
+    EFFECT_ABSOLUTE_VULNERABILITY:effect_absolute_vulnerability,
+    EFFECT_ADD_STATE:effect_default, // TODO: effect_add_state
+    EFFECT_AFTEREFFECT:effect_aftereffect,
+    EFFECT_ALLY_KILLED_TO_AGILITY:effect_default, // TODO: effect_ally_killed_to_agility
+    EFFECT_ANTIDOTE: effect_default, // TODO: effect_antidote
+    EFFECT_ATTRACT:effect_default, // TODO: effect_attract
+    EFFECT_BOOST_MAX_LIFE:effect_boost_max_life,
+    EFFECT_BUFF_AGILITY:effect_buff_agility,
+    EFFECT_BUFF_MP:effect_buff_mp,
+    EFFECT_BUFF_RESISTANCE:effect_buff_resistance,
+    EFFECT_BUFF_STRENGTH:effect_buff_strength,
+    EFFECT_BUFF_TP:effect_buff_tp,
+    EFFECT_BUFF_WISDOM:effect_buff_wisdom,
+    EFFECT_CRITICAL_TO_HEAL:effect_default, // TODO: effect_critical_to_heal
+    EFFECT_DAMAGE:effect_damage,
+    EFFECT_DAMAGE_RETURN:effect_damage_return,
+    EFFECT_DAMAGE_TO_ABSOLUTE_SHIELD:effect_default, // TODO: effect_damage_to_absolute_shield
+    EFFECT_DAMAGE_TO_STRENGTH:effect_default, // TODO: effect_damage_to_strength
+    EFFECT_DEBUFF: effect_default, // TODO: effect_debuff
+    EFFECT_HEAL:effect_heal,
+    EFFECT_INVERT:effect_default, // TODO: effect_invert
+    EFFECT_KILL:effect_kill,
+    EFFECT_KILL_TO_TP:effect_default, // TODO: effect_kill_to_tp
+    EFFECT_LIFE_DAMAGE:effect_life_damage,
+    EFFECT_MOVED_TO_MP:effect_default, // TODO: effect_moved_to_mp
+    EFFECT_NOVA_DAMAGE:effect_nova_damage,
+    EFFECT_NOVA_DAMAGE_TO_MAGIC:effect_default, // TODO: effect_nova_damage_to_magic
+    EFFECT_NOVA_VITALITY:effect_nova_vitality,
+    EFFECT_POISON:effect_poison,
+    EFFECT_POISON_TO_SCIENCE:effect_default, // TODO: effect_poison_to_science
+    EFFECT_PROPAGATION:effect_default, // TODO: effect_propagation
+    EFFECT_PUSH:effect_default, // TODO: effect_push
+    EFFECT_RAW_ABSOLUTE_SHIELD:effect_raw_absolute_shield,
+    EFFECT_RAW_BUFF_AGILITY:effect_raw_buff_agility,
+    EFFECT_RAW_BUFF_MAGIC:effect_raw_buff_magic,
+    EFFECT_RAW_BUFF_MP:effect_raw_buff_mp,
+    EFFECT_RAW_BUFF_POWER:effect_raw_buff_power,
+    EFFECT_RAW_BUFF_RESISTANCE:effect_raw_buff_resistance,
+    EFFECT_RAW_BUFF_SCIENCE:effect_raw_buff_science,
+    EFFECT_RAW_BUFF_STRENGTH:effect_raw_buff_strength,
+    EFFECT_RAW_BUFF_TP:effect_raw_buff_tp,
+    EFFECT_RAW_BUFF_WISDOM:effect_raw_buff_wisdom,
+    EFFECT_RAW_HEAL:effect_raw_heal,
+    EFFECT_RAW_RELATIVE_SHIELD:effect_raw_relative_shield,
+    EFFECT_RELATIVE_SHIELD:effect_relative_shield,
+    EFFECT_REMOVE_SHACKLES:effect_default, // TODO: effect_remove_shackles
+    EFFECT_REPEL:effect_default, // TODO: effect_repel
+    EFFECT_RESURRECT:effect_default, // TODO: effect_resurrect
+    EFFECT_SHACKLE_AGILITY:effect_shackle_agility,
+    EFFECT_SHACKLE_MAGIC:effect_shackle_magic,
+    EFFECT_SHACKLE_MP:effect_shackle_mp,
+    EFFECT_SHACKLE_STRENGTH:effect_shackle_strength,
+    EFFECT_SHACKLE_TP:effect_shackle_tp,
+    EFFECT_SHACKLE_WISDOM:effect_shackle_wisdom,
+    EFFECT_STEAL_ABSOLUTE_SHIELD:effect_default, // TODO: effect_steal_absolute_shield
+    EFFECT_SUMMON:effect_default, // TODO: effect_summon
+    EFFECT_TELEPORT:effect_default, // TODO: effect_teleport
+    EFFECT_VULNERABILITY:effect_vulnerability
+  ]; // function (Effect obj, LeekRound shooter, LeekRound target, real AOE, real midCriticalLuck) => {integer minEffect, integer maxEffect, integer midEffect}
 
-  owner;
-  category;
-  caster;
-  target;  
-
+  
   /**
    * constructor
-   * [0:type, 1:min, 2:max, 3:turns, 4:targets, 5:modifiers]
+   * @param effectArray : [0:type, 1:min, 2:max, 3:turns, 4:targets, 5:modifiers]
    **/
-  constructor(effectArray, owner) {
+  constructor(Array<integer|real> effectArray, Tool owner) {
     this.owner = owner;
-    type = effectArray[0];
-    category = EFFECT_CATEGORY[type];
-    min = effectArray[1];
-    max = effectArray[2];
-    mid = (min+max)>>1
-    turns = effectArray[3];
-    var target = effectArray[4];
-    targetAllie = target&EFFECT_TARGET_ALLIES;
-    targetCaster = target&EFFECT_TARGET_CASTER;
-    targetEnemy = target&EFFECT_TARGET_ENEMIES;
-    targetNonSummon = target&EFFECT_TARGET_NON_SUMMONS;
-    targetSummon = target&EFFECT_TARGET_SUMMONS;
-    target = effectArray[5];
-    modIred = target&EFFECT_MODIFIER_IRREDUCTIBLE;
-    modMulti = target&EFFECT_MODIFIER_MULTIPLIED_BY_TARGETS;
-    modNoRep = target&EFFECT_MODIFIER_NOT_REPLACEABLE;
-    modOnCast = target&EFFECT_MODIFIER_ON_CASTER;
-    modStack = target&EFFECT_MODIFIER_STACKABLE;
+    type = effectArray[0] as integer;
+    category = EFFECT_CATEGORY[type]!;
+    minEffect = round(effectArray[1] as real);
+    maxEffect = round(effectArray[2] as real);
+    midEffect = round((minEffect+maxEffect)/2);
+    turns = effectArray[3] as integer;
+    integer targets = effectArray[4] as integer;
+    targetAllie     = (targets & EFFECT_TARGET_ALLIES) > 0;
+    targetCaster    = (targets & EFFECT_TARGET_CASTER) > 0;
+    targetEnemy     = (targets & EFFECT_TARGET_ENEMIES) > 0;
+    targetNonSummon = (targets & EFFECT_TARGET_NON_SUMMONS) > 0;
+    targetSummon    = (targets & EFFECT_TARGET_SUMMONS) > 0;
+    targets = effectArray[5] as integer;
+    modIred   = (targets & EFFECT_MODIFIER_IRREDUCTIBLE) > 0;
+    modMulti  = (targets & EFFECT_MODIFIER_MULTIPLIED_BY_TARGETS) > 0;
+    modNoRep  = (targets & EFFECT_MODIFIER_NOT_REPLACEABLE) > 0;
+    modOnCast = (targets & EFFECT_MODIFIER_ON_CASTER) > 0;
+    modStack  = (targets & EFFECT_MODIFIER_STACKABLE) > 0;
+    simulateShotFunction = Effect.SIMULATE_SHOT_FUNCTION[type]!;
   }
   
   /**
-   * string
+   * simulateShot
+   * TODO : ajouter la puissance pour les battle royal
+   * TODO : ajouter les passif des armes oubliees
+   * @return {integer minEffect, integer maxEffect, integer midEffect}
    **/
-  string() {
-    return "Effect("+EFFECT_TYPE_TRANSLATOR[type]+") {cat: "+category+" min: "+min+"\n  max: "+max+" mid:"+mid + "}\n";
-  }
-  shortString() {
-    return "Effect("+EFFECT_TYPE_TRANSLATOR[type] + ")\n";
+  Object simulateShot(LeekRound shooter, LeekRound target, real AOE, integer nbTargets, real midCriticalLuck) {
+    
+    Leek targetLeek = target.leek;
+    if((targetLeek.isAllie && !targetAllie) ||
+       (targetLeek.isEnemy && !targetEnemy) ||
+       (targetLeek.isSummon && !targetSummon) ||
+       (!targetLeek.isSummon && !targetNonSummon) ||
+       (modNoRep && mapContainsKey(target.effects, type)) ||
+       (shooter.id == target.id && !targetCaster)) return {minEffect:0,maxEffect:0,midEffect:0};
+    
+    if (modMulti) AOE = AOE*nbTargets;
+    
+    GameDebug.add(EFFECT_DEBUG, EFFECT_TYPE_TRANSLATOR[type],"effect");
+
+    return simulateShotFunction(this, shooter, target, AOE, midCriticalLuck);
   }
 
-}
+  /**
+   * baseDmg
+   * define critical damage + AOE 
+   * @return {real minEffect, real maxEffect, real midEffect}
+   **/
+  Object baseDmg(LeekRound shooter, real AOE, real midCriticalLuck) {
+    return {
+      minEffect: minEffect*AOE,
+      maxEffect: maxEffect*CRITICAL_FACTOR*AOE,
+      midEffect: midEffect*(1.0+CRITICAL_BONUS*midCriticalLuck)*AOE
+    }
+  }
+
+  /**
+   * targetDmg
+   * define damage to target
+   * @return {real minEffect, real maxEffect, real midEffect}
+   **/
+  Object targetDmg(LeekRound shooter, real AOE, integer minCarac, integer maxCarac, integer midCarac, real midCriticalLuck) {
+    Object baseDmg = baseDmg(shooter, AOE, midCriticalLuck);
+    return {
+      minEffect: max(0.0, baseDmg.minEffect as real*(1.0+(minCarac/100.0))),
+      maxEffect: max(0.0, baseDmg.maxEffect as real*(1.0+(maxCarac/100.0))),
+      midEffect: max(0.0, baseDmg.midEffect as real*(1.0+(midCarac/100.0)))
+    }
+  }
+    
+  /**
+   * dmgReturn
+   * @param targetDmg : {real minEffect, real maxEffect, real midEffect}
+   * @return {integer minEffect, integer maxEffect, integer midEffect}
+   **/
+  Object dmgReturn(LeekRound target, Object targetDmg) {
+    return {
+      minEffect: round(targetDmg.minEffect * target.minDmgReturn / 100.0), 
+      maxEffect: round(targetDmg.maxEffect * target.maxDmgReturn / 100.0),
+      midEffect: round(targetDmg.midEffect * target.midDmgReturn / 100.0)
+    }
+  }
+
+  /**
+   * shield
+   * @param targetDmg : {real minEffect, real maxEffect, real midEffect}
+   **/
+  void shield(LeekRound target, Object targetDmg) {
+    targetDmg.minEffect = max(0.0, (targetDmg.minEffect as real*(1-(target.maxRelativeShield/100))-target.maxAbsoluteShield));
+    targetDmg.maxEffect = max(0.0, (targetDmg.maxEffect as real*(1-(target.minRelativeShield/100))-target.minAbsoluteShield));
+    targetDmg.midEffect = max(0.0, (targetDmg.midEffect as real*(1-(target.midRelativeShield/100))-target.midAbsoluteShield));
+  }
+
+  /**
+   * RoundedDmg
+   * @param targetDmg : {real minEffect, real maxEffect, real midEffect}
+   * @return {integer minEffect, integer maxEffect, integer midEffect}
+   **/
+  Object roundedDmg(Object targetDmg) {
+    return {
+      minEffect: round(targetDmg.minEffect as real),
+      maxEffect: round(targetDmg.maxEffect as real),
+      midEffect: round(targetDmg.midEffect as real)
+	};
+  }
+
+  /**
+   * applyDmg
+   * apply damage to target
+   * @param targetDmg : {real minEffect, real maxEffect, real midEffect}
+   * @return {integer minEffect, integer maxEffect, integer midEffect}
+   **/
+  Object applyDmg(LeekRound target, Object targetDmg) {
+    integer minDmg = round(targetDmg.minEffect as real);
+    integer maxDmg = round(targetDmg.maxEffect as real);
+    integer midDmg = round(targetDmg.midEffect as real);
+    target.minInjury += minDmg; // injury target
+    target.maxInjury += maxDmg;
+    target.midInjury += midDmg;
+    target.minLife -= maxDmg; // life target
+    target.maxLife -= minDmg;
+    target.midLife -= midDmg;
+    return {minEffect:minDmg, maxEfffect:maxDmg, midEffect:midDmg};
+  }
+  
+  /**
+   * applyHeal
+   * apply damage to target
+   * @param roundedDmg : {integer minEffect, integer maxEffect, integer midEffect}
+   **/
+  void applyHeal(LeekRound target, Object roundedDmg) {
+    roundedDmg.minEffect = min(roundedDmg.minEffect as integer, target.minTotalLife-target.minLife);
+    roundedDmg.maxEffect = min(roundedDmg.maxEffect as integer, target.maxTotalLife-target.maxLife);
+    roundedDmg.midEffect = min(roundedDmg.midEffect as integer, target.midTotalLife-target.midLife);
+    target.minInjury -= roundedDmg.maxEffect as integer; // injury target
+    target.maxInjury -= roundedDmg.minEffect as integer;
+    target.midInjury -= roundedDmg.midEffect as integer;
+    target.minLife += roundedDmg.minEffect as integer; // life target
+    target.maxLife += roundedDmg.maxEffect as integer;
+    target.midLife += roundedDmg.midEffect as integer;
+  }
+  
+  /**
+   * erosion
+   * erosion ne peut pas etre inferieur a la vie courante
+   * @param roundedDmg : {integer minEffect, integer maxEffect, integer midEffect}
+   **/
+  void applyErosion(LeekRound target, real erosionFactor, Object roundedDmg) {
+    target.maxTotalLife = max(target.maxLife, target.maxTotalLife-round(erosionFactor * roundedDmg.minEffect as integer));
+    target.minTotalLife = max(target.minLife, target.minTotalLife-round((erosionFactor + CRITICAL_EROSION) * roundedDmg.maxEffect as integer));
+    target.midTotalLife = max(target.midLife, target.midTotalLife-round((erosionFactor + CRITICAL_EROSION * roundedDmg.midCriticalLuck as real) * roundedDmg.maxEffect as integer));
+  }
+
+  /**
+   * lifeSteal
+   * @param roundedDmg : {integer minEffect, integer maxEffect, integer midEffect}
+   * @param dmgReturn : {integer minEffect, integer maxEffect, integer midEffect}
+   * @return {integer minEffect, integer maxEffect, integer midEffect}
+   **/
+  Object lifeSteal(LeekRound shooter, Object roundedDmg, Object dmgReturn) {
+	return {
+      minEffect: max(dmgReturn.minEffect as integer - round(roundedDmg.maxEffect as integer * (shooter.maxWisdom / 1000)), shooter.minLife - shooter.minTotalLife), // le vol de vie ne peut pas ramener plus de vie que la totallife
+      maxEffect: max(dmgReturn.maxEffect as integer - round(roundedDmg.minEffect as integer * (shooter.minWisdom / 1000)), shooter.maxLife - shooter.maxTotalLife),
+      midEffect: max(dmgReturn.midEffect as integer - round(roundedDmg.midEffect as integer * (shooter.midWisdom / 1000)), shooter.midLife - shooter.midTotalLife)
+    }
+  }
+	
+  /**
+   * applyLifeSteal
+   * @param shooterDmg : {integer minEffect, integer maxEffect, integer midEffect}
+   **/
+  void applyLifeStealAndDmgReturn(LeekRound shooter, Object shooterDmg) {
+    shooter.minInjury += shooterDmg.minEffect as integer; // injury shooter
+    shooter.maxInjury += shooterDmg.maxEffect as integer;
+    shooter.midInjury += shooterDmg.midEffect as integer;
+    shooter.minLife -= shooterDmg.maxEffect as integer; // life shooter
+    shooter.maxLife -= shooterDmg.minEffect as integer;
+    shooter.midLife -= shooterDmg.midEffect as integer;
+  }
+  
+  /**
+   * toString
+   * @return string
+   **/
+  string string() {
+    return "Effect("+EFFECT_TYPE_TRANSLATOR[type]+") {cat: "+category+" min: "+minEffect+"\n  max: "+maxEffect+" mid:"+midEffect + "}\n";
+  }
+  string shortString() {
+    return "Effect("+EFFECT_TYPE_TRANSLATOR[type] + ")";
+  }
+  
+} // class
+

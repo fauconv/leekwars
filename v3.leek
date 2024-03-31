@@ -1,39 +1,51 @@
 /**************************************************************************
- * include debugs
+ * debug
  **************************************************************************/
 include("gamedebug");
 //include("gamenodebug");
+global boolean EFFECT_DEBUG = false;
+global boolean BASIC_STRATEGY_DEBUG = false;
+global boolean UNIT_TEST_DEBUG = false;
 
 /**************************************************************************
  * include
  **************************************************************************/
 include("board");
-gFirstRound and Board.init() or Board.update();
+if(gFirstRound) {
+  Board.init();
+} else {
+  Board.update();
+}
 
 /*************************************************************************
- * Add strategies files
+ * include strategie files
  *************************************************************************/
+include("strategy");
+include("unit_test");
 include("basicstrategy");
-if(BasicStrategy.isValide()) gAvailableStrategie = new BasicStrategy();
+if(UnitTest.isValide()) gAvailableStrategie = new UnitTest();
+else if(BasicStrategy.isValide()) gAvailableStrategie = new BasicStrategy();
+else gAvailableStrategie = new Strategy();
 
-/******************************************************
+/*******************************************************
  * main
  *******************************************************/
 
 //
 // apply strategy
 //
-(gAvailableStrategie != null) and 
-  gAvailableStrategie.apply()
-or 
-  (gFirstRound) and 
-    (Talk.text = "Je n'ai pas été codé pour ce format de combat, donc je bouge pas et toc !");
+gAvailableStrategie.apply()
 
 //
 // update nbturn
 //
-gFirstRound and (gSecondRound = true) or (gSecondRound = false);
-gFirstRound = false;
+if(gFirstRound) {
+  gFirstRound = false;
+  gSecondRound = true;
+} else {
+  gSecondRound = false;
+}
+
 
 //
 // talk and debug

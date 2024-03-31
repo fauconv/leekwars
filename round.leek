@@ -1,222 +1,94 @@
-/*******************************************************************
- * PoireauRound
- ******************************************************************/
-class PoireauRound {
-  
-  id;
-  poireau;
-  matchRound;
-  
-  TP;
-  MP;
-  Life;
-  cellId;
-  cellRound;
-  cell;
-  weapon;  //tool
-  weaponId;
-  life;
-  resistance;
-  agility;
-  strength;
-  magic;
-  science;
-  wisdom;
-  absoluteShield;
-  relativeShield;
-  dmgReturn;
-  power;
+include("leekround");
 
-  usableCategorizedTools = { } // object(array(tool))
-  
-  usableDmgMaxRange = 0;
-  usableDmgMinRange = Integer.MAX_VALUE;
-  
-  flatReachableCells;          // [cellId] = remainingMP (MAP)
-
-  constructor(poireau, matchRound) {
-    this.poireau = poireau;
-    id = poireau.id;
-    this.matchRound = matchRound;
-    
-    MP = getMP(id);
-    TP = getTP(id);
-    life = getTotalLife(id);
-    power = getPower(id);
-    life = getLife(id);
-    resistance=getResistance(id);
-    agility=getAgility(id);
-    strength=getStrength(id);
-    magic=getMagic(id);
-    science=getScience(id);
-    wisdom=getWisdom(id);
-    absoluteShield =getAbsoluteShield(id);
-    relativeShield=getRelativeShield(id);
-    dmgReturn=getDamageReturn(id);
-
-    cellId = getCell(id);
-    cellRound = matchRound.cellsRound[cellId]
-    cell = Board.cells[cellId];
-    cellRound.poireauOnCell = this;
-    
-    for(var category in CATEGORY_LIST) {
-      usableCategorizedTools[category] = new Array();
-      for(var tool in poireau.categorizedTools[category]) {
-        if (!tool.isChip || getChipCooldown(tool.id)) {
-          push(usableCategorizedTools[category], tool);
-          if(category == CATEGORY_DAMAGE) {
-            (tool.maxAOERange > usableDmgMaxRange) and (usableDmgMaxRange = tool.maxAOERange);
-            (tool.minAOERange < usableDmgMinRange) and (usableDmgMinRange = tool.minAOERange);
-          }
-        }
-      }
-    }
-    weaponId = getWeapon(id);
-    (weaponId != null) and (weapon = poireau.tools[weaponId]);
-    
-  }
-  
-  /**
-   * parcour
-   * flatReachableCells[cellId] = remainingMP (MAP)
-   * TODO: ajouter la gestion de la chip de saut
-   * TODO: !!!!! maj des map en array
-   **/
-  parcour() {
-    var reachableCells = [MP:[cell]]; //reachableCells[remainingMP][] = cell  -> map(array(cell))
-    flatReachableCells = [cellId:MP];
-    var voisin; 
-    for(var i = MP; i > 0; i--) {
-      var futurMP = i-1;
-      reachableCells[futurMP] = [];
-      for(var cell in reachableCells[i]) {
-        for(var direction in LINE_DIRECTION) {
-          if(!(voisin = cell.voisins[direction]) || voisin.isWall) continue;
-          var voisinId = voisin.id;
-          var voisinRound = matchRound.cellsRound[voisinId];
-          (!mapContainsKey(flatReachableCells, voisinId)) && (!voisinRound.poireauOnCell) and 
-            (push(reachableCells[futurMP], voisin) or true) and
-            (flatReachableCells[voisinId] = futurMP);
-        }
-      }
-    }
-    return flatReachableCells;
-  }
-  
-}
-
-/*******************************************************************
- * CellRound
- ******************************************************************/
-class CellRound {
-  id;
-  matchRound;
-  cell;
-  poireauOnCell;
-  
-  constructor(cell, matchRound) {
-    this.cell = cell;
-    id = cell.id;
-    this.matchRound = matchRound;
-  }
-  
-  /**
-   * string
-   **/
-  string() {
-    return "cellRound=>{ id:"+cell.id+"}";
-  }
-  shortString() {
-    return "#"+cell.id;
-  }
-  
-}
-
-/****************************************************************************
+/******************************************************************************
  * Round
- ****************************************************************************/
+ ******************************************************************************/
 class Round {
   
-  cellsRound = [];
-  moiRound;
-  enemiesRound = [:];
-  alliesRound = [:];
-  relativeCenterCellId;
-  relativeCenterCell;
-  relativeCenterCellRound;
-  myCell;
-  myCellRound;
-  myCellId;
-  pathToCenter; // liste(cellId)
+  MeRound meRound; // meRound
+  
+  Array<CellRound> cellsRound = [];   // Array(CellRound)
+  
+  Array<AllieRound> alliesRound = [];  // Array(AllieRound)
+  Array<EnemyRound> enemiesRound = []; // Array(EnemyRound)
+  
+  Map<integer, LeekRound> leeksRound = [:];   // Map(LeekRound)
   
   /**
    * constructor
-   * clone previousResult ou cree un round a partir de l etat courant
    **/
-  constructor(moi, allies, enemies, previousResult = null) {
+  constructor(Round|null clone = null) {
     
-    if(previousResult) {
-      cellsRound = previousResult.cells;      // TODO: on doit reset les cells pour remettre les objet Atk a 0
-      moiRound   = previousResult.moiRound;   // TODO: pour un nouveau round on doit recalculer les tool utilisable (et les degats)
-      enemiesRound = previousResult.enemiesRound; // TODO: pour un nouveau round on doit recalculer les tool utilisable (et les degats)
-      alliesRound = previousResult.enemiesRound; // TODO: pour un nouveau round on doit recalculer les tool utilisable (et les degats)
-      relativeCenterCellId    = previousResult.relativeCenterCellId;    // TODO: pour un nouveau round on doit recalculer le centre relatif si c est pas 306
-      relativeCenterCell      = previousResult.relativeCenterCell;      // TODO: pour un nouveau round on doit recalculer le centre relatif si c est pas 306
-      relativeCenterCellRound = previousResult.relativeCenterCellRound; // TODO: pour un nouveau round on doit recalculer le centre relatif si c est pas 306
-      pathToCenter   = previousResult.pathToCenter;                     // TODO: pour un nouveau round on doit recalculer le centre relatif si c est pas 306
-      myCell         = previousResult.myCell;        
-      myCellRound    = previousResult.myCellRound;   
-      myCellId       = previousResult.myCellId;      
-    } else {
-      for(var i = 0;i < NB_CELLS; i++) push(cellsRound, new CellRound(Board.cells[i], this));
-      moiRound   = new PoireauRound(moi, this);
-      for(var enemyId : var enemy in enemies) enemiesRound[enemyId] = new PoireauRound(enemy, this);
-      for(var allieId : var allie in allies) alliesRound[allieId] = new PoireauRound(allie, this);
-        relativeCenterCellId    = CENTER_CELL_ID;
-        relativeCenterCell      = Board.cells[CENTER_CELL_ID];
-        relativeCenterCellRound = cellsRound[CENTER_CELL_ID];
-        myCell         = moiRound.cell;        
-        myCellRound    = moiRound.cellRound;   
-        myCellId       = moiRound.cellId;      
+    //
+    // cells creations
+    //
+    for(integer i = 0;i < NB_CELLS; i++) {
+      push(cellsRound, new CellRound(Board.cells[i],this));
+    }
+    
+    //
+    // clonage
+    // 
+    if(clone != null) {
+      //
+      // add me
+      //
+      meRound = new MeRound(this, (clone!).meRound);
+      leeksRound[meRound.id] = meRound;
+
+      //
+      // add enemies
+      //
+      for(EnemyRound enemy in (clone!).enemiesRound) {
+        EnemyRound en = new EnemyRound(enemy, this); 
+        push(enemiesRound, en);
+        leeksRound[en.id] = en;
       }
+
+      //
+      // add allies
+      //
+      for(AllieRound enemy in (clone!).alliesRound) {
+        AllieRound en = new AllieRound(enemy, this);
+        push(alliesRound, en);
+        leeksRound[en.id] = en;
+      }
+      
+    } else {
+
+      //
+      // add me
+      //
+      meRound = new MeRound(this);
+      leeksRound[meRound.id] = meRound;
+
+      //
+      // add enemies
+      //
+      for(Leek enemy in Board.enemies) {
+        EnemyRound en = new EnemyRound(enemy, this);
+        push(enemiesRound, en);
+        leeksRound[en.id] = en;
+      }
+
+      //
+      // add allies
+      //
+      for(Leek enemy in Board.allies) {
+        AllieRound en = new AllieRound(enemy, this);
+        push(alliesRound, en);
+        leeksRound[en.id] = en;
+      }
+    }
     
   }
   
   /**
-   * compute (if not defined)
-   *  - relativeCenterCell
-   *  - relativeCenterCellId
-   *  - relativeCenterCellRound
-   *  - pathToCenter
-   *  TODO: !!!!!! code faux a revoir d urgence, fait planter l IA trop d ops
+   * ToString
+   * @return string
    **/
-  computeRelativeCenter() {
-    if(pathToCenter != null) return true;
-    pathToCenter = getPath(myCellId, relativeCenterCellId);
-    if (!pathToCenter) {
-      var pathFromCenter = relativeCenterCell.getTrajectory(myCell);
-      var finalCell = null;
-      var ok = false;
-      for(var cell in pathFromCenter) {
-        if (pathToCenter = getPath(myCellId, cell)) {
-          finalCell = Board.cells[cell];
-          if(!finalCell.isWall && !finalCell.isDeadEnd) {
-            ok = true;
-            break;
-          }
-        }
-      }
-      if(ok) {
-        relativeCenterCellId    = finalCell;
-        relativeCenterCell      = Board.cells[relativeCenterCellId];
-        relativeCenterCellRound = cellsRound[relativeCenterCellId];
-      } // else relativeCenterCell = null
-    } else if (relativeCenterCell.isWall) {
-      relativeCenterCellId    = pathToCenter[-1];
-      relativeCenterCell      = Board.cells[relativeCenterCellId];
-      relativeCenterCellRound = cellsRound[relativeCenterCellId];
-    }
-    return relativeCenterCellRound;
+  string shortString() {
+    return "Round";
   }
   
 }

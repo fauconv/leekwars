@@ -1,0 +1,197 @@
+include("tool");
+
+/******************************************************************************
+ * Leek
+ ******************************************************************************/
+class Leek {
+  
+  integer id;
+  string name;
+  string farmer;
+  boolean isMe;
+  boolean isAllie;
+  boolean isEnemy;
+  boolean isSummon;
+  integer maxAOERange;
+  
+  Array<Weapon> weapons = [];
+  Array<Chip> chips = [];
+  Map<integer,Tool> tools = [:];
+  
+  Array<Tool> categoryDamage = [];
+  Array<Tool> categoryProtection = [];
+  Array<Tool> categoryHeal = [];
+  Array<Tool> categoryMPBuff = [];
+  Array<Tool> categoryBuff = [];
+  Array<Tool> categoryDeBuff = [];
+  Array<Tool> categoryBulb = [];
+  Array<Tool> categoryOther = [];
+  Array<Tool> categoryMove = [];
+  
+  
+  /**
+   * constructor
+   **/
+  constructor(integer id) {
+    this.id  = id
+    name     = getName(id)!;
+    farmer   = getFarmerName(id)!;
+    
+    Array<integer> weapons = getWeapons(id)!;
+    if(weapons) for(integer weaponId in weapons) {
+    Weapon weapon = new Weapon(weaponId, this);
+      categoriseTool(weapon);
+      push(this.weapons, weapon);
+    }
+
+    Array<integer> chips = getChips(id)!;
+    if(chips) for(integer chipId in chips) {
+    Chip chip = new Chip(chipId, this);
+    categoriseTool(chip);
+    push(this.chips, chip);
+    }
+    
+  }
+  
+  /**
+   * categoriseTool
+   **/
+  void categoriseTool(Tool tool) {
+    integer toolId = tool.id
+    tools[toolId] = tool;
+    for(string category in tool.categories) push(this[category] as Array<Tool>, tool);
+    (tool.categories["categoryDamage"]) and
+      (tool.maxAOERange > maxAOERange) and (maxAOERange = tool.maxAOERange);
+  }
+  
+  /**
+   * toString
+   *
+   * @return string
+   **/
+  string shortString() {
+    return name+"(#"+id+")";
+  }
+  string string() {
+    string ret = name+"(#"+id+") maxAOE:"+maxAOERange+"\n";
+    ret += "damage:\n"
+    for(Tool tool in categoryDamage) {
+      ret += tool.shortString() + "\n";
+    }
+    ret += "protection:\n"
+    for(Tool tool in categoryProtection) {
+      ret += tool.shortString() + "\n";
+    }
+    ret += "heal:\n"
+    for(Tool tool in categoryHeal) {
+      ret += tool.shortString() + "\n";
+    }
+    ret += "MPBuff:\n"
+    for(Tool tool in categoryMPBuff) {
+      ret += tool.shortString() + "\n";
+    }
+    ret += "Buff:\n"
+    for(Tool tool in categoryBuff) {
+      ret += tool.shortString() + "\n";
+    }
+     ret += "DeBuff:\n"
+    for(Tool tool in categoryDeBuff) {
+      ret += tool.shortString() + "\n";
+    }
+    ret += "other:\n"
+    for(Tool tool in categoryOther) {
+      ret += tool.shortString() + "\n";
+    }
+    ret += "Move:\n"
+    for(Tool tool in categoryMove) {
+      ret += tool.shortString() + "\n";
+    }
+    return ret;  
+  }
+  
+}
+
+/******************************************************************************
+ * Allie
+ ******************************************************************************/
+class Allie extends Leek {
+  
+  /**
+   * constructor
+   **/
+  constructor(integer id) {
+    isMe     = false;
+    isAllie  = true;
+    isEnemy  = false;
+    isSummon = false;
+    this.id  = id
+    name     = getName(id)!;
+    farmer   = getFarmerName(id)!;
+  }
+  
+  /**
+   * toString
+   *
+   * @return string
+   **/
+  string shortString() {
+    return name+"(#"+id+")";
+  }
+  
+}
+
+/******************************************************************************
+ * Enemy
+ ******************************************************************************/
+class Enemy extends Leek {
+  
+  /**
+   * constructor
+   **/
+  constructor(integer id) {
+    isMe     = false;
+    isAllie  = false;
+    isEnemy  = true;
+    isSummon = false;
+    super(id);
+  }
+  
+  /**
+   * toString
+   *
+   * @return string
+   **/
+  string shortString() {
+    return name+"(#"+id+")";
+  }
+}
+
+/******************************************************************************
+ * Me
+ ******************************************************************************/
+class Me extends Leek {
+  
+  /**
+   * constructor
+   **/
+  constructor() {
+    isMe     = true;
+    isAllie  = true;
+    isEnemy  = false;
+    isSummon = false;
+    super(getEntity());
+  }
+  
+  /**
+   * toString
+   *
+   * @return string
+   **/
+  string shortString() {
+    return name+"(#"+id+")";
+  }
+  
+}
+
+
+

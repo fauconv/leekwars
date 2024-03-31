@@ -1,69 +1,63 @@
 /*****************************************************************************
  * GameDebug
- * static
  *****************************************************************************/
 class GameDebug {
   
-  static str = "\n";
-  static opt = 0;
-  static ram = 0;
-  
+  static string str = "\n";
+  static integer opt = 0;
+  static integer ram = 0;
+ 
   /**
    * str
    **/
-  static display() {
-    addOperation("( "+getTP()+" TP / "+getMP()+" MP left ) total operations, turn "+getTurn());
+  static void display() {
+    addOperation(true, "( "+getTP()+" TP / "+getMP()+" MP left ) total operations, turn "+getTurn());
     debug(str);
     str = "\n";
     opt = 0;
     ram = 0;
-    return true;
   }
   
-  /**
-   * translate functions
-   **/
-  static addDirection(id,txt = "") {
-    return add(DIRECTION_TRANSLATOR[id], txt);
-  }
-
   /***
    * arrayDebug
    *
    * internal
    **/
-  static arrayDebug(array, limit = [], start = [], revers = [], space = "") {
-    var lim = 1000;
-    var star = 0;
-    var cnt = 0;
-    var cpt = count(array);
-    var rev = false;
-    var tab = array;
-    (count(limit) > 0) and (lim = shift(limit));
-    (count(start) > 0) and (star = shift(start));
-    (count(revers) > 0) and (rev = shift(revers));
-    (rev) and (tab = reverse(array));
+  private static void arrayDebug(Array<any>|Map<any,any> array, integer depth, Array<integer> limit, Array<integer> start, Array<boolean> revers, string space) {
+    integer lim = 1000;
+    integer star = 0;
+    integer cnt = 0;
+    integer cpt;
+    boolean rev = false;
+    Array<any>|Map<any,any> tab = array;
+    if(count(limit) > 0) lim = shift(limit) as integer;
+    if(count(start) > 0) star = shift(start) as integer;
+    if(count(revers) > 0) rev = shift(revers) as boolean;
     if(typeOf(array) == TYPE_ARRAY) {
+    cpt = count(array as Array<any>);
+    if(rev) reverse(tab as Array<any>);
       str += "Array("+star+"-"+lim+"/"+cpt+") [";
     } else {
-      str += "MAP("+star+"-"+lim+"/"+cpt+") [";
+      cpt = mapSize(array as Map<any,any>);
+      str += "Map("+star+"-"+lim+"/"+cpt+") [";
     }
-    if(cpt != 0) {
+    if(cpt != 0 && depth > 0) {
       str += "\n"
-      var space2 = space + "  ";
-      for(var key:var value in tab) {
+      string space2 = space + "  ";
+      depth--;
+      for(integer key:any value in tab) {
         if(cnt >= lim) break;
         if(cnt < star) {
           cnt++;
           continue;
         }
         str += space2+key+": ";
-        add(value, "", limit, start, revers, space2);
+        add(true, value, "", depth, limit, start, revers, space2); // ret2 pour bug de compil
         cnt++;
       }
-      str += space+"]\n";
+      str += space+"]";
     } else {
-      str += "]\n";
+      str += "]";
     }
     unshift(revers,rev);
     unshift(limit,lim);
@@ -72,36 +66,35 @@ class GameDebug {
   
   /***
    * objectDebug
-   *
+   * TODO : comment detecter sur une methode existe : le code actuel ne marche pas
    * internal
    **/
-  static objectDebug(obj, limit = [], start = [], revers = [], space = "") {
-    var ret;
-    if(ret = obj.shortString()) {
-      str += ret;
-      return true;
+  private static void objectDebug(Object obj, integer depth, Array<integer> limit, Array<integer> start, Array<boolean> revers, string space) {
+    string ret;
+    if(depth == 0) {
+      Array<string> methods = obj.class.methods;
+      boolean shortString = false;
+      if(inArray(methods, "shortString") && depth == 0) {
+        str += obj.shortString() as string;
+        return;
+      }
+      str += obj.class.name;
+      return;
     }
-    if(ret = obj.string()) {
-      str += ret;
-      return true;
-    }
-    if(obj.id != null) {
-      str += " Object("+obj.id+")\n";
-      return true;
-    }
-    str += "Object {";
-    var keys = obj.keys();
-    var cpt = count(keys);
+    str += obj.class.name + " {";
+    Array<string> keys = obj.keys();
+    integer cpt = count(keys);
     if(cpt != 0) {
       str += "\n"
-      var space2 = space + "  ";
-      for(var key:var value in keys) {
-        str += space2+key+": ";
-        add(value, "", limit, start, revers, space2);
+      string space2 = space + "  ";
+      depth--;
+      for(any value in keys) {
+        str += space2+value+": ";
+        add(true, obj[value], "", depth, limit, start, revers, space2); // ret2 pour bug de compil
       }
-      str += space+"}\n";
+      str += space+"}";
     } else {
-      str += "}\n";
+      str += "}";
     }
   }
   
@@ -112,18 +105,18 @@ class GameDebug {
    *
    * ajoute un element a debugger dans la liste a afficher
    **/
-  static add(element, txt = "", limit = [], start = [], revers = [], space = "") {
-    (txt != "") and (str+= txt +" => ");
-    var type = typeOf(element);
+  static void add(boolean condition, any element, string txt = "", integer depth = 1, Array<integer> limit = [], Array<integer> start = [], Array<boolean> revers = [], string space = "") {
+    if(!condition) return;
+    if(txt != "") str+= txt +" => ";
+    integer type = typeOf(element);
     if(type == TYPE_ARRAY || type == TYPE_MAP) {
-      arrayDebug(element, limit, start, revers, space);
+      arrayDebug(element as Array<any>|Map<any,any>, depth, limit, start, revers, space);
     } else if(type == TYPE_OBJECT) {
-      objectDebug(element, limit, start, revers, space);
+      objectDebug(element as Object, depth, limit, start, revers, space);
     } else {
       str += element;
     }
     str += "\n";
-    return true;
   }
   
   /**
@@ -131,44 +124,41 @@ class GameDebug {
    *
    * change la couleur de fond d une liste de cells ou d'un cellId
    **/
-  static addBackground(cellsOrCellId,color = 0) {
-    var type = typeOf(cellsOrCellId);
-    if(type == TYPE_ARRAY|| type == TYPE_MAP || type == TYPE_OBJECT) for(var cell in cellsOrCellId) mark(cell.id, color,1);
-    else mark(cellsOrCellId, color,1);
-    return true;
+  static void addBackground(boolean condition, any cellsOrCellId, integer color = 0) {
+    if(!condition) return;
+    integer type = typeOf(cellsOrCellId);
+    if(type == TYPE_ARRAY || type == TYPE_MAP) {
+      for(any cell in cellsOrCellId as Array<any>|Map<any,any>) {
+        type = typeOf(cell);
+        break;
+      }
+      if(type == TYPE_OBJECT) {
+        for(any cell in cellsOrCellId as Array<Cell|CellRound>|Map<any,Cell|CellRound>) {
+          mark(cell.id, color, 1);
+        }
+      } else {
+        for(integer cell in cellsOrCellId  as Array<integer>|Map<any,integer>) {
+          mark(cell, color, 1);
+        }
+      }
+    } else if(type == TYPE_OBJECT) {
+      mark(cellsOrCellId.id as integer, color, 1);
+    } else mark(cellsOrCellId as integer, color,1);
   }
   
-  /**
-   * addDeadEnd
-   *
-   * change la couleur de fond d une liste de cells ou isDeadEnd = true
-   **/
-  static addDeadEnd(cells,color = 0) {
-    for(var cell in cells) if(cell.isDeadEnd) mark(cell.id, color,0);
-    return true;
-  }
-
   /**
    * addOperation
    * calcul les opt et la ram depuis le dernier addOperation et l affiche
    **/
-  static addOperation(txt = "") {
-    var opt2 = getOperations()-opt;
-    var ram2 = getUsedRAM()-ram;
-    str += txt+" : "+opt2+"("+(opt2*100/OPERATIONS_LIMIT)+"%Ops) / "+ram2+"("+(ram2*100/getMaxRAM())+"%RAM)\n";
+  static void addOperation(boolean condition, string txt = "") {
+    if(!condition) return;
+    integer opt2 = getOperations()-opt;
+    integer ram2 = getUsedRAM()-ram;
+    str += txt+" : "+opt2+"("+(opt2*100.0/OPERATIONS_LIMIT)+"%Ops) / "+ram2+"("+(ram2*100.0/getMaxRAM())+"%RAM)\n";
     opt = getOperations();
     ram = getUsedRAM();
-    return true;
   }
   
-  /**
-   * addParcour
-   **/
-  static addParcour(flatReachableCells, color = 0) {
-    for(var cellId : var MP in flatReachableCells) markText(cellId, MP, color,1);
-    return true;
-  }
-
 }
 
 

@@ -1,85 +1,57 @@
 /*****************************************************************************
  * GameDebug
- * static
  *****************************************************************************/
 class GameDebug {
   
-  static str = "\n";
-  static opt = 0;
-  static ram = 0;
-  
+  static string str = "\n";
+  static integer opt = 0;
+  static integer ram = 0;
+ 
   /**
    * str
    **/
-  static display() {
-    return true;
+  static void display() {
   }
   
-  /**
-   * translate functions
-   **/
-  static addDirection(id,txt = "", nl = true) {
-    return true;
-  }
-
   /***
    * arrayDebug
    *
    * internal
    **/
-  static arrayDebug(array, limit = [], start = [], revers = [], space = "") {
-    return true;
+  private static void arrayDebug(Array<any> array, Array<integer> limit = [], Array<integer> start = [], Array<boolean> revers = [], string space = "") {
   }
   
   /***
    * objectDebug
-   *
+   * TODO : comment detecter sur une methode existe : le code actuel ne marche pas
    * internal
    **/
-  static objectDebug(array, limit = [], start = [], revers = [], space = "") {
-    return true;
+  private static void objectDebug(Object obj, Array<integer> limit = [], Array<integer> start = [], Array<boolean> revers = [], string space = "") {
   }
+  
+  
   
   /**
    * add
    *
    * ajoute un element a debugger dans la liste a afficher
    **/
-  static add(element, txt = "", limit = [], start = [], revers = [], space) {
-    return true;
+  static void add(boolean condition, any element, string txt = "", Array<integer> limit = [], Array<integer> start = [], Array<boolean> revers = [], string space = "") {
   }
   
   /**
-   * markBackground
+   * addBackground
    *
-   * change la couleur de fond d une liste de cells
+   * change la couleur de fond d une liste de cells ou d'un cellId
    **/
-  static addBackground(cellId,color = 0) {
-    return true;
+  static void addBackground(boolean condition, any cellsOrCellId, integer color = 0) {
   }
   
-  /**
-   * addDeadEnd
-   *
-   * change la couleur de fond d une liste de cells ou isDeadEnd = true
-   **/
-  static addDeadEnd(cells,color = 0) {
-    return true;
-  }
-
   /**
    * addOperation
    * calcul les opt et la ram depuis le dernier addOperation et l affiche
    **/
-  static addOperation(txt = "") {
-    return true;
-  }
-  
-  /**
-   * addParcour
-   **/
-  static addParcour(flatReachableCells, color = 0) {
-    return true;
+  static void addOperation(boolean condition, string txt = "") {
   }
   
 }

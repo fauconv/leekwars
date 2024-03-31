@@ -1,0 +1,364 @@
+include("toolround");
+
+/******************************************************************************
+ * LeekRound
+ ******************************************************************************/
+class LeekRound {
+  
+  integer id;
+  Leek leek;
+  MoveCell currentCell;
+  integer currentCellId;
+  
+  integer minTP;
+  integer maxTP;
+  integer midTP;
+  integer maxTotalLife;
+  integer minTotalLife;
+  integer midTotalLife;
+  integer maxLife;
+  integer midLife;
+  integer minLife;
+  integer minResistance;
+  integer maxResistance;
+  integer midResistance;
+  integer minAgility;
+  integer maxAgility;
+  integer midAgility;
+  integer minStrength;
+  integer maxStrength;
+  integer midStrength;
+  integer minMagic;
+  integer maxMagic;
+  integer midMagic;
+  integer minScience;
+  integer maxScience;
+  integer midScience;
+  integer minWisdom;
+  integer maxWisdom;
+  integer midWisdom;
+  integer minAbsoluteShield;
+  integer maxAbsoluteShield;
+  integer midAbsoluteShield;
+  integer minRelativeShield;
+  integer maxRelativeShield;
+  integer midRelativeShield;
+  integer minDmgReturn;
+  integer maxDmgReturn;
+  integer midDmgReturn;
+  integer minMP;
+  integer maxMP;
+  integer midMP;
+  integer minPower;
+  integer maxPower;
+  integer midPower;
+
+  integer maxInjury;
+  integer midInjury;
+  integer minInjury;
+  
+  integer maxAOERange;
+  ToolRound|null weapon;
+  integer|null weaponId;
+  
+  Map<integer,Array<Array<integer|boolean>>> effects = [:]; // Map(type)
+  
+  Map<integer, MoveCell> moveCells = [:];  // Map(MoveCell)
+  Map<integer, ToolRound> toolsRound = [:]; // Map(ToolRound)
+  Round roundObj; // Round
+    
+  Array<ToolRound> categoryDamage = [];    // Array(ToolRound)
+  Array<ToolRound> categoryProtection = [];// Array(ToolRound)
+  Array<ToolRound> categoryHeal = [];      // Array(ToolRound)
+  Array<ToolRound> categoryMPBuff = [];    // Array(ToolRound)
+  Array<ToolRound> categoryBuff = [];      // Array(ToolRound)
+  Array<ToolRound> categoryDeBuff = [];    // Array(ToolRound)
+  Array<ToolRound> categoryBulb = [];      // Array(ToolRound)
+  Array<ToolRound> categoryOther = [];     // Array(ToolRound)
+  Array<ToolRound> categoryMove = [];      // Array(ToolRound)
+  
+  /**
+   * constructor
+   **/
+  constructor(Leek|LeekRound leek, Round roundObj) {
+    
+    if(leek.class.super.name == "LeekRound") {
+    
+      //
+      // clonage
+      //
+      id = leek.id;
+      this.leek = (leek as LeekRound).leek;
+      this.roundObj = roundObj;
+      
+      minTP = (leek as LeekRound).minTP
+      maxTP = (leek as LeekRound).maxTP
+      midTP = (leek as LeekRound).midTP;
+      maxTotalLife = (leek as LeekRound).maxTotalLife
+      minTotalLife = (leek as LeekRound).minTotalLife
+      midTotalLife = (leek as LeekRound).midTotalLife
+      maxLife = (leek as LeekRound).maxLife
+      midLife = (leek as LeekRound).midLife
+      minLife = (leek as LeekRound).minLife
+      minResistance = (leek as LeekRound).minResistance
+      maxResistance = (leek as LeekRound).maxResistance
+      midResistance = (leek as LeekRound).midResistance
+      minAgility = (leek as LeekRound).minAgility
+      maxAgility = (leek as LeekRound).maxAgility
+      midAgility = (leek as LeekRound).midAgility
+      minStrength = (leek as LeekRound).minStrength
+      maxStrength = (leek as LeekRound).maxStrength
+      midStrength = (leek as LeekRound).midStrength
+      minMagic = (leek as LeekRound).minMagic
+      maxMagic = (leek as LeekRound).maxMagic
+      midMagic = (leek as LeekRound).midMagic
+      minScience = (leek as LeekRound).minScience
+      maxScience = (leek as LeekRound).maxScience
+      midScience = (leek as LeekRound).midScience
+      minWisdom = (leek as LeekRound).minWisdom
+      maxWisdom = (leek as LeekRound).maxWisdom
+      midWisdom = (leek as LeekRound).midWisdom
+      minAbsoluteShield = (leek as LeekRound).minAbsoluteShield
+      maxAbsoluteShield = (leek as LeekRound).maxAbsoluteShield
+      midAbsoluteShield = (leek as LeekRound).midAbsoluteShield
+      minRelativeShield = (leek as LeekRound).minRelativeShield
+      maxRelativeShield = (leek as LeekRound).maxRelativeShield
+      midRelativeShield = (leek as LeekRound).midRelativeShield
+      minDmgReturn = (leek as LeekRound).minDmgReturn
+      maxDmgReturn = (leek as LeekRound).maxDmgReturn
+      midDmgReturn = (leek as LeekRound).midDmgReturn
+      minMP = (leek as LeekRound).minMP
+      maxMP = (leek as LeekRound).maxMP
+      midMP = (leek as LeekRound).midMP
+      minPower = (leek as LeekRound).minPower
+      maxPower = (leek as LeekRound).maxPower
+      midPower = (leek as LeekRound).midPower
+      maxInjury = (leek as LeekRound).maxInjury
+      midInjury = (leek as LeekRound).midInjury
+      minInjury = (leek as LeekRound).minInjury
+      
+      maxAOERange = leek.maxAOERange
+      weapon = (leek as LeekRound).weapon
+      weaponId = (leek as LeekRound).weaponId
+      
+      currentCellId = (leek as LeekRound).currentCellId
+      CellRound cellRound = roundObj.cellsRound[currentCellId];
+      cellRound.leekOnCell = this;
+      
+      currentCell = new MoveCell(cellRound, this, (leek as LeekRound).currentCell.remainingMP);
+      
+      effects = (leek as LeekRound).effects
+      for(integer i : MoveCell m in (leek as LeekRound).moveCells) {
+        moveCells[i] = new MoveCell(cellRound, this, m.remainingMP);
+      }
+      
+      for(ToolRound toolRound in (leek as LeekRound).toolsRound) {
+        if(toolRound.tool.isChip) {
+          categoriseTool(new ChipRound(toolRound, this)); 
+        } else {
+          categoriseTool(new WeaponRound(toolRound, this));
+        }
+      }
+      
+    } else {
+
+      
+      //
+      // cas normal
+      //
+      id = leek.id; 
+      this.leek = (leek as Leek);
+      this.roundObj = roundObj;
+
+      minTP = maxTP = midTP = getTP(id)!;
+      maxTotalLife = minTotalLife = midTotalLife = getTotalLife(id)!;
+      maxLife = midLife = minLife = getLife(id)!;
+      minResistance = maxResistance = midResistance = getResistance(id)!;
+      minAgility = maxAgility = midAgility = getAgility(id)!;
+      minStrength = maxStrength = midStrength = getStrength(id)!;
+      minMagic = maxMagic = midMagic = getMagic(id)!;
+      minScience = maxScience = midScience = getScience(id)!;
+      minWisdom = maxWisdom = midWisdom = getWisdom(id)!;
+      minAbsoluteShield = maxAbsoluteShield = midAbsoluteShield = getAbsoluteShield(id)!;
+      minRelativeShield = maxRelativeShield = midRelativeShield = getRelativeShield(id)!;
+      minDmgReturn = maxDmgReturn = midDmgReturn = getDamageReturn(id)!;
+      minMP = maxMP = midMP = getMP(id)!;
+      minPower = maxPower = midPower = getPower(id)!;
+
+      maxInjury = midInjury = minInjury = 0;
+
+      currentCellId = getCell(id)!;
+      CellRound cellRound = roundObj.cellsRound[currentCellId];
+      cellRound.leekOnCell = this;
+      currentCell = new MoveCell(cellRound, this, minMP);
+
+      for(Tool tool in (leek as Leek).tools) {
+        if(tool.isChip) {
+          if(getCooldown(tool.id) == 0) {
+            categoriseTool(new ChipRound(tool, this));
+          }
+        } else {
+          categoriseTool(new WeaponRound(tool, this));
+        }
+
+      }
+
+      if(weaponId = getWeapon(id)) weapon = toolsRound[weaponId!];
+
+      Array<Array<integer | boolean>> effects = getEffects(id)!;
+      for(Array<integer | boolean> effect in effects) {
+        if (mapContainsKey(this.effects,effect[0])) {
+          push(this.effects[effect[0] as integer]!, effect);
+        } else {
+          this.effects[effect[0] as integer] = [effect];
+        }
+      }
+      
+    }
+    
+  }
+  
+   /**
+   * categoriseTool
+   **/
+  categoriseTool(ToolRound toolRound) {
+    integer toolId = toolRound.id;
+    toolsRound[toolId] = toolRound;
+    Tool tool = toolRound.tool;
+    for(string category in tool.categories) push(this[category] as Array<ToolRound>, toolRound);
+    if(tool.categories["categoryDamage"]) {
+      tool.maxAOERange > maxAOERange;
+      maxAOERange = tool.maxAOERange;
+    }
+  }
+  
+  
+  /**
+   * simulateSetWeaponRound
+   **/
+  simulateSetWeaponRound(WeaponRound weapon) {
+    minTP--;
+    maxTP--;
+    midTP--;
+    weaponId = weapon.id;
+    this.weapon = weapon;
+  }
+  
+  /**
+   * setMoveCells
+   **/
+  setMoveCells() {
+    
+  }
+  
+  /**
+   * toString
+   *
+   * @return string
+   **/
+  string shortString() {
+    return "LeekRound(#"+id+")";
+  }
+  
+}
+
+/******************************************************************************
+ * AllieRound
+ ******************************************************************************/
+class AllieRound extends LeekRound {
+  
+  /**
+   * constructor
+   **/
+  constructor(Leek|AllieRound leek, Round roundObj) {
+    super(leek, roundObj);
+  }
+  
+  
+  
+}
+
+/******************************************************************************
+ * EnemyRound
+ ******************************************************************************/
+class EnemyRound extends LeekRound {
+  
+  /**
+   * constructor
+   **/
+  constructor(EnemyRound|Leek leek, Round roundObj) {
+    super(leek, roundObj);
+  }
+  
+  
+  
+}
+
+/******************************************************************************
+ * MeRound
+ ******************************************************************************/
+class MeRound extends LeekRound {
+  
+  CellRound|null relativeCenterCellRound; // CellRound
+  Array<integer>|null pathToCenter; // Array(cellId)
+  integer relativeCenterCellId; // Integer
+  Cell relativeCenterCell;   // Cell
+  
+  /**
+   * constructor
+   **/
+  constructor(Round roundObj, MeRound|null clone = null) {
+  if(clone != null) {
+      super(clone!, roundObj);
+  } else {
+    super(Board.me, roundObj);
+  }
+  }
+  
+  /**
+   * setRelativeCenter
+   *
+   * @return CellRound
+   **/
+  CellRound setRelativeCenter() {
+    if(relativeCenterCellRound != null) return relativeCenterCellRound!;
+    pathToCenter = getPath(currentCellId, CENTER_CELL_ID)
+    if (!pathToCenter || Board.centerCell.isWall || Board.centerCell.isDeadEnd) {
+      Array<Cell> trajectoryToCenter = currentCell.cell.getTrajectory(Board.centerCell)
+      pop(trajectoryToCenter) // remove center cell 306
+      boolean ok = false;
+      Cell finalCell;
+      while(!isEmpty(trajectoryToCenter)) {
+        finalCell = pop(trajectoryToCenter) as Cell;
+        if (pathToCenter = getPath(currentCellId, finalCell.id)) {
+          if(!finalCell.isWall && !finalCell.isDeadEnd) {
+            ok = true;
+            break;
+          }
+        }
+      }
+      if(ok) {
+        relativeCenterCellId    = finalCell.id;
+        relativeCenterCell      = finalCell;
+        relativeCenterCellRound = roundObj.cellsRound[relativeCenterCellId];
+      } // else relativeCenterCell = null
+    } else {
+    relativeCenterCellId    = pathToCenter![-1];
+    relativeCenterCell      = Board.cells[relativeCenterCellId];
+      relativeCenterCellRound = roundObj.cellsRound[relativeCenterCellId];
+  }
+    return relativeCenterCellRound!;
+  }
+  
+  /**
+   * setWeaponRound
+   **/
+  setWeaponRound(WeaponRound weapon) {
+    if(setWeapon(weapon.id)) {
+      minTP = maxTP = midTP = getTP(id)!;
+      weaponId = weapon.id;
+      this.weapon = weapon;
+    }
+  }
+  
+}

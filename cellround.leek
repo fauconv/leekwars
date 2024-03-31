@@ -1,0 +1,30 @@
+include("cell");
+/******************************************************************************
+ * CellRound
+ ******************************************************************************/
+class CellRound {
+  
+  integer id;
+  Cell cell;
+  LeekRound leekOnCell;
+  
+  Round roundObj;
+  
+  /**
+   * constructor
+   **/
+  constructor(Cell cell, Round roundObj) {
+    id = cell.id;
+    this.cell = cell;
+    this.roundObj = roundObj;
+  }
+  
+  /**
+   * ToString
+   * @return string
+   **/
+  string shortString() {
+    return "cellRound:(#"+id+")";
+  }
+  
+}

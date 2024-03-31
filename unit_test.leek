@@ -1,0 +1,146 @@
+/****************************************************************************
+ * Unit test
+ ****************************************************************************/
+class UnitTest extends Strategy {
+  
+  static Enemy enemy;         
+  static integer enemyId;
+  static MeRound meRound;       // MeRound
+  static EnemyRound enemyRound;    // EnemyRound
+  static Round currentRound;  // Round
+  static Round simRound;
+  static Round oldRound;
+  
+  /**
+   * isValide
+   **/
+  static boolean isValide() {
+    return UNIT_TEST_DEBUG;
+  }
+  
+  /**
+   * apply
+   **/
+  void apply() {
+    
+    currentRound = Board.currentRound;
+    meRound = currentRound.meRound;
+    enemyRound = currentRound.enemiesRound[0];
+    
+    if(gFirstRound) {  
+      GameDebug.addBackground(true, meRound.relativeCenterCellId, COLOR_GREEN);
+      GameDebug.addOperation(true, "avant setWeapon");
+      if(Board.me.weapons[0]) meRound.setWeaponRound(meRound.toolsRound[Board.me.weapons[0].id] as WeaponRound);
+      GameDebug.addOperation(true, "setWeapon");
+      board();
+      cell();
+      cellRound();
+      effect();
+      fonctions();
+      leek();
+      leekRound();
+      moveCell();
+      relativeCell();
+      round();
+      tool();
+      toolRound();
+      oldRound = simRound = currentRound;
+    }
+      integer oldPV = oldRound.meRound.midLife - simRound.meRound.midLife;
+      integer oldTot = oldRound.meRound.midTotalLife - simRound.meRound.midTotalLife;
+      integer newPV = oldRound.meRound.midLife - meRound.midLife;
+      integer newTot = oldRound.meRound.midTotalLife - meRound.midTotalLife;
+      GameDebug.add(true, "Life->prevision :" + oldPV + " PV:"+newPV+" ecart:"+((oldPV - newPV)/newPV)*100);
+      GameDebug.add(true, "erosion->prevision :" + oldTot + " PV:"+newTot+" ecart:"+((oldTot - newTot)/newTot)*100);
+      if(enemyRound.weapon != null) {
+        integer nbShot = floor(enemyRound.maxTP / enemyRound.weapon!.tool.cost);
+        GameDebug.addOperation(true, "avant clonage");
+        simRound = new Round(currentRound);
+        enemyRound = simRound.enemiesRound[0];
+        meRound = simRound.meRound;
+        GameDebug.addOperation(true, "clonage");
+        for(integer i = 0; i < nbShot; i++)
+          GameDebug.add(true, enemyRound.weapon!.simulateShot([meRound],[1.0]),"prevision");
+        GameDebug.addOperation(true, "simulateShot");
+      } else if(count(enemyRound.categoryDamage) > 0) {
+        GameDebug.addOperation(true, "avant clonage");
+        simRound = new Round(currentRound);
+        enemyRound = simRound.enemiesRound[0];
+        meRound = simRound.meRound;
+        GameDebug.addOperation(true, "clonage");
+        GameDebug.add(enemyRound.categoryDamage[0].simulateShot([meRound],[1.0]),"prevision");
+        GameDebug.addOperation(true, "simulateShot");
+      }
+      oldRound = currentRound;
+    moveToward(enemyRound.id);
+    Talk.text = "Unit Test";
+  }
+  
+  boolean board() {
+    GameDebug.addBackground(Board.deadEnds,COLOR_BROWN); // marron
+    if(Board.cells[306].right.id == 324 && Board.cells[10].rightTop.id == 11) debugC("Board OK",COLOR_GREEN);
+    else debugC("Board KO", COLOR_RED);
+    return true;
+  }
+  
+  boolean cell() {
+    Object inter = Board.cells[306].interCellInfo[300];
+    if(inter.range == 12 && inter.isDiag == true && inter.isInline == false) debugC("Cell OK",COLOR_GREEN);
+    else debugC("Cell KO", COLOR_RED);
+    debugC("300 and 306 are " + ((inter.isInsight)?"":"NOT") + " inSight",COLOR_BLUE);
+    GameDebug.addBackground(true, 306, COLOR_BLUE);
+    GameDebug.addBackground(true, 300, COLOR_BLUE);
+    GameDebug.addBackground(true, Board.cells[306].getTrajectory(Board.cells[241]), COLOR_GREEN);
+    GameDebug.addBackground(true, Board.cells[288].getTrajectory(Board.cells[163]), COLOR_GREEN);
+    GameDebug.addBackground(true, Board.cells[305].getTrajectory(Board.cells[531]), COLOR_GREEN);
+    return true;
+  }
+  
+  boolean cellRound() {
+    return true;
+  }
+  
+  boolean effect() {
+    GameDebug.EFFECT_DEBUG = true;
+    //GameDebug.add(meRound.weapon.tool.effects,"",2);
+    return true;
+  }
+  
+  boolean fonctions() {
+    return true;
+  }
+  
+  boolean leek() {
+    //GameDebug.add(Board.me,"",2);
+    return true;
+  }
+  
+  boolean leekRound() {
+    meRound.setRelativeCenter()
+    //GameDebug.add(meRound,"",2);
+    GameDebug.addBackground(true, meRound.pathToCenter, COLOR_RED);
+    return true;
+  }
+  
+  boolean moveCell() {
+    return true;
+  }
+  
+  boolean relativeCell() {
+    return true;
+  }
+  
+  boolean round() {
+    return true;
+  }
+  
+  boolean tool() {
+    return true;
+  }
+  
+  boolean toolRound() {
+    //GameDebug.add(true, meRound.weapon,"",3);
+    return true;
+  }
+  
+}

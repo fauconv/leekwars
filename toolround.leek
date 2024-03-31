@@ -1,0 +1,103 @@
+include("movecell");
+/******************************************************************************
+ * ToolRound
+ *
+ * Exist only if cooldown == 0 ou si le tool viens d etre utilise dans ce tour
+ ******************************************************************************/
+class ToolRound {
+  
+  integer id;
+  Tool tool;
+  integer cooldown; 
+  
+  LeekRound owner;
+  
+  /**
+   * constructor
+   **/
+  constructor(Tool|ToolRound tool, LeekRound owner) {
+    this.owner = owner;
+    id = tool.id;
+    if(tool.class.super.name == "Tool") {
+      this.tool = tool as Tool;
+      cooldown = 0;
+    } else {
+      this.tool = (tool as ToolRound).tool;
+      cooldown = tool.cooldown;
+    }
+  }
+
+  /**
+   * simulateShot
+   * TODO: a adapter suite on changement dans Effect et mettre Effect a jour
+   * @return {integer minEffect, integer maxEffect, integer midEffect}
+   **/
+  Object simulateShot(Array<LeekRound> targets, Array<real> AOEs) {
+    integer nbTargets = count(targets);
+    integer cost = tool.cost;
+    owner.minTP -= cost;
+    owner.maxTP -= cost;
+    owner.midTP -= cost;
+    cooldown = tool.cooldown;
+    Object delta = {minEffect:0,maxEffect:0,midEffect:0};
+	real midCriticalLuck = owner.midAgility/1000.0;
+	for(Effect effect in tool.effects) {
+      if(effect.modOnCast) {
+        Object delta2 = effect.simulateShot(owner, owner, 1.0, 1, midCriticalLuck)
+        delta.minEffect += delta2.minEffect;
+        delta.maxEffect += delta2.maxEffect;
+        delta.midEffect += delta2.midEffect;
+      } else {
+        for(integer i : LeekRound target in targets) {
+          Object delta2 = effect.simulateShot(owner, target, AOEs[i], nbTargets, midCriticalLuck)
+          delta.minEffect += delta2.minEffect;
+          delta.maxEffect += delta2.maxEffect;
+          delta.midEffect += delta2.midEffect;
+        }
+      }
+    }
+    return delta;
+  }
+  
+  /**
+   * toString
+   *
+   * @return string
+   **/
+  string shortString() {
+    return "ToolRound("+TOOL_NAME_TRANSLATOR[id]+")";
+  }
+  
+}
+
+/******************************************************************************
+ * WeaponRound
+ *
+ * Exist only if cooldown == 0
+ ******************************************************************************/
+class WeaponRound extends ToolRound {
+  
+  /**
+   * constructor
+   **/
+  constructor(Tool|ToolRound tool, LeekRound owner) {
+    super(tool, owner);
+  }
+  
+}
+
+/******************************************************************************
+ * ChipRound
+ *
+ * Exist only if cooldown == 0
+ ******************************************************************************/
+class ChipRound extends ToolRound {
+  
+  /**
+   * constructor
+   **/
+  constructor(Tool|ToolRound tool, LeekRound owner) {
+    super(tool, owner);
+  }
+  
+}

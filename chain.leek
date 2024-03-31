@@ -1,0 +1,241 @@
+/****************************************************************************
+ * Chain
+ ****************************************************************************/
+class Chain {
+  
+  ChainElement|null first = null;
+  ChainElement|null current = null;
+  ChainElement|null last = null;
+  integer size = 0;
+  
+  /**
+   * constructor
+   **/
+  constructor() {
+  }
+
+  /**
+   * getFirst
+   **/
+  any getFirst() {
+    if(first != null) return first.element;
+    return null;
+  }
+  /**
+   * getLast
+   **/
+  any getLast() {
+    if(last != null) return last.element;
+    return null;
+  }
+  /**
+   * getNext
+   **/
+  any getNext() {
+    if(current != null && current.next != null) return current.next.element;
+    return null;
+  }
+  /**
+   * getPrevious
+   **/
+  any getPrevious() {
+    if(current != null && current.previous != null) return current.previous.element;
+    return null;
+  }
+  /**
+   * current
+   **/
+  any current() {
+    if(current != null) return current.element;
+    return null;
+  }
+  /**
+   * first
+   **/
+  any first() {
+    current = first;
+    if(current != null) return current.element;
+    return null;
+  }
+  /**
+   * last
+   **/
+  any last() {
+    current = last;
+    if(current != null) return current.element;
+    return null;
+  }
+  /**
+   * next
+   **/
+  any next() {
+    if(current != null && current.next != null) {
+      current = current.next;
+      return current.element;
+    }
+    return null;
+  }
+  /**
+   * previous
+   **/
+  any previous() {
+    if(current != null && current.previous != null) {
+      current = current.previous;
+      return current.element;
+    }
+    return null;
+  }
+  /**
+   * isEmpty
+   **/
+  boolean isEmpty() {
+    return (size == 0);
+  }
+  /**
+   * isFirst
+   **/
+  boolean isFirst() {
+    return (current == null || current.previous == null);
+  }
+  /**
+   * isLast
+   **/
+  boolean isLast() {
+    return (current == null || current.next == null);
+  }
+  /**
+   * push
+   **/
+  void push(any element) {
+    current = new ChainElement(last,element,null);
+    if(last != null) last.next = current;
+    last = current;
+    size++;
+  }
+  /**
+   * unshift
+   **/
+  void unshift(any element) {
+    current = new ChainElement(null,element,first);
+    if(first != null) first.previous = current;
+    first = current;
+    size++;
+  }
+  /**
+   * insert
+   * insert avant l element courant
+   **/
+  void insert(any element) {
+    if(current != null) {
+      current  = new ChainElement(current.previous,element,current);
+      current.next.previous = current;
+      if(current.previous != null) current.previous.next = current;
+    } else {
+      current  = new ChainElement(null,element,null);
+      first = last = current;
+    }
+    size++;
+  }
+  /**
+   * insertAfter
+   * insert avant l element courant
+   **/
+  void insertAfter(any element) {
+    if(current != null) {
+      current  = new ChainElement(current,element,current.next);
+      if(current.next != null) current.next.previous = current;
+      current.previous.next = current;
+    } else {
+      current  = new ChainElement(null,element,null);
+      first = last = current;
+    }
+    size++;
+  }
+  /**
+   * pop
+   **/
+  any pop() {
+    if(last != null) {
+      any elem = last.element;
+      if(last.previous == null) {
+        first = current = last = null;
+        size = 0;
+      } else {
+        last = current = last.previous;
+        current.next = null;
+        size--;
+      }
+      return elem;
+    }
+    return null;
+  }
+  /**
+   * shift
+   **/
+  any shift() {
+    if(first != null) {
+      any elem = first.element;
+      if(first.next == null) {
+        first = current = last = null;
+        size = 0;
+      } else {
+        first = current = first.next;
+        current.previous = null;
+        size--;
+      }
+      return elem;
+    }
+    return null;
+  }
+  /**
+   * remove
+   **/
+  any remove() {
+    if(current != null) {
+      any elem = current.element;
+      if(current.next == null) {
+        if(current.previous == null) {
+          first = current = last = null;
+          size = 0;
+        } else {
+          current = current.previous;
+          current.next = null;
+          size--;
+        }
+      } else {
+        if(current.previous == null) {
+          current = current.next;
+          current.previous = null;
+          size--;
+        } else {
+          current = current.next;
+          current.previous = current.previous.previous;
+          current.previous.next = current;
+          size--;
+        }
+      }
+      return elem;
+    }
+    return null;
+  }
+}
+
+/****************************************************************************
+ * ChainElement
+ ****************************************************************************/
+class ChainElement {
+  
+  ChainElement|null previous;
+  any element;
+  ChainElement|null next;
+  
+  /**
+   * constructor
+   **/
+  constructor(ChainElement|null previous, any element, ChainElement|null next) {
+    this.previous = previous;
+    this.element = element;
+    this.next = next;
+  }
+  
+}

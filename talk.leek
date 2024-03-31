@@ -1,3 +1,4 @@
+include("const");
 /*****************************************************************************
  * Talk
  * static
@@ -17,73 +18,75 @@
  *
  *****************************************************************************/
 class Talk {
-  static CURRENT      = 0b000001;
-  static RANDOM       = 0b000010;
-  static INC          = 0b000100;
-  static INC_REP      = 0b001000;
-  static UNI          = 0b010000;
-  static UNIQ         = 0b010001;
-  static UNI_RAND     = 0b010010;
-  static UNI_INC      = 0b010100;
-  static UNI_INC_REP  = 0b011000;
-  static MIX          = 0b100000;
-  static UNI_RAND_MIX = 0b100010;
-  static CONT_START   = "start";
-  static CONT_END     = "end";
-  static CONT_NORMAL  = "normal";
-  static context;
-  static iteration    = {start:0,normal:0,end:0}; // index du context
-  static contextType  = {start:RANDOM,normal:RANDOM,end:RANDOM};
-  static sentences    = {start:["Hello", "Salut, tu veux jouer à tire mon doigt ? Ou on se tire dessus ?", 
-                                  "Yop ! on tire un coup... de pistoler ?"],
-                         normal:["Hum... il me reste des PT, t'en veux ?", 
-                                   "Mais qu'est ce qu'on fout là ?",
-                                   "Je vais te dire un secret... chui pas vraiment un poireau",
-                                   "Je poireautais dans l'coin, quand on m'a dit : toi tu seras un poireau de combat",
-                                   "t'es lent ! tu me tues ou on y passe la journée ?",
-                                   "On est pas obligé de parler si tu veux",
-                                   "hum... *fais semblant de réfléchir*",
-                                   "zzzZZZZzzz",
-                                   "j'ai PT, ça sent le poireau"],
-                         end:["bon... comment on range son arme maintenant ?", 
-                                "J'ai gagné!", 
-                                "youhou ! c'est moi qui suis pas mort !", 
-                                "et hop, t'es déja moins vivant!", 
-                                "et toc !", 
-                                "et pan dans les dents ! heu... dans le poireau", 
-                                "et voilà je t'ai refroidi... tu te conserveras plus longtemps", 
-                                "heu... ca fait mal d'être mort ?", 
-                                "bon je retourne me coucher", 
-                                "Oups pardon", 
-                                "tu dis rien... t'es mort ?... ah oui !"]
+  static integer CURRENT      = 0b000001;
+  static integer RANDOM       = 0b000010;
+  static integer INC          = 0b000100;
+  static integer INC_REP      = 0b001000;
+  static integer UNI          = 0b010000;
+  static integer UNIQ         = 0b010001;
+  static integer UNI_RAND     = 0b010010;
+  static integer UNI_INC      = 0b010100;
+  static integer UNI_INC_REP  = 0b011000;
+  static integer MIX          = 0b100000;
+  static integer UNI_RAND_MIX = 0b100010;
+  static string CONT_START   = "start";
+  static string CONT_END     = "end";
+  static string CONT_NORMAL  = "normal";
+  static string context;
+  static Object iteration    = {start:0,normal:0,end:0}; // index du context
+  static Object contextType  = {start:RANDOM,normal:RANDOM,end:RANDOM};
+  static Object sentences    = {start:["Hello",
+                                       "Salut, tu veux jouer à tire mon doigt ? Ou on se tire dessus ?", 
+                                       "Yo ! on tire un coup... de pistoler ?"],
+                                normal:["Hum... il me reste des PT, t'en veux ?", 
+                                        "Mais qu'est ce qu'on fout là ?",
+                                        "Je vais te dire un secret... chui pas vraiment un leek",
+                                        "Je leektais dans l'coin, quand on m'a dit : toi tu seras un leek de combat",
+                                        "t'es lent ! tu me tues ou on y passe la journée ?",
+                                        "On est pas obligé de parler si tu veux",
+                                        "hum... *fais semblant de réfléchir*",
+                                        "zzzZZZZzzz",
+                                        "j'ai PT, ça sent le leek"],
+                                end:["bon... comment on range son arme maintenant ?", 
+                                     "J'ai gagné!", 
+                                     "youhou ! c'est moi qui suis pas mort !", 
+                                     "et hop, t'es déja moins vivant!", 
+                                     "et toc !", 
+                                     "et pan dans les dents ! heu... dans le leek", 
+                                     "et voilà je t'ai refroidi... tu te conserveras plus longtemps", 
+                                     "heu... ca fait mal d'être mort ?", 
+                                     "bon je retourne me coucher", 
+                                     "Oups pardon", 
+                                     "tu dis rien... t'es mort ?... ah oui !"]
                         }; // Object(Array(string))
   static text = "";
   
   /**
    * talk
    **/
-  static talk() {
+  static void talk() {
     if(getTP() > 0) {
       if(text == "") {
         (getAliveEnemiesCount() == 0) and (context = CONT_END);
-        if(context == null) {
-          (gSecondRound) and (context = CONT_START) or (context = CONT_NORMAL);
+        if(!context) {
+          if(gSecondRound) context = CONT_START;
+          else context = CONT_NORMAL;
         }
-        var type = contextType[context];
-        (type & UNI || context == CONT_START) and (context = CONT_NORMAL);
-        ((type & MIX) && randInt(0,2)) and (context = CONT_NORMAL);
-        var talkable = sentences[context];
-        var sentencesCount = count(talkable);
+        integer type = contextType[context] as integer;
+        if(type & UNI || context == CONT_START) context = CONT_NORMAL;
+        if((type & MIX) && randInt(0,2)) context = CONT_NORMAL;
+        Array<string> talkable = sentences[context] as Array<string>;
+        integer sentencesCount = count(talkable);
         if(sentencesCount <= 0) return;
         if(type & RANDOM) {
           text = remove(talkable, randInt(0,sentencesCount));
         } else {
-          var iter = iteration[context];
-          (iter < sentencesCount) and (text = talkable[iter]);
-          ((type & INC) || (type & INC_REP) && iter < (sentencesCount-1)) and iteration[context]++;
+          integer iter = iteration[context] as integer;
+          if(iter < sentencesCount) text = talkable[iter];
+          if((type & INC) || (type & INC_REP) && iter < (sentencesCount-1)) iteration[context]++;
         }
       }
-      (text != "") and say(text);
+      if(text != "") say(text);
     }
     text = "";
   }
@@ -91,9 +94,9 @@ class Talk {
   /**
    * addContext
    **/
-  static addContext(name, type, sentences) {
+  static void addContext(string name, integer type, Array<string> list) {
     iteration[name]   = 0;  
     contextType[name] = type;
-    sentences[name]   = sentences;  
+    sentences[name]   = list;  
   }
 }

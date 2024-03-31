@@ -4,9 +4,20 @@
 
 /***
  * first
+ * Retourne le premier element d'une map
  **/
-function mapFirst(map) {
-  for(var value in map) return value;
+function mapFirst(Map<any,any> map) => any {
+  for(any value in map) return value;
   return null;
 }
+
+/***
+ * objectSize
+ * Retourne le nombre d'element dans un objet anonyme
+ * O(3)
+ **/
+function objectSize(Object obj) => integer {
+  return count(obj.keys());
+}
+
 
