@@ -1,0 +1,66 @@
+/*****************************************************************
+ * Effect
+ * dynamic/static
+ * [0:type, 1:min, 2:max, 3:turns, 4:targets, 5:modifiers]
+ ******************************************************************/
+include("const");
+class Effect {
+  
+  type;
+  min;
+  max;
+  mid;
+  turns;
+  targetAllie;
+  targetCaster;
+  targetEnemy;
+  targetNonSummon;
+  targetSummon;
+  modIred;
+  modMulti;
+  modNoRep;
+  modOnCast;
+  modStack;
+
+  owner;
+  category;
+  caster;
+  target;  
+
+  /**
+   * constructor
+   * [0:type, 1:min, 2:max, 3:turns, 4:targets, 5:modifiers]
+   **/
+  constructor(effectArray, owner) {
+    this.owner = owner;
+    type = effectArray[0];
+    category = EFFECT_CATEGORY[type];
+    min = effectArray[1];
+    max = effectArray[2];
+    mid = (min+max)>>1
+    turns = effectArray[3];
+    var target = effectArray[4];
+    targetAllie = target&EFFECT_TARGET_ALLIES;
+    targetCaster = target&EFFECT_TARGET_CASTER;
+    targetEnemy = target&EFFECT_TARGET_ENEMIES;
+    targetNonSummon = target&EFFECT_TARGET_NON_SUMMONS;
+    targetSummon = target&EFFECT_TARGET_SUMMONS;
+    target = effectArray[5];
+    modIred = target&EFFECT_MODIFIER_IRREDUCTIBLE;
+    modMulti = target&EFFECT_MODIFIER_MULTIPLIED_BY_TARGETS;
+    modNoRep = target&EFFECT_MODIFIER_NOT_REPLACEABLE;
+    modOnCast = target&EFFECT_MODIFIER_ON_CASTER;
+    modStack = target&EFFECT_MODIFIER_STACKABLE;
+  }
+  
+  /**
+   * string
+   **/
+  string() {
+    return "Effect("+EFFECT_TYPE_TRANSLATOR[type]+") {cat: "+category+" min: "+min+"\n  max: "+max+" mid:"+mid + "}\n";
+  }
+  shortString() {
+    return "Effect("+EFFECT_TYPE_TRANSLATOR[type] + ")\n";
+  }
+
+}

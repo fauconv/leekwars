@@ -1,0 +1,181 @@
+include("effect");
+
+/*****************************************************************
+ * Tool
+ * dynamic
+ *
+ ******************************************************************/
+class Tool {
+  
+  id;
+  areaType;
+  needLos;
+  cost;
+  effects = [];
+  launchType; // inline, circle...
+  minRange;
+  maxRange;
+  maxAOERange = 0;
+  minAOERange = 0;
+  AOERange = 0;
+  AOELaunchType;
+  owner;
+  orderValue = 0; // to sortTool by firePower
+  cooldown   = 0; // weapon need cooldown to be treated as generic tool
+  
+  targetAllie     = false;
+  targetCaster    = false;
+  targetEnemy     = false;
+  targetSummon    = false;
+  targetNonSummon = false;
+  
+  categories = [:];
+  
+  isChip    = false;
+  isLaser   = false;
+  isAOE     = true;
+
+  /**
+   * constructor
+   **/
+  constructor(id, owner, getEffects) {
+    this.id = id;
+    this.owner = owner;
+
+    if(getEffects) {
+      var eff;
+      for(var effect in getEffects) {
+        push(effects, (eff = new Effect(effect, this)));
+        categories[eff.category] = eff.category;
+        targetAllie     = targetAllie     || eff.targetAllie;
+        targetCaster    = targetCaster    || eff.targetCaster;
+        targetEnemy     = targetEnemy     || eff.targetEnemy;
+        targetSummon    = targetSummon    || eff.targetSummon;
+        targetNonSummon = targetNonSummon || eff.targetNonSummon;
+      }
+    }
+      
+    if(areaType == AREA_POINT || areaType == AREA_LASER_LINE) {
+      isAOE = false;
+      maxAOERange = maxRange;
+      minAOERange = minRange;
+      if(areaType == AREA_LASER_LINE) {
+        isLaser = true;
+        AOELaunchType = LAUNCH_TYPE_LINE;
+      }
+    } else {
+      maxAOERange = maxRange+AOERange;
+      minAOERange = max(minRange-AOERange,1);
+      if(areaType == AREA_X_3) {
+        AOERange = 6;
+        AOELaunchType = LAUNCH_TYPE_DIAGONAL;
+      } else if(areaType == AREA_X_2) {
+        AOERange = 4;
+        AOELaunchType = LAUNCH_TYPE_DIAGONAL;
+      } else if(areaType == AREA_SQUARE_2) {
+        AOERange = 4;
+        AOELaunchType = LAUNCH_TYPE_SQUARE;
+      } else if(areaType == AREA_CIRCLE_3) {
+        AOERange = 3;
+        AOELaunchType = LAUNCH_TYPE_CIRCLE;
+      } else if(areaType == AREA_CIRCLE_2) {
+        AOERange = 2;
+        AOELaunchType = LAUNCH_TYPE_CIRCLE;
+      } else if(areaType == AREA_PLUS_2) {
+        AOERange = 2;
+        AOELaunchType = LAUNCH_TYPE_LINE;
+      } else if(areaType == AREA_X_1) {
+        AOERange = 2;
+        AOELaunchType = LAUNCH_TYPE_DIAGONAL;
+      } else if(areaType == AREA_SQUARE_1) {
+        AOERange = 2;
+        AOELaunchType = LAUNCH_TYPE_SQUARE;
+      } else if(areaType == AREA_PLUS_3) {
+        AOERange = 3;
+        AOELaunchType = LAUNCH_TYPE_LINE;
+      } else { // AREA_CIRCLE_1 || AREA_PLUS_1
+        AOERange = 1;
+        AOELaunchType = LAUNCH_TYPE_LINE;
+      }
+    }
+  }
+
+  /**
+   * string
+   **/
+  string() {
+    return TOOL_NAME_TRANSLATOR[id]+":\n  areaType:"+areaType+"\n  needLos:"+needLos+"\n  cost:"+cost+
+          "\n  launchType:"+TOOL_LAUNCHTYPE_TRANSLATOR[launchType]+"\n  minRange:"+minRange+"\n  maxRange:"+maxRange;
+  }
+  shortString() {
+    return TOOL_NAME_TRANSLATOR[id];
+  }
+
+}
+
+/***************************************************************
+ * Weapon
+ * dynamic
+ *
+ * TODO: passiveEffect
+ *
+ ***************************************************************/
+class Weapon extends Tool {
+
+  passiveEffect; // [][type,min,max,turns,targets,modifiers]
+
+  /**
+   * constructor
+   **/
+  constructor(weaponId, owner) {
+    areaType   = getWeaponArea(weaponId);
+    needLos    = weaponNeedLos(weaponId);
+    cost       = getWeaponCost(weaponId);
+    launchType = getWeaponLaunchType(weaponId);
+    minRange   = getWeaponMinRange(weaponId);
+    maxRange   = getWeaponMaxRange(weaponId);
+    passiveEffect = getWeaponPassiveEffects(weaponId);
+
+    super(weaponId, owner, getWeaponEffects(weaponId));
+
+  }
+  
+  /**
+   * getToolEffectiveArea
+   **/
+  getToolEffectiveArea(cellToId, cellFromId = null) {
+    return getWeaponEffectiveArea(id, cellToId, cellFromId);
+  }
+
+}
+
+/*************************************************************************
+ * Chip
+ * dynamic
+ *
+ *************************************************************************/
+class Chip extends Tool {
+
+  /**
+   * constructor
+   **/
+  constructor(chipId, owner) {
+    this.areaType = getChipArea(chipId);
+    this.needLos  = chipNeedLos(chipId);
+    this.cost     = getChipCost(chipId);
+    this.launchType = getChipLaunchType(chipId);
+    this.minRange = getChipMinRange(chipId);
+    this.maxRange = getChipMaxRange(chipId);
+    this.cooldown = getChipCooldown(chipId);
+    this.isChip = true;
+    super(chipId, owner, getChipEffects(chipId));
+  }
+  
+  /**
+   * getToolEffectiveArea
+   **/
+  getToolEffectiveArea(cellToId, cellFromId = null) {
+    return getChipEffectiveArea(id, cellToId, cellFromId);
+  }
+  
+}

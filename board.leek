@@ -1,0 +1,130 @@
+include("cell");
+include("round");
+/******************************************************************************
+ * Board 
+ ******************************************************************************/
+class Board {
+
+  static myId;
+  static moi;             // poireau
+  static combatMaxRange;  // int
+  static currentRound;
+  static centerCell;
+  
+  static enemies  = [:];  // Map(Poireau)
+  static allies   = [:];  // Map(Poireau)
+  static poireaux;        // Map(Poireau)
+  static cells = [];      // array(cells)
+
+  static centerCellId = CENTER_CELL_ID;
+  
+  
+  /**
+   * init
+   **/
+  static init() {
+    
+    //
+    // add moi
+    //
+    moi      = new Moi();
+    myId     = moi.id;
+    poireaux = [myId:moi];
+    combatMaxRange = moi.dmgMaxRange;
+    
+    //
+    // add enemies
+    //
+    var ens = getEnemies();
+    for(var en in ens) {
+      poireaux[en] = enemies[en] = new Enemy(en);
+      (poireaux[en].dmgMaxRange > combatMaxRange) and (combatMaxRange = poireaux[en].dmgMaxRange);
+    }
+    
+    //
+    // add allies
+    //
+    ens = getAllies();
+    for(var en in ens) {
+      (en != myId) and (allies[en] = poireaux[en] = new Friend(en));
+    }
+    
+    //
+    // cells creations
+    //
+    for(var i = 0;i < NB_CELLS; i++) {
+      push(cells, (getCellContent(i) == CELL_OBSTACLE)?new Wall(i):new FreeCell(i));
+    }
+    centerCell = cells[centerCellId];
+    
+    //
+    // voisin creations
+    //
+    for(var objCell in cells) {
+      for(var direction in STAR_DIRECTION) {
+        var xy = XY_DIRECTION[direction];
+        var cellId = getCellFromXY(objCell.x+xy.x,objCell.y+xy.y);
+        (cellId) and (objCell.voisins[direction] = cells[cellId]);
+      }
+    }
+    
+    //
+    // deadend
+    //
+    var DEADEND_LOOP = true;
+    while(DEADEND_LOOP) {
+      DEADEND_LOOP = false;
+      for(var objCell in cells) {
+        if(objCell.isDeadEnd) continue;
+        var deadCount = 0;
+        var voisins = objCell.voisins;
+        for(var direction in LINE_DIRECTION) {
+          ((!voisins[direction]) || voisins[direction].isDeadEnd) and (deadCount++);
+        }
+        (objCell.isDeadEnd = (deadCount >= 3)) and (DEADEND_LOOP = true);
+      }
+    }
+    GameDebug.addDeadEnd(cells,12019715); // marron
+    
+    //
+    // define los, distance, diag and line
+    //
+    for(var x = 1; x < NB_CELLS; x++) {
+      var cellFrom = cells[x];
+      if(cellFrom.isWall) continue;
+      for(var y = 0; y < x; y++) {
+        var cellTo = cells[y];
+        if(cellTo.isWall) continue;
+        var range = getCellDistance(x, y);
+        if(range > MAX_RANGE) continue;
+        cellFrom.cellLinkInfo[cellTo.id] = cellTo.cellLinkInfo[cellFrom.id] = 
+          {range:range, isInsight:lineOfSight(x, y), isInline:(cellFrom.x == cellTo.x || cellFrom.y == cellTo.y), isDiag:(abs(cellFrom.x-cellTo.x) == abs(cellFrom.y-cellTo.y))};
+      }
+    }
+    
+    //
+    // first round
+    //
+    currentRound = new Round(moi, allies, enemies);
+    
+    return true;
+  }
+  
+  /**
+   * update
+   **/
+  static update() {
+    
+    for(var id : var poireau in poireaux) {
+      if(!isAlive(id)) {
+        mapRemove(poireaux,id);
+        if(poireau.isEnemy) mapRemove(enemies,id);
+        else if(poireau.isAllie) mapRemove(allies,id); // TODO: cas des summon a gerer
+      }
+    }
+    currentRound = new Round(moi, allies, enemies);
+    return true;
+    
+  }
+}
+

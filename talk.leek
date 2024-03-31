@@ -1,0 +1,99 @@
+/*****************************************************************************
+ * Talk
+ * static
+ *
+ * contextType filter :
+ *   1 = appel a l index courant
+ *   2 = appel d un index random avec suppression des phrases utilises
+ *   4 = appel a l index courant puis increment
+ *   8 = appel a l index courant puis increment qui repete le dernier a l infini
+ *   (16 = appel unique = 1 appel a talk avec le context courant puis retour au context CONT_NORMAL)
+ *   17 = appel unique a l index courant
+ *   18 = appel unique random avec suppression des phrases utilises
+ *   20 = appel unique incremental
+ *   24 = appel unique incremental qui repete le dernier a l infini
+ *   (32 = appel unique + mix avec CONT_NORMAL)
+ *   34 = appel unique (+mix avec normal) random avec suppression des phrases utilises
+ *
+ *****************************************************************************/
+class Talk {
+  static CURRENT      = 0b000001;
+  static RANDOM       = 0b000010;
+  static INC          = 0b000100;
+  static INC_REP      = 0b001000;
+  static UNI          = 0b010000;
+  static UNIQ         = 0b010001;
+  static UNI_RAND     = 0b010010;
+  static UNI_INC      = 0b010100;
+  static UNI_INC_REP  = 0b011000;
+  static MIX          = 0b100000;
+  static UNI_RAND_MIX = 0b100010;
+  static CONT_START   = "start";
+  static CONT_END     = "end";
+  static CONT_NORMAL  = "normal";
+  static context;
+  static iteration    = {start:0,normal:0,end:0}; // index du context
+  static contextType  = {start:RANDOM,normal:RANDOM,end:RANDOM};
+  static sentences    = {start:["Hello", "Salut, tu veux jouer à tire mon doigt ? Ou on se tire dessus ?", 
+                                  "Yop ! on tire un coup... de pistoler ?"],
+                         normal:["Hum... il me reste des PT, t'en veux ?", 
+                                   "Mais qu'est ce qu'on fout là ?",
+                                   "Je vais te dire un secret... chui pas vraiment un poireau",
+                                   "Je poireautais dans l'coin, quand on m'a dit : toi tu seras un poireau de combat",
+                                   "t'es lent ! tu me tues ou on y passe la journée ?",
+                                   "On est pas obligé de parler si tu veux",
+                                   "hum... *fais semblant de réfléchir*",
+                                   "zzzZZZZzzz",
+                                   "j'ai PT, ça sent le poireau"],
+                         end:["bon... comment on range son arme maintenant ?", 
+                                "J'ai gagné!", 
+                                "youhou ! c'est moi qui suis pas mort !", 
+                                "et hop, t'es déja moins vivant!", 
+                                "et toc !", 
+                                "et pan dans les dents ! heu... dans le poireau", 
+                                "et voilà je t'ai refroidi... tu te conserveras plus longtemps", 
+                                "heu... ca fait mal d'être mort ?", 
+                                "bon je retourne me coucher", 
+                                "Oups pardon", 
+                                "tu dis rien... t'es mort ?... ah oui !"]
+                        }; // Object(Array(string))
+  static text = "";
+  
+  /**
+   * talk
+   **/
+  static talk() {
+    if(getTP() > 0) {
+      if(text == "") {
+        (getAliveEnemiesCount() == 0) and (context = CONT_END);
+        if(context == null) {
+          (gSecondRound) and (context = CONT_START) or (context = CONT_NORMAL);
+        }
+        var type = contextType[context];
+        (type & UNI || context == CONT_START) and (context = CONT_NORMAL);
+        ((type & MIX) && randInt(0,2)) and (context = CONT_NORMAL);
+        var talkable = sentences[context];
+        var sentencesCount = count(talkable);
+        if(sentencesCount <= 0) return;
+        if(type & RANDOM) {
+          text = remove(talkable, randInt(0,sentencesCount));
+        } else {
+          var iter = iteration[context];
+          (iter < sentencesCount) and (text = talkable[iter]);
+          ((type & INC) || (type & INC_REP) && iter < (sentencesCount-1)) and iteration[context]++;
+        }
+      }
+      (text != "") and say(text);
+    }
+    text = "";
+  }
+  
+  /**
+   * addContext
+   **/
+  static addContext(name, type, sentences) {
+    iteration[name]   = 0;  
+    contextType[name] = type;
+    sentences[name]   = sentences;  
+  }
+}

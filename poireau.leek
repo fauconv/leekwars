@@ -1,0 +1,118 @@
+include("tool");
+
+/******************************************************************************
+ * Poireau
+ * dynamic
+ *
+ ******************************************************************************/
+class Poireau {
+
+  // fixed data
+  id;                // int
+  isMoi    = false;  // bool
+  isAllie  = false;  // bool
+  isEnemy  = false;  // bool
+  isSummon = false;  // bool
+  name;              // string
+  farmer;            // string
+  dmgMaxRange = 0;
+  dmgMinRange = Integer.MAX_VALUE;
+  tools = [:];
+  categorizedTools = {};  // object(array(tool)). les tools peuvent etre en double dans cette objet
+
+  /**
+   * constructor
+   *
+   * TODO: ajouter les bulb chips
+   **/
+  constructor(idPoireau) {
+    id = idPoireau;
+    name = getName(idPoireau);
+    farmer = getFarmerName(idPoireau);
+    for(var category in CATEGORY_LIST) categorizedTools[category] = new Array();
+    
+    //
+    // add tools by category
+    //
+    var weapons = getWeapons(idPoireau);
+    if(weapons) for(var weaponId in weapons) categoriseTool(new Weapon(weaponId, this));
+
+    var chips = getChips(idPoireau);
+    if(chips) for(var chipId in chips) categoriseTool(new Chip(chipId, this));
+    
+  }
+
+  /**
+   * categoriseTool
+   **/
+  categoriseTool(tool) {
+    var toolId = tool.id
+    tools[toolId] = tool;
+    for(var category in tool.categories) push(categorizedTools[category], tool);
+    if (tool.categories[CATEGORY_DAMAGE]) {
+      (tool.maxAOERange > dmgMaxRange) and (dmgMaxRange = tool.maxAOERange);
+      (tool.minAOERange < dmgMinRange) and (dmgMinRange = tool.minAOERange);
+    }
+  }
+  
+  /**
+   * string
+   **/
+  string() {
+    return name+"(#"+id+")";
+  }
+
+}
+
+/*************************************************
+ * Enemy
+ * dynamic
+ *
+ *************************************************/
+class Enemy extends Poireau {
+
+  /**
+   * constructor
+   **/
+  constructor(idPoireau) {
+    super(idPoireau);
+    isEnemy = true;
+  }
+
+}
+
+/*************************************************
+ * Friend
+ * dynamic
+ *
+ *************************************************/
+class Friend extends Poireau {
+
+  /**
+   * constructor
+   **/
+  constructor(entityId) {
+    id = entityId;
+    name = getName(entityId);
+    farmer = getFarmerName(entityId);
+    isAllie = true
+  }
+
+}
+
+/*************************************************
+ * Moi
+ * dynamic
+ *
+ *************************************************/
+class Moi extends Poireau {
+
+  /**
+   * constructor
+   **/
+  constructor() {
+    super(getEntity());
+    isMoi = true;
+    isAllie = true
+  }
+}

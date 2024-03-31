@@ -1,0 +1,88 @@
+/*****************************************************************************
+ * GameDebug
+ * static
+ *****************************************************************************/
+class GameDebug {
+  
+  static str = "\n";
+  static opt = 0;
+  static ram = 0;
+  
+  /**
+   * str
+   **/
+  static display() {
+    return true;
+  }
+  
+  /**
+   * translate functions
+   **/
+  static addDirection(id,txt = "", nl = true) {
+    return true;
+  }
+
+  /***
+   * arrayDebug
+   *
+   * internal
+   **/
+  static arrayDebug(array, limit = [], start = [], revers = [], space = "") {
+    return true;
+  }
+  
+  /***
+   * objectDebug
+   *
+   * internal
+   **/
+  static objectDebug(array, limit = [], start = [], revers = [], space = "") {
+    return true;
+  }
+  
+  /**
+   * add
+   *
+   * ajoute un element a debugger dans la liste a afficher
+   **/
+  static add(element, txt = "", limit = [], start = [], revers = [], space) {
+    return true;
+  }
+  
+  /**
+   * markBackground
+   *
+   * change la couleur de fond d une liste de cells
+   **/
+  static addBackground(cellId,color = 0) {
+    return true;
+  }
+  
+  /**
+   * addDeadEnd
+   *
+   * change la couleur de fond d une liste de cells ou isDeadEnd = true
+   **/
+  static addDeadEnd(cells,color = 0) {
+    return true;
+  }
+
+  /**
+   * addOperation
+   * calcul les opt et la ram depuis le dernier addOperation et l affiche
+   **/
+  static addOperation(txt = "") {
+    return true;
+  }
+  
+  /**
+   * addParcour
+   **/
+  static addParcour(flatReachableCells, color = 0) {
+    return true;
+  }
+  
+}
+
+
+

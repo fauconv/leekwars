@@ -1,0 +1,175 @@
+/*****************************************************************************
+ * GameDebug
+ * static
+ *****************************************************************************/
+class GameDebug {
+  
+  static str = "\n";
+  static opt = 0;
+  static ram = 0;
+  
+  /**
+   * str
+   **/
+  static display() {
+    addOperation("( "+getTP()+" TP / "+getMP()+" MP left ) total operations, turn "+getTurn());
+    debug(str);
+    str = "\n";
+    opt = 0;
+    ram = 0;
+    return true;
+  }
+  
+  /**
+   * translate functions
+   **/
+  static addDirection(id,txt = "") {
+    return add(DIRECTION_TRANSLATOR[id], txt);
+  }
+
+  /***
+   * arrayDebug
+   *
+   * internal
+   **/
+  static arrayDebug(array, limit = [], start = [], revers = [], space = "") {
+    var lim = 1000;
+    var star = 0;
+    var cnt = 0;
+    var cpt = count(array);
+    var rev = false;
+    var tab = array;
+    (count(limit) > 0) and (lim = shift(limit));
+    (count(start) > 0) and (star = shift(start));
+    (count(revers) > 0) and (rev = shift(revers));
+    (rev) and (tab = reverse(array));
+    if(typeOf(array) == TYPE_ARRAY) {
+      str += "Array("+star+"-"+lim+"/"+cpt+") [";
+    } else {
+      str += "MAP("+star+"-"+lim+"/"+cpt+") [";
+    }
+    if(cpt != 0) {
+      str += "\n"
+      var space2 = space + "  ";
+      for(var key:var value in tab) {
+        if(cnt >= lim) break;
+        if(cnt < star) {
+          cnt++;
+          continue;
+        }
+        str += space2+key+": ";
+        add(value, "", limit, start, revers, space2);
+        cnt++;
+      }
+      str += space+"]\n";
+    } else {
+      str += "]\n";
+    }
+    unshift(revers,rev);
+    unshift(limit,lim);
+    unshift(start, star);
+  }
+  
+  /***
+   * objectDebug
+   *
+   * internal
+   **/
+  static objectDebug(obj, limit = [], start = [], revers = [], space = "") {
+    var ret;
+    if(ret = obj.shortString()) {
+      str += ret;
+      return true;
+    }
+    if(ret = obj.string()) {
+      str += ret;
+      return true;
+    }
+    if(obj.id != null) {
+      str += " Object("+obj.id+")\n";
+      return true;
+    }
+    str += "Object {";
+    var keys = obj.keys();
+    var cpt = count(keys);
+    if(cpt != 0) {
+      str += "\n"
+      var space2 = space + "  ";
+      for(var key:var value in keys) {
+        str += space2+key+": ";
+        add(value, "", limit, start, revers, space2);
+      }
+      str += space+"}\n";
+    } else {
+      str += "}\n";
+    }
+  }
+  
+  
+  
+  /**
+   * add
+   *
+   * ajoute un element a debugger dans la liste a afficher
+   **/
+  static add(element, txt = "", limit = [], start = [], revers = [], space = "") {
+    (txt != "") and (str+= txt +" => ");
+    var type = typeOf(element);
+    if(type == TYPE_ARRAY || type == TYPE_MAP) {
+      arrayDebug(element, limit, start, revers, space);
+    } else if(type == TYPE_OBJECT) {
+      objectDebug(element, limit, start, revers, space);
+    } else {
+      str += element;
+    }
+    str += "\n";
+    return true;
+  }
+  
+  /**
+   * addBackground
+   *
+   * change la couleur de fond d une liste de cells ou d'un cellId
+   **/
+  static addBackground(cellsOrCellId,color = 0) {
+    var type = typeOf(cellsOrCellId);
+    if(type == TYPE_ARRAY|| type == TYPE_MAP || type == TYPE_OBJECT) for(var cell in cellsOrCellId) mark(cell.id, color,1);
+    else mark(cellsOrCellId, color,1);
+    return true;
+  }
+  
+  /**
+   * addDeadEnd
+   *
+   * change la couleur de fond d une liste de cells ou isDeadEnd = true
+   **/
+  static addDeadEnd(cells,color = 0) {
+    for(var cell in cells) if(cell.isDeadEnd) mark(cell.id, color,0);
+    return true;
+  }
+
+  /**
+   * addOperation
+   * calcul les opt et la ram depuis le dernier addOperation et l affiche
+   **/
+  static addOperation(txt = "") {
+    var opt2 = getOperations()-opt;
+    var ram2 = getUsedRAM()-ram;
+    str += txt+" : "+opt2+"("+(opt2*100/OPERATIONS_LIMIT)+"%Ops) / "+ram2+"("+(ram2*100/getMaxRAM())+"%RAM)\n";
+    opt = getOperations();
+    ram = getUsedRAM();
+    return true;
+  }
+  
+  /**
+   * addParcour
+   **/
+  static addParcour(flatReachableCells, color = 0) {
+    for(var cellId : var MP in flatReachableCells) markText(cellId, MP, color,1);
+    return true;
+  }
+
+}
+
+
+

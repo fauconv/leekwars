@@ -1,0 +1,126 @@
+/****************************************************************************
+ * BasicStrategy
+ * 1 instance (voir en bas)
+ ****************************************************************************/
+class BasicStrategy {
+  
+  static enemy;
+  static enemyId;
+  static moi;
+  static myId;
+  
+  /**
+   * isValide
+   *
+   * refuse les match avec AOE, en groupe, ou avec bulb
+   **/
+  static isValide() {
+    if(mapSize(Board.enemies) > 1) return false;
+    for(var enemy in Board.enemies) {
+      if(enemy.categorizedTools[CATEGORY_BULB]) return false;
+      BasicStrategy.enemy = enemy;
+    }
+    enemyId = enemy.id;
+    myId = Board.myId;
+    moi = Board.moi;
+    return true;
+  }
+  
+  /**
+   * apply
+   */
+  apply() {
+    
+    //
+    // creation du round
+    //
+    var currentRound = Board.currentRound;
+    var moiRound = currentRound.moiRound;
+    var enemyRound = mapFirst(currentRound.enemiesRound);
+    var myCellRound = moiRound.cellRound;
+    var enemyCellRound = enemyRound.cellRound;
+    
+    //
+    // cas particulier premier tour
+    //
+    if(gFirstRound) {
+      var relativeCenterCellRound = currentRound.computeRelativeCenter();
+      GameDebug.addBackground(relativeCenterCellRound.id, COLOR_GREEN);
+      moveTowardCell(relativeCenterCellRound.id);
+      return true;
+    }
+    
+    //
+    // creation des parcours
+    //
+    moiRound.parcour();
+    enemyRound.parcour();
+    var myFlatReachableCells = moiRound.parcour(); // [remainingMP][] = cell -> map(array(cell))
+    var ennemyFlatReachableCells = enemyRound.parcour();
+    
+    GameDebug.addParcour(myFlatReachableCells, COLOR_BLUE);
+    GameDebug.addParcour(ennemyFlatReachableCells, COLOR_RED);
+    
+    //
+    // pour chaque tool je determine les cases interessante a cible par rapport a l AOE et la position de l ennemi
+    //
+    var myDmgTools = moiRound.usableCategorizedTools[CATEGORY_DAMAGE];
+    var ennemyDmgTools = enemyRound.usableCategorizedTools[CATEGORY_DAMAGE];
+    var enemyRelativeCells = enemyCellRound.cell.getRelativeCells(myDmgTools);
+
+    /*
+    
+    //
+    // pour chaque case ou je peux aller je test si je peux utiliser un tool
+    //
+    for(var myMoveCellId : var remainingMP in flatReachableCells) {
+      var interCellInfo = Board.cells[myMoveCellId].cellLinkInfo[enemyCellId];
+      var range = interCellInfo.range;
+      if(range < moiRound.usableDmgMaxRange || range > moiRound.usableDmgMinRange) { // TODO utiliser combatMaxRange ?
+        var isInsight = interCellInfo.isInsight;
+        var isInline  = interCellInfo.isInline;
+        var isDiag    = interCellInfo.isDiag;
+        var currentCellRound = cellsRound[myMoveCellId];
+        var myUsableTools = currentCellRound.myUsableTools;
+        for(var tool in dmgTools) {
+          if(tool.maxAOERange < range || tool.minAOERange > range) continue;
+          if(tool.isAOE) {
+            var ennemyRelativeEnnemyCellIds = tool.getToolEffectiveArea(enemyCellId);
+            for(var ennemyRelativeCellId in ennemyRelativeEnnemyCellIds) {
+              // recursion du code
+              interCellInfo = Board.cells[myMoveCellId].cellLinkInfo[ennemyRelativeCellId];
+              range = interCellInfo.range;
+              if(range < moiRound.usableDmgMaxRange || range > moiRound.usableDmgMinRange) {
+                isInsight = interCellInfo.isInsight;
+                isInline  = interCellInfo.isInline;
+                isDiag    = interCellInfo.isDiag;
+                if(tool.needLos && !isInsight) continue;
+                if(tool.launchType == LAUNCH_TYPE_LINE) {if(!isInline) continue;}
+                else if(tool.launchType == LAUNCH_TYPE_DIAGONAL) { if(!isDiag) continue;}
+                else if(tool.launchType == LAUNCH_TYPE_STAR && !isDiag && !isInline) continue;
+                myUsableTools[tool.id] = tool;
+                myCells4Atk[myMoveCellId] = currentCellRound; // TODO: ici ont voudrais mettre la nouvelle target et le % de degat de l AOE
+              }
+            }
+          } else {
+            if(tool.needLos && !isInsight) continue;
+            if(tool.launchType == LAUNCH_TYPE_LINE) {if(!isInline) continue;}
+            else if(tool.launchType == LAUNCH_TYPE_DIAGONAL) { if(!isDiag) continue;}
+            else if(tool.launchType == LAUNCH_TYPE_STAR && !isDiag && !isInline) continue;
+            myUsableTools[tool.id] = tool;
+            myCells4Atk[myMoveCellId] = currentCellRound; // TODO: ou on peut mettre le remaining MP ? au choix
+          }
+        }
+      }
+      
+      // TODO: reflechir a un algo plus humain
+      // TODO: pour chaque combo d arme identique je garde celui qui me laisse le plus de MP, sauf pour les arme AOE ou je dois faire le calcul
+    }*/
+    
+    
+    
+    return true;
+  }
+ 
+}
+

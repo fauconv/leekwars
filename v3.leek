@@ -1,0 +1,43 @@
+/**************************************************************************
+ * include debugs
+ **************************************************************************/
+include("gamedebug");
+//include("gamenodebug");
+
+/**************************************************************************
+ * include
+ **************************************************************************/
+include("board");
+gFirstRound and Board.init() or Board.update();
+
+/*************************************************************************
+ * Add strategies files
+ *************************************************************************/
+include("basicstrategy");
+if(BasicStrategy.isValide()) gAvailableStrategie = new BasicStrategy();
+
+/******************************************************
+ * main
+ *******************************************************/
+
+//
+// apply strategy
+//
+(gAvailableStrategie != null) and 
+  gAvailableStrategie.apply()
+or 
+  (gFirstRound) and 
+    (Talk.text = "Je n'ai pas été codé pour ce format de combat, donc je bouge pas et toc !");
+
+//
+// update nbturn
+//
+gFirstRound and (gSecondRound = true) or (gSecondRound = false);
+gFirstRound = false;
+
+//
+// talk and debug
+//
+Talk.talk();
+GameDebug.display();
+pause();
