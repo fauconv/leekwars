@@ -1,4 +1,4 @@
-include("relativecell");
+include("cellround");
 
 /******************************************************************************
  * MoveCell
@@ -13,9 +13,6 @@ class MoveCell {
   LeekRound owner;
   Cell cell;
   
-  Map<integer, RelativeCell> relativeCells = [:]; // Map(RelativeCell)
-  
-  
   /**
    * constructor
    **/
@@ -26,26 +23,6 @@ class MoveCell {
     this.roundObj = cellRound.roundObj;
     this.cell = cellRound.cell;
     remainingMP = MP;
-  }
-  
-  /**
-   * getRelativeCells
-   * TODO : check
-   **/
-  void setRelativeCells(Array<ToolRound> toolsRound) {
-    for(ToolRound toolRound in toolsRound) {
-      Tool tool = toolRound.tool;
-      if(!tool.isAOE) {
-        if(!relativeCells[id]) relativeCells[id] = new RelativeCell(id, this, toolRound, 1.0); 
-        else (relativeCells[id]!).addTool(toolRound);
-      } else {
-        /*for(Array<any> infos in tool.getTouchedCells(id)) {
-          integer id = infos[0] as integer;
-          if(!relativeCells[id]) relativeCells[id] = new RelativeCell(id, this, toolRound, infos[1] as real); 
-          else relativeCells[id].addTool(toolRound);
-        }*/
-      }
-    }
   }
   
   /**
