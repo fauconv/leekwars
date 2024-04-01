@@ -5,19 +5,19 @@ include("leekround");
  ******************************************************************************/
 class Round {
   
-  MeRound meRound; // meRound
+  MeRound meRound;
   
-  Array<CellRound> cellsRound = [];   // Array(CellRound)
+  Array<CellRound> cellsRound = [];
   
-  Array<AllieRound> alliesRound = [];  // Array(AllieRound)
-  Array<EnemyRound> enemiesRound = []; // Array(EnemyRound)
+  Array<AllieRound> alliesRound = [];
+  Array<EnemyRound> enemiesRound = [];
   
-  Map<integer, LeekRound> leeksRound = [:];   // Map(LeekRound)
+  Map<integer, LeekRound> leeksRound = [:];
   
   /**
    * constructor
    **/
-  constructor(Round|null clone = null) {
+  constructor() {
     
     //
     // cells creations
@@ -25,60 +25,29 @@ class Round {
     for(integer i = 0;i < NB_CELLS; i++) {
       push(cellsRound, new CellRound(Board.cells[i],this));
     }
-    
+
     //
-    // clonage
-    // 
-    if(clone != null) {
-      //
-      // add me
-      //
-      meRound = new MeRound(this, (clone!).meRound);
-      leeksRound[meRound.id] = meRound;
+    // add me
+    //
+    meRound = new MeRound(this);
+    leeksRound[meRound.id] = meRound;
 
-      //
-      // add enemies
-      //
-      for(EnemyRound enemy in (clone!).enemiesRound) {
-        EnemyRound en = new EnemyRound(enemy, this); 
-        push(enemiesRound, en);
-        leeksRound[en.id] = en;
-      }
+    //
+    // add enemies
+    //
+    for(Leek enemy in Board.enemies) {
+      EnemyRound en = new EnemyRound(enemy, this);
+      push(enemiesRound, en);
+      leeksRound[en.id] = en;
+    }
 
-      //
-      // add allies
-      //
-      for(AllieRound enemy in (clone!).alliesRound) {
-        AllieRound en = new AllieRound(enemy, this);
-        push(alliesRound, en);
-        leeksRound[en.id] = en;
-      }
-      
-    } else {
-
-      //
-      // add me
-      //
-      meRound = new MeRound(this);
-      leeksRound[meRound.id] = meRound;
-
-      //
-      // add enemies
-      //
-      for(Leek enemy in Board.enemies) {
-        EnemyRound en = new EnemyRound(enemy, this);
-        push(enemiesRound, en);
-        leeksRound[en.id] = en;
-      }
-
-      //
-      // add allies
-      //
-      for(Leek enemy in Board.allies) {
-        AllieRound en = new AllieRound(enemy, this);
-        push(alliesRound, en);
-        leeksRound[en.id] = en;
-      }
+    //
+    // add allies
+    //
+    for(Leek enemy in Board.allies) {
+      AllieRound en = new AllieRound(enemy, this);
+      push(alliesRound, en);
+      leeksRound[en.id] = en;
     }
     
   }

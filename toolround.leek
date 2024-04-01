@@ -15,16 +15,11 @@ class ToolRound {
   /**
    * constructor
    **/
-  constructor(Tool|ToolRound tool, LeekRound owner) {
+  constructor(Tool tool, LeekRound owner) {
     this.owner = owner;
     id = tool.id;
-    if(tool.class.super.name == "Tool") {
-      this.tool = tool as Tool;
-      cooldown = 0;
-    } else {
-      this.tool = (tool as ToolRound).tool;
-      cooldown = tool.cooldown;
-    }
+    this.tool = tool;
+    cooldown = 0;
   }
 
   /**
@@ -80,7 +75,7 @@ class WeaponRound extends ToolRound {
   /**
    * constructor
    **/
-  constructor(Tool|ToolRound tool, LeekRound owner) {
+  constructor(Tool tool, LeekRound owner) {
     super(tool, owner);
   }
   
@@ -96,7 +91,7 @@ class ChipRound extends ToolRound {
   /**
    * constructor
    **/
-  constructor(Tool|ToolRound tool, LeekRound owner) {
+  constructor(Tool tool, LeekRound owner) {
     super(tool, owner);
   }
   

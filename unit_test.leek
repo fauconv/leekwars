@@ -68,7 +68,7 @@ class UnitTest extends Strategy {
         enemyRound = simRound.enemiesRound[0];
         meRound = simRound.meRound;
         GameDebug.addOperation(true, "clonage");
-        GameDebug.add(enemyRound.categoryDamage[0].simulateShot([meRound],[1.0]),"prevision");
+        GameDebug.add(true, enemyRound.categoryDamage[0].simulateShot([meRound],[1.0]),"prevision");
         GameDebug.addOperation(true, "simulateShot");
       }
       oldRound = currentRound;
@@ -77,7 +77,7 @@ class UnitTest extends Strategy {
   }
   
   boolean board() {
-    GameDebug.addBackground(Board.deadEnds,COLOR_BROWN); // marron
+    GameDebug.addBackground(true, Board.deadEnds,COLOR_BROWN); // marron
     if(Board.cells[306].right.id == 324 && Board.cells[10].rightTop.id == 11) debugC("Board OK",COLOR_GREEN);
     else debugC("Board KO", COLOR_RED);
     return true;
@@ -101,7 +101,7 @@ class UnitTest extends Strategy {
   }
   
   boolean effect() {
-    GameDebug.EFFECT_DEBUG = true;
+    EFFECT_DEBUG = true;
     //GameDebug.add(meRound.weapon.tool.effects,"",2);
     return true;
   }
@@ -116,7 +116,7 @@ class UnitTest extends Strategy {
   }
   
   boolean leekRound() {
-    meRound.setRelativeCenter()
+    meRound.getRelativeCenter()
     //GameDebug.add(meRound,"",2);
     GameDebug.addBackground(true, meRound.pathToCenter, COLOR_RED);
     return true;

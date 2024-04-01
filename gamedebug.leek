@@ -74,7 +74,7 @@ class GameDebug {
     if(depth == 0) {
       Array<string> methods = obj.class.methods;
       boolean shortString = false;
-      if(inArray(methods, "shortString") && depth == 0) {
+      if(inArray(methods, "shortString")) {
         str += obj.shortString() as string;
         return;
       }
