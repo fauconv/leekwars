@@ -4,9 +4,8 @@ include("cellround");
  * MoveCell
  * TODO: revoir tout ce code
  ******************************************************************************/
-class MoveCell {
+class MoveCell extends Objects {
   
-  integer id;
   integer remainingMP;
   CellRound cellRound;
   Round roundObj;

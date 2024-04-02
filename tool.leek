@@ -3,9 +3,8 @@ include("effect");
 /******************************************************************************
  * Tool
  ******************************************************************************/
-class Tool {
+class Tool extends Objects {
   
-  integer id;       // Enumeration
   boolean needLos;
   integer areaType; // Enumeration
   integer cost;

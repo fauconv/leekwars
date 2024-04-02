@@ -4,9 +4,8 @@ include("movecell");
  *
  * Exist only if cooldown == 0 ou si le tool viens d etre utilise dans ce tour
  ******************************************************************************/
-class ToolRound {
+class ToolRound extends Objects {
   
-  integer id;
   Tool tool;
   integer cooldown; 
   

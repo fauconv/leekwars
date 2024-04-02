@@ -2,9 +2,8 @@ include("leek");
 /******************************************************************************
  * Cell
  ******************************************************************************/
-class Cell {
+class Cell extends Objects {
   
-  integer id;
   integer x;
   integer y;
   boolean isDeadEnd;

@@ -2,9 +2,8 @@ include("cell");
 /******************************************************************************
  * CellRound
  ******************************************************************************/
-class CellRound {
+class CellRound extends Objects {
   
-  integer id;
   Cell cell;
   LeekRound leekOnCell;
   

@@ -17,7 +17,7 @@ include("const");
  *   34 = appel unique (+mix avec normal) random avec suppression des phrases utilises
  *
  *****************************************************************************/
-class Talk {
+class Talk extends Objects {
   static integer CURRENT      = 0b000001;
   static integer RANDOM       = 0b000010;
   static integer INC          = 0b000100;

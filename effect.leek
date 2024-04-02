@@ -4,7 +4,7 @@ include("effectfunctions");
  * Effect
  * [0:type, 1:min, 2:max, 3:turns, 4:targets, 5:modifiers]
  ******************************************************************************/
-class Effect {
+class Effect extends Objects {
   
   string category;
   integer type;     // Enumeration

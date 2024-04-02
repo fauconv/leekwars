@@ -4,7 +4,7 @@ include("round");
  * Board
  * TODO : cas des summon
  ******************************************************************************/
-class Board {
+class Board extends Objects {
   
   static integer myId;
   static integer maxAOERange;

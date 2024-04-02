@@ -5,7 +5,7 @@ include("gamedebug");
 //include("gamenodebug");
 global boolean EFFECT_DEBUG = false;
 global boolean BASIC_STRATEGY_DEBUG = false;
-global boolean UNIT_TEST_DEBUG = false;
+global boolean UNIT_TEST_DEBUG = true;
 
 /**************************************************************************
  * include

@@ -3,9 +3,8 @@ include("toolround");
 /******************************************************************************
  * LeekRound
  ******************************************************************************/
-class LeekRound {
+class LeekRound extends Objects {
   
-  integer id;
   Leek leek;
   MoveCell currentCell;
   integer currentCellId;
@@ -65,6 +64,8 @@ class LeekRound {
   
   Map<integer, MoveCell> moveCells = [:];
   Map<integer, ToolRound> toolsRound = [:];
+  Array<WeaponRound> weaponsRound = [];
+  Array<ChipRound> chipsRound = [];
   Round roundObj;
     
   Array<ToolRound> categoryDamage = [];
@@ -111,10 +112,14 @@ class LeekRound {
       for(Tool tool in leek.tools) {
         if(tool.isChip) {
           if(getCooldown(tool.id) == 0) {
-            categoriseTool(new ChipRound(tool, this));
+            ChipRound c = new ChipRound(tool, this);
+            categoriseTool(c);
+            push(chipsRound, c);
           }
         } else {
-          categoriseTool(new WeaponRound(tool, this));
+          WeaponRound w = new WeaponRound(tool, this);
+          categoriseTool(w);
+          push(weaponsRound, w);
         }
       }
 
@@ -135,8 +140,7 @@ class LeekRound {
    * categoriseTool
    **/
   categoriseTool(ToolRound toolRound) {
-    integer toolId = toolRound.id;
-    toolsRound[toolId] = toolRound;
+    toolsRound[toolRound.id] = toolRound;
     Tool tool = toolRound.tool;
     for(string category in tool.categories) push(this[category] as Array<ToolRound>, toolRound);
     (tool.categories["categoryDamage"]) and
@@ -253,12 +257,14 @@ class MeRound extends LeekRound {
   /**
    * setWeaponRound
    **/
-  setWeaponRound(WeaponRound weapon) {
+  boolean setWeaponRound(WeaponRound weapon) {
     if(setWeapon(weapon.id)) {
       minTP = maxTP = midTP = getTP(id)!;
       weaponId = weapon.id;
       this.weapon = weapon;
+      return true;
     }
+    return false;
   }
   
 }

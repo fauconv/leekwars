@@ -23,7 +23,7 @@ class GameDebug {
    *
    * internal
    **/
-  private static void arrayDebug(Array<any>|Map<any,any> array, integer depth, Array<integer> limit, Array<integer> start, Array<boolean> revers, string space) {
+  private static void arrayDebug(Array<any>|Map<any,any> array, integer depth, Array<integer> limit, Array<integer> start, Array<boolean> revers, string space, string debugFunction) {
     integer lim = 1000;
     integer star = 0;
     integer cnt = 0;
@@ -52,7 +52,7 @@ class GameDebug {
           continue;
         }
         str += space2+key+": ";
-        add(true, value, "", depth, limit, start, revers, space2); // ret2 pour bug de compil
+        add(true, value, "", depth, limit, start, revers, space2, debugFunction); // ret2 pour bug de compil
         cnt++;
       }
       str += space+"]";
@@ -66,23 +66,32 @@ class GameDebug {
   
   /***
    * objectDebug
-   * TODO : comment detecter sur une methode existe : le code actuel ne marche pas
+   * @param obj : TYPE_OBJECT => Object ou Objects
    * internal
    **/
-  private static void objectDebug(Object obj, integer depth, Array<integer> limit, Array<integer> start, Array<boolean> revers, string space) {
+  private static void objectDebug(Object|Objects obj, integer depth, Array<integer> limit, Array<integer> start, Array<boolean> revers, string space, string debugFunction) {
     string ret;
     if(depth == 0) {
-      Array<string> methods = obj.class.methods;
-      boolean shortString = false;
-      if(inArray(methods, "shortString")) {
-        str += obj.shortString() as string;
+      if(obj instanceof Object) {
+        str += "Object";
         return;
-      }
-      str += obj.class.name;
-      return;
+	  }
+      if(obj instanceof Objects) {
+		if(debugFunction == "shortString") str += (obj as Objects).shortString();
+      	else str += (obj as Objects).string();
+		return;
+	  }
+	  str += obj.class.name + ": not herite from Objects";
+      return;  
     }
-    str += obj.class.name + " {";
-    Array<string> keys = obj.keys();
+    Array<string> keys;
+    if(obj instanceof Object) {
+	  str += "Object {";
+	  keys = (obj as Object).keys();
+	} else {
+	  str += obj.class.name + " {";
+      keys = obj.class.fields;
+	}
     integer cpt = count(keys);
     if(cpt != 0) {
       str += "\n"
@@ -90,7 +99,7 @@ class GameDebug {
       depth--;
       for(any value in keys) {
         str += space2+value+": ";
-        add(true, obj[value], "", depth, limit, start, revers, space2); // ret2 pour bug de compil
+        add(true, obj[value], "", depth, limit, start, revers, space2, debugFunction);
       }
       str += space+"}";
     } else {
@@ -98,21 +107,19 @@ class GameDebug {
     }
   }
   
-  
-  
   /**
    * add
    *
    * ajoute un element a debugger dans la liste a afficher
    **/
-  static void add(boolean condition, any element, string txt = "", integer depth = 1, Array<integer> limit = [], Array<integer> start = [], Array<boolean> revers = [], string space = "") {
+  static void add(boolean condition, any element, string txt = "", integer depth = 1, Array<integer> limit = [], Array<integer> start = [], Array<boolean> revers = [], string space = "", string debugFunction = "shortString") {
     if(!condition) return;
     if(txt != "") str+= txt +" => ";
     integer type = typeOf(element);
     if(type == TYPE_ARRAY || type == TYPE_MAP) {
-      arrayDebug(element as Array<any>|Map<any,any>, depth, limit, start, revers, space);
+      arrayDebug(element as Array<any>|Map<any,any>, depth, limit, start, revers, space, debugFunction);
     } else if(type == TYPE_OBJECT) {
-      objectDebug(element as Object, depth, limit, start, revers, space);
+      objectDebug(element as Object|Objects, depth, limit, start, revers, space, debugFunction);
     } else {
       str += element;
     }
@@ -142,7 +149,7 @@ class GameDebug {
         }
       }
     } else if(type == TYPE_OBJECT) {
-      mark(cellsOrCellId.id as integer, color, 1);
+      mark((cellsOrCellId as Objects).id, color, 1);
     } else mark(cellsOrCellId as integer, color,1);
   }
   

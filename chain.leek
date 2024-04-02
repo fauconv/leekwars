@@ -127,7 +127,7 @@ class Chain {
    **/
   void insert(any element) {
     if(current != null) {
-      current  = new ChainElement(current.previous,element,current);
+      current = new ChainElement(current.previous,element,current);
       current.next.previous = current;
       if(current.previous != null) current.previous.next = current;
     } else {
@@ -138,7 +138,7 @@ class Chain {
   }
   /**
    * insertAfter
-   * insert avant l element courant
+   * insert apres l element courant
    **/
   void insertAfter(any element) {
     if(current != null) {
