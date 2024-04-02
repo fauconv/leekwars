@@ -32,8 +32,7 @@ class BasicStrategy extends Strategy {
     
     if(gFirstRound) {
       moveTowardCell(meRound.getRelativeCenter().id);
-      GameDebug.addBackground(BASIC_STRATEGY_DEBUG, meRound.relativeCenterCellId, COLOR_GREEN);
-      setWeapon(Board.me.weapons[0].id)
+      meRound.setWeaponRound(meRound.weaponsRound[0]);
     }
   }
   

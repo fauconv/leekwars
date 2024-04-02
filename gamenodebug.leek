@@ -1,3 +1,5 @@
+include("objects");
+
 /*****************************************************************************
  * GameDebug
  *****************************************************************************/
@@ -18,25 +20,23 @@ class GameDebug {
    *
    * internal
    **/
-  private static void arrayDebug(Array<any> array, Array<integer> limit = [], Array<integer> start = [], Array<boolean> revers = [], string space = "") {
+  private static void arrayDebug(Array<any>|Map<any,any> array, integer depth, Array<integer> limit, Array<integer> start, Array<boolean> revers, string space, string debugFunction) {
   }
   
   /***
    * objectDebug
-   * TODO : comment detecter sur une methode existe : le code actuel ne marche pas
+   * @param obj : TYPE_OBJECT => Object ou Objects
    * internal
    **/
-  private static void objectDebug(Object obj, Array<integer> limit = [], Array<integer> start = [], Array<boolean> revers = [], string space = "") {
+  private static void objectDebug(Object|Objects obj, integer depth, Array<integer> limit, Array<integer> start, Array<boolean> revers, string space, string debugFunction) {
   }
-  
-  
   
   /**
    * add
    *
    * ajoute un element a debugger dans la liste a afficher
    **/
-  static void add(boolean condition, any element, string txt = "", Array<integer> limit = [], Array<integer> start = [], Array<boolean> revers = [], string space = "") {
+  static void add(boolean condition, any element, string txt = "", integer depth = 1, Array<integer> limit = [], Array<integer> start = [], Array<boolean> revers = [], string space = "", string debugFunction = "shortString") {
   }
   
   /**
