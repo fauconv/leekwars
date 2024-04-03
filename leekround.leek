@@ -208,7 +208,17 @@ class MeRound extends LeekRound {
   }
   
   /**
-   * setRelativeCenter
+   * getHistoricalRelativeCenter
+   *
+   * @return CellRound
+   **/
+  CellRound getHistoricalRelativeCenter() {
+    if((leek as Me).historicalRelativeCenterCellId == -1) return getRelativeCenter();
+    roundObj.cellsRound[(leek as Me).historicalRelativeCenterCellId];
+  }
+  
+  /**
+   * getRelativeCenter
    *
    * @return CellRound
    **/
@@ -237,6 +247,7 @@ class MeRound extends LeekRound {
         relativeCenterCellId    = finalCell.id;
         relativeCenterCell      = finalCell;
         relativeCenterCellRound = roundObj.cellsRound[relativeCenterCellId];
+        (leek as Me).historicalRelativeCenterCellId = relativeCenterCellId;
       } // else relativeCenterCell = null
     }
     return relativeCenterCellRound!;
