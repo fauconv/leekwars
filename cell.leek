@@ -17,6 +17,7 @@ class Cell extends Objects {
   Cell leftBottom;
   Cell rightBottom;
   
+  // Attention NB_CELLS statiques !!!! si NB_CELLS change il faut changer a la main ici
   Array<Object> interCellInfo = [
                   {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
                   {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},

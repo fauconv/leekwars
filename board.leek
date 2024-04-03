@@ -108,7 +108,7 @@ class Board extends Objects {
         cellFrom.interCellInfo[cellTo.id] = cellTo.interCellInfo[cellFrom.id] = 
           {range:range, isInsight:lineOfSight(x, y), isInline:(cellFrom.x == cellTo.x || cellFrom.y == cellTo.y), isDiag:(abs(cellFrom.x-cellTo.x) == abs(cellFrom.y-cellTo.y))};
       }
-  }
+    }
   
     //
     // first round
