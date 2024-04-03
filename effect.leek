@@ -134,7 +134,7 @@ class Effect extends Objects {
     
     if (modMulti) AOE = AOE*nbTargets;
     
-    GameDebug.add(EFFECT_DEBUG, EFFECT_TYPE_TRANSLATOR[type],"effect");
+    GameDebug.add(EFFECT_DEBUG, EFFECT_TYPE_TRANSLATOR[type],"simulate shot effect");
 
     return simulateShotFunction(this, shooter, target, AOE, midCriticalLuck);
   }

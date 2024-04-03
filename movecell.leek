@@ -22,15 +22,6 @@ class MoveCell extends Objects {
     this.roundObj = cellRound.roundObj;
     this.cell = cellRound.cell;
     remainingMP = MP;
-  }
-  
-  /**
-   * ToString
-   * @return string
-   **/
-  string shortString() {
-    return "MoveCell:(#"+id+")";
-  }
-  
+  }  
   
 }

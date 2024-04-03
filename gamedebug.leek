@@ -18,6 +18,7 @@ class GameDebug {
     str = "\n";
     opt = 0;
     ram = 0;
+    pause();
   }
   
   /***
@@ -47,7 +48,7 @@ class GameDebug {
       str += "\n"
       string space2 = space + "  ";
       depth--;
-      for(integer key:any value in tab) {
+      for(any key:any value in tab) {
         if(cnt >= lim) break;
         if(cnt < star) {
           cnt++;

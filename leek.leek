@@ -68,10 +68,10 @@ class Leek extends Objects {
    * @return string
    **/
   string shortString() {
-    return name+"(#"+id+")";
+    return this.class.name+"("+name+")";
   }
   string string() {
-    string ret = name+"(#"+id+") maxAOE:"+maxAOERange+"\n";
+    string ret = this.class.name+"("+name+") maxAOE:"+maxAOERange+"\n";
     ret += "damage:\n"
     for(Tool tool in categoryDamage) {
       ret += tool.shortString() + "\n";
@@ -127,15 +127,6 @@ class Allie extends Leek {
     farmer   = getFarmerName(id)!;
   }
   
-  /**
-   * toString
-   *
-   * @return string
-   **/
-  string shortString() {
-    return name+"(#"+id+")";
-  }
-  
 }
 
 /******************************************************************************
@@ -154,14 +145,6 @@ class Enemy extends Leek {
     super(id);
   }
   
-  /**
-   * toString
-   *
-   * @return string
-   **/
-  string shortString() {
-    return name+"(#"+id+")";
-  }
 }
 
 /******************************************************************************
@@ -178,15 +161,6 @@ class Me extends Leek {
     isEnemy  = false;
     isSummon = false;
     super(getEntity());
-  }
-  
-  /**
-   * toString
-   *
-   * @return string
-   **/
-  string shortString() {
-    return name+"(#"+id+")";
   }
   
 }

@@ -158,15 +158,6 @@ class LeekRound extends Objects {
     weaponId = weapon.id;
     this.weapon = weapon;
   }
-
-  /**
-   * toString
-   *
-   * @return string
-   **/
-  string shortString() {
-    return "LeekRound(#"+id+")";
-  }
   
 }
 
@@ -182,8 +173,6 @@ class AllieRound extends LeekRound {
     super(leek, roundObj);
   }
   
-  
-  
 }
 
 /******************************************************************************
@@ -197,9 +186,7 @@ class EnemyRound extends LeekRound {
   constructor(Leek leek, Round roundObj) {
     super(leek, roundObj);
   }
-  
-  
-  
+ 
 }
 
 /******************************************************************************
@@ -226,7 +213,7 @@ class MeRound extends LeekRound {
    **/
   CellRound getRelativeCenter() {
     if(relativeCenterCellRound != null) return relativeCenterCellRound!;
-    if(!Board.centerCell.isWall && !Board.centerCell.isDeadEnd) pathToCenter = getPath(currentCellId, CENTER_CELL_ID)
+    if(!Board.centerCell.isDeadEnd) pathToCenter = getPath(currentCellId, CENTER_CELL_ID)
     if (pathToCenter) {
       relativeCenterCellId    = CENTER_CELL_ID;
       relativeCenterCell      = Board.cells[relativeCenterCellId];
@@ -238,7 +225,7 @@ class MeRound extends LeekRound {
       Cell finalCell;
       while(!isEmpty(trajectoryToCenter)) {
         finalCell = pop(trajectoryToCenter) as Cell;
-        if(!finalCell.isWall && !finalCell.isDeadEnd) {
+        if(!finalCell.isDeadEnd) {
           if (pathToCenter = getPath(currentCellId, finalCell.id)) {
             ok = true;
             break;

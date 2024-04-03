@@ -59,7 +59,7 @@ class ToolRound extends Objects {
    * @return string
    **/
   string shortString() {
-    return "ToolRound("+TOOL_NAME_TRANSLATOR[id]+")";
+    return this.class.name+"("+TOOL_NAME_TRANSLATOR[id]+")";
   }
   
 }

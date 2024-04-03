@@ -7,13 +7,17 @@
  **/
 class Objects {
 	
-	integer id;
+  integer id;
 	
-	string string() {
-		debug("Undefined string function");
-	}
-	
-	string shortString() {
-		debug("Undefined shortString function");
-	}
+  /**
+   * toString
+   *
+   * @return string
+   **/
+  string string() {
+    return this.class.name+":(#"+id+")";
+  }
+  string shortString() {
+    return this.class.name+":(#"+id+")";
+  }
 }

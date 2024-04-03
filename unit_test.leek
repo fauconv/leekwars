@@ -30,12 +30,8 @@ class UnitTest extends Strategy {
     Talk.text = "UnitTest mode";
     
     if(gFirstRound) {
-      debug("Legend: relative center cell = green");
-      GameDebug.addBackground(true, meRound.relativeCenterCellId, COLOR_GREEN);
-      GameDebug.addOperation(true, "avant setWeapon");
       if(Board.me.weapons[0]) meRound.setWeaponRound(meRound.weaponsRound[0]);
-	  else debugE("no weapon");
-      GameDebug.addOperation(true, "setWeapon");
+	  else debugC("no weapon", COLOR_RED);
       board();
       cell();
       cellRound();
@@ -70,8 +66,13 @@ class UnitTest extends Strategy {
    **/
   boolean cell() {
     Object inter = Board.cells[306].interCellInfo[300];
-    if(inter.range == 12 && inter.isDiag == true && inter.isInline == false) debugC("Cell OK",COLOR_GREEN);
-    else debugC("Cell KO", COLOR_RED);
+    if(inter.range == 12 && inter.isDiag && !inter.isInline) 
+	  debugC("Cell OK",COLOR_GREEN);
+    else {
+	  if(inter.range != 12) debugC("Cell KO: 300-306 range(12) = "+ inter.range, COLOR_RED);
+	  if(!inter.isDiag) debugC("Cell KO: 300-306 not is diag", COLOR_RED);
+	  if(!inter.isInline) debugC("Cell KO: 300-306 is inline", COLOR_RED);
+	}
     debugC("300 and 306 are " + ((inter.isInsight)?"":"NOT") + " inSight",COLOR_BLUE);
 	debug("Legend: 300 and 306 = blue");
     GameDebug.addBackground(true, 306, COLOR_BLUE);
@@ -102,8 +103,11 @@ class UnitTest extends Strategy {
    * effect
    **/
   boolean effect() {
-    EFFECT_DEBUG = true;
-    GameDebug.add(true, meRound.weapon!.tool.effects,"current weapon effects",2);
+    if(meRound.weapon!.tool.effects[0].owner.shortString() == "Weapon(magnum)" && meRound.weapon!.tool.effects[0].minEffect == 25) 
+	  debugC("Effect OK", COLOR_GREEN);
+	else 
+	  debugC("Effect on setWepon (magnum) KO", COLOR_RED);
+    //GameDebug.add(true, meRound.weapon!.tool.effects,"current weapon effects",2);
     return true;
   }
   
@@ -119,7 +123,11 @@ class UnitTest extends Strategy {
    * leek
    **/
   boolean leek() {
-    //GameDebug.add(Board.me,"",2);
+    //GameDebug.add(true, Board.me,"me",2);
+	if(Board.me.categoryDamage[1].shortString() == "Chip(chip ice)" && Board.me.categoryProtection[0].shortString() == "Chip(chip helmet)")
+	  debugC("Leek OK", COLOR_GREEN);
+	else 
+	  debugC("Leek me KO", COLOR_RED);
     return true;
   }
   
@@ -128,8 +136,13 @@ class UnitTest extends Strategy {
    **/
   boolean leekRound() {
     meRound.getRelativeCenter()
-    //GameDebug.add(meRound,"",2);
+    //GameDebug.add(true, enemyRound,"enemyRound",2);
+	debug("Legend: path to relative center = red");
     GameDebug.addBackground(true, meRound.pathToCenter, COLOR_RED);
+	if(enemyRound.minTP == 10 && enemyRound.maxAOERange == 10 && enemyRound.currentCell.cell.id == enemyRound.currentCellId)
+	  debugC("LeekRound OK", COLOR_GREEN);
+	else 
+	  debugC("LeekRound enemyRound KO", COLOR_RED);	
     return true;
   }
   
@@ -158,7 +171,7 @@ class UnitTest extends Strategy {
    * toolRound
    **/
   boolean toolRound() {
-    //GameDebug.add(true, meRound.weapon,"",3);
+    //GameDebug.add(true, meRound.weapon,"Current weapon",2);
     return true;
   }
   

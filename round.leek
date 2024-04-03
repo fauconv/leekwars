@@ -52,12 +52,4 @@ class Round extends Objects {
     
   }
   
-  /**
-   * ToString
-   * @return string
-   **/
-  string shortString() {
-    return "Round";
-  }
-  
 }

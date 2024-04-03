@@ -689,10 +689,7 @@ class Cell extends Objects {
    * @return string
    **/
   string string() {
-    return "cell:{ id:"+id+"\n  x:"+x+" y:"+y+" isWall:"+isWall+"}\n";
-  }
-  string shortString() {
-    return "cell:(#"+id+")";
+    return this.class.name+":{ id:"+id+"\n  x:"+x+" y:"+y+" isWall:"+isWall+"}\n";
   }
 }
 

@@ -18,12 +18,4 @@ class CellRound extends Objects {
     this.roundObj = roundObj;
   }
   
-  /**
-   * ToString
-   * @return string
-   **/
-  string shortString() {
-    return "cellRound:(#"+id+")";
-  }
-  
 }
