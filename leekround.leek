@@ -191,6 +191,7 @@ class EnemyRound extends LeekRound {
 
 /******************************************************************************
  * MeRound
+ * TODO: garder l'historique des relative center cell dans le Leek. est ce bien utile d avoir le CellRound et le Cell du relative center cell ?
  ******************************************************************************/
 class MeRound extends LeekRound {
   
