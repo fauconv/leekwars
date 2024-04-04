@@ -3,19 +3,43 @@
  ****************************************************************************/
 class Chain {
   
-  ChainElement|null first = null;
-  ChainElement|null current = null;
-  ChainElement|null last = null;
-  integer size = 0;
+  private ChainElement|null first = null;
+  private ChainElement|null current = null;
+  private ChainElement|null last = null;
+  private integer size = 0;
   
   /**
    * constructor
+   * construit une liste chainee a partir d un tableau ou une liste vide
+   * O(n)
    **/
-  constructor() {
+  constructor(Array<any>|null fromArray) {
+    if(fromArray != null) {
+	  for(any elem in fromArray) {
+        current = new ChainElement(last,elem,null);
+        if(last != null) last.next = current;
+		else first = current;
+        last = current;
+	  }
+	  size = count(fromArray);
+      current = first;
+	}
   }
 
   /**
+   * clear
+   * O(1)
+   **/
+  void clear() {
+    first = null;
+    current = null;
+    last = null;
+    size = 0;
+  }
+	
+  /**
    * getFirst
+   * O(1)
    **/
   any getFirst() {
     if(first != null) return first.element;
@@ -23,6 +47,7 @@ class Chain {
   }
   /**
    * getLast
+   * O(1)
    **/
   any getLast() {
     if(last != null) return last.element;
@@ -30,6 +55,7 @@ class Chain {
   }
   /**
    * getNext
+   * O(1)
    **/
   any getNext() {
     if(current != null && current.next != null) return current.next.element;
@@ -37,6 +63,7 @@ class Chain {
   }
   /**
    * getPrevious
+   * O(1)
    **/
   any getPrevious() {
     if(current != null && current.previous != null) return current.previous.element;
@@ -44,6 +71,7 @@ class Chain {
   }
   /**
    * current
+   * O(1)
    **/
   any current() {
     if(current != null) return current.element;
@@ -59,6 +87,7 @@ class Chain {
   }
   /**
    * last
+   * O(1)
    **/
   any last() {
     current = last;
@@ -67,6 +96,9 @@ class Chain {
   }
   /**
    * next
+   * avance le curseur de 1
+   * @return le nouvel element ou null si le curseur ne peut pas avancer
+   * O(1)
    **/
   any next() {
     if(current != null && current.next != null) {
@@ -77,6 +109,9 @@ class Chain {
   }
   /**
    * previous
+   * recule le curseur de 1
+   * @return le nouvel element ou null si le curseur ne peut pas reculer
+   * O(1)
    **/
   any previous() {
     if(current != null && current.previous != null) {
@@ -86,25 +121,90 @@ class Chain {
     return null;
   }
   /**
+   * forward
+   * avance le curseur de count
+   * @return le nouvel element ou le dernier si on ne peut pas avancer plus
+   * O(count)
+   **/
+  any forward(integer count) {
+	if(current == null) return null;
+    for(integer i = 0; i < count; i++) {
+      if(current.next != null) current = current.next;
+	  else break;
+    }
+	return current.element;
+  }
+  /**
+   * backward
+   * recule le curseur de count
+   * @return le nouvel element ou le premier si on ne peut pas reculer plus
+   * O(count)
+   **/
+  any backward(integer count) {
+	if(current == null) return null;
+    for(integer i = 0; i < count; i++) {
+      if(current.previous != null) current = current.previous;
+      else break;
+    }
+	return current.element;
+  }
+  /**
+   * getElement
+   * @param setCursor : si true alors le curseur est positionner sur le Xieme element
+   * @return le Xieme element de la liste (en commencant a 0) ou null si il n existe pas
+   * O(X)
+   **/
+  any getElement(integer X, boolean setCursor = false) {
+	if(X >= size) return null;
+    ChainElement|null cursor;
+	if(size - X <= X) {
+	  cursor = last;
+      integer XX = size-X-1;
+      for(integer i = 0; i < XX; i++) {
+        if(cursor.previous != null) cursor = cursor.previous;
+	    else break;
+      }
+	} else {
+      cursor = first;
+      for(integer i = 0; i < X; i++) {
+        if(cursor.next != null) cursor = cursor.next;
+	    else break;
+      }
+	}
+    if(setCursor) current = cursor;
+	return cursor.element;
+  }
+  /**
    * isEmpty
+   * O(1)
    **/
   boolean isEmpty() {
     return (size == 0);
   }
   /**
+   * count
+   * O(1)
+   **/
+  integer count() {
+    return size;
+  }
+  /**
    * isFirst
+   * O(1)
    **/
   boolean isFirst() {
     return (current == null || current.previous == null);
   }
   /**
    * isLast
+   * O(1)
    **/
   boolean isLast() {
     return (current == null || current.next == null);
   }
   /**
    * push
+   * O(1)
    **/
   void push(any element) {
     current = new ChainElement(last,element,null);
@@ -114,6 +214,7 @@ class Chain {
   }
   /**
    * unshift
+   * O(1)
    **/
   void unshift(any element) {
     current = new ChainElement(null,element,first);
@@ -124,6 +225,7 @@ class Chain {
   /**
    * insert
    * insert avant l element courant
+   * O(1)
    **/
   void insert(any element) {
     if(current != null) {
@@ -139,6 +241,7 @@ class Chain {
   /**
    * insertAfter
    * insert apres l element courant
+   * O(1)
    **/
   void insertAfter(any element) {
     if(current != null) {
@@ -153,6 +256,7 @@ class Chain {
   }
   /**
    * pop
+   * O(1)
    **/
   any pop() {
     if(last != null) {
@@ -171,6 +275,7 @@ class Chain {
   }
   /**
    * shift
+   * O(1)
    **/
   any shift() {
     if(first != null) {
@@ -189,6 +294,7 @@ class Chain {
   }
   /**
    * remove
+   * O(1)
    **/
   any remove() {
     if(current != null) {
@@ -217,6 +323,45 @@ class Chain {
       return elem;
     }
     return null;
+  }
+  /**
+   * toArray
+   * O(n)
+   **/
+  Array<any> toArray() {
+    Array<any> ret = [];
+    ChainElement|null cursor = first;
+    while(cursor != null) {
+      push(ret, cursor.element);
+      cursor = cursor.next;
+	}
+    return ret;
+  }
+  /**
+   * concat
+   * chain est fusionner a la fin de la chaine courante (les elements ne sont pas copies). Puis chain devient une nouvelle liste chainee vide
+   * O(1)
+   **/
+  void concat(Chain chain) {
+    last.next = chain.first;
+	chain.first.previous = last;
+	last = chain.last;
+	size += chain.size;
+	chain.first = null;
+	chain.last = null;
+	chain.current = null;
+	chain.size = 0;
+  }
+  /**
+   * getChainElement
+   * !!!!! Waring : a utiliser uniquement pour manipuler un CHainElement en lecture !!!!!!!!
+   * Permet de se balader dans la liste chainer manuellement et donc de gerer plusieurs curseur independant. Vous n avez plus acces a first et last
+   * ni a la taille de la liste
+   * @return le chainElement courant ou null si la chaine est vide
+   * O(1)
+   **/ 
+  ChainElement|null getChainElement() {
+    return current;
   }
 }
 
