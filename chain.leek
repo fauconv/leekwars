@@ -15,15 +15,15 @@ class Chain {
    **/
   constructor(Array<any>|null fromArray) {
     if(fromArray != null) {
-	  for(any elem in fromArray) {
+      for(any elem in fromArray) {
         current = new ChainElement(last,elem,null);
         if(last != null) last.next = current;
-		else first = current;
+        else first = current;
         last = current;
-	  }
-	  size = count(fromArray);
+      }
+      size = count(fromArray);
       current = first;
-	}
+    }
   }
 
   /**
@@ -36,7 +36,7 @@ class Chain {
     last = null;
     size = 0;
   }
-	
+    
   /**
    * getFirst
    * O(1)
@@ -127,12 +127,12 @@ class Chain {
    * O(count)
    **/
   any forward(integer count) {
-	if(current == null) return null;
+    if(current == null) return null;
     for(integer i = 0; i < count; i++) {
       if(current.next != null) current = current.next;
-	  else break;
+      else break;
     }
-	return current.element;
+    return current.element;
   }
   /**
    * backward
@@ -141,12 +141,12 @@ class Chain {
    * O(count)
    **/
   any backward(integer count) {
-	if(current == null) return null;
+    if(current == null) return null;
     for(integer i = 0; i < count; i++) {
       if(current.previous != null) current = current.previous;
       else break;
     }
-	return current.element;
+    return current.element;
   }
   /**
    * getElement
@@ -155,24 +155,24 @@ class Chain {
    * O(X)
    **/
   any getElement(integer X, boolean setCursor = false) {
-	if(X >= size) return null;
+    if(X >= size) return null;
     ChainElement|null cursor;
-	if(size - X <= X) {
-	  cursor = last;
+    if(size - X <= X) {
+      cursor = last;
       integer XX = size-X-1;
       for(integer i = 0; i < XX; i++) {
         if(cursor.previous != null) cursor = cursor.previous;
-	    else break;
+        else break;
       }
-	} else {
+    } else {
       cursor = first;
       for(integer i = 0; i < X; i++) {
         if(cursor.next != null) cursor = cursor.next;
-	    else break;
+        else break;
       }
-	}
+    }
     if(setCursor) current = cursor;
-	return cursor.element;
+    return cursor.element;
   }
   /**
    * isEmpty
@@ -334,7 +334,7 @@ class Chain {
     while(cursor != null) {
       push(ret, cursor.element);
       cursor = cursor.next;
-	}
+    }
     return ret;
   }
   /**
@@ -344,13 +344,13 @@ class Chain {
    **/
   void concat(Chain chain) {
     last.next = chain.first;
-	chain.first.previous = last;
-	last = chain.last;
-	size += chain.size;
-	chain.first = null;
-	chain.last = null;
-	chain.current = null;
-	chain.size = 0;
+    chain.first.previous = last;
+    last = chain.last;
+    size += chain.size;
+    chain.first = null;
+    chain.last = null;
+    chain.current = null;
+    chain.size = 0;
   }
   /**
    * getChainElement

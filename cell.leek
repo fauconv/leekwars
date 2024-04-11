@@ -679,7 +679,7 @@ class Cell extends Objects {
         push(ret,Board.cells[getCellFromXY(newX, round((newX-x)*rap+y)) as integer]);
       }
     }
-	push(ret,endCell);
+    push(ret,endCell);
     
     return ret;
   }
@@ -707,7 +707,7 @@ class FreeCell extends Cell {
     isWall = false;
     isDeadEnd = false;
   }
-	
+  
 }
 
 /******************************************************************************
@@ -723,5 +723,5 @@ class Wall extends Cell {
     isWall = true;
     isDeadEnd = true;
   }
-	
+  
 }

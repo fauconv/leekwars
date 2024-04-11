@@ -31,7 +31,7 @@ class UnitTest extends Strategy {
     
     if(gFirstRound) {
       if(Board.me.weapons[0]) meRound.setWeaponRound(meRound.weaponsRound[0]);
-	  else debugC("no weapon", COLOR_RED);
+      else debugC("no weapon", COLOR_RED);
       board();
       cell();
       cellRound();
@@ -45,7 +45,7 @@ class UnitTest extends Strategy {
       tool();
       toolRound();
       oldRound = simRound = currentRound;
-	  return
+      return
     }
     
   }
@@ -67,14 +67,14 @@ class UnitTest extends Strategy {
   boolean cell() {
     Object inter = Board.cells[306].interCellInfo[300];
     if(inter.range == 12 && inter.isDiag && !inter.isInline || Board.cells[306].isWall && inter.range == END_RANGE || Board.cells[300].isWall && inter.range == END_RANGE) 
-	  debugC("Cell OK",COLOR_GREEN);
+      debugC("Cell OK",COLOR_GREEN);
     else {
-	  if(inter.range != 12) debugC("Cell KO: 300-306 range(12) = "+ inter.range, COLOR_RED);
-	  if(!inter.isDiag) debugC("Cell KO: 300-306 not is diag", COLOR_RED);
-	  if(!inter.isInline) debugC("Cell KO: 300-306 is inline", COLOR_RED);
-	}
+      if(inter.range != 12) debugC("Cell KO: 300-306 range(12) = "+ inter.range, COLOR_RED);
+      if(!inter.isDiag) debugC("Cell KO: 300-306 not is diag", COLOR_RED);
+      if(!inter.isInline) debugC("Cell KO: 300-306 is inline", COLOR_RED);
+    }
     debugC("300 and 306 are " + ((inter.isInsight)?"":"NOT") + " inSight",COLOR_BLUE);
-	debug("Legend: 300 and 306 = blue");
+    debug("Legend: 300 and 306 = blue");
     GameDebug.addBackground(true, 306, COLOR_BLUE);
     GameDebug.addBackground(true, 300, COLOR_BLUE);
     debug("Legend: trajectory 306-> 241, 288->163, 305->531 = green");
@@ -104,9 +104,9 @@ class UnitTest extends Strategy {
    **/
   boolean effect() {
     if(meRound.weapon!.tool.effects[0].owner.shortString() == "Weapon(magnum)" && meRound.weapon!.tool.effects[0].minEffect == 25) 
-	  debugC("Effect OK", COLOR_GREEN);
-	else 
-	  debugC("Effect on setWepon (magnum) KO", COLOR_RED);
+      debugC("Effect OK", COLOR_GREEN);
+    else 
+      debugC("Effect on setWepon (magnum) KO", COLOR_RED);
     //GameDebug.add(true, meRound.weapon!.tool.effects,"current weapon effects",2);
     return true;
   }
@@ -124,10 +124,10 @@ class UnitTest extends Strategy {
    **/
   boolean leek() {
     //GameDebug.add(true, Board.me,"me",2);
-	if(Board.me.categoryDamage[1].shortString() == "Chip(chip ice)" && Board.me.categoryProtection[0].shortString() == "Chip(chip helmet)")
-	  debugC("Leek OK", COLOR_GREEN);
-	else 
-	  debugC("Leek me KO", COLOR_RED);
+    if(Board.me.categoryDamage[1].shortString() == "Chip(chip ice)" && Board.me.categoryProtection[0].shortString() == "Chip(chip helmet)")
+      debugC("Leek OK", COLOR_GREEN);
+    else 
+      debugC("Leek me KO", COLOR_RED);
     return true;
   }
   
@@ -137,12 +137,17 @@ class UnitTest extends Strategy {
   boolean leekRound() {
     meRound.getRelativeCenter()
     //GameDebug.add(true, enemyRound,"enemyRound",2);
-	debug("Legend: path to relative center = red");
+    debug("Legend: MoveCells = yellow");
+    for(MoveCell mv in meRound.moveCells) {
+      mark(mv.id, COLOR_YELLOW,1);
+      markText(mv.id, mv.remainingMP,0,1);
+    }
+    debug("Legend: path to relative center = red");
     GameDebug.addBackground(true, meRound.pathToCenter, COLOR_RED);
-	if(enemyRound.minTP == 10 && enemyRound.maxAOERange == 10 && enemyRound.currentCell.cell.id == enemyRound.currentCellId)
-	  debugC("LeekRound OK", COLOR_GREEN);
-	else 
-	  debugC("LeekRound enemyRound KO", COLOR_RED);	
+    if(enemyRound.minTP == 10 && enemyRound.maxAOERange == 10 && enemyRound.currentCell.cell.id == enemyRound.currentCellId)
+      debugC("LeekRound OK", COLOR_GREEN);
+    else 
+      debugC("LeekRound enemyRound KO", COLOR_RED);    
     return true;
   }
   

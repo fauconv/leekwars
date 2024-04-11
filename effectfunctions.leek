@@ -127,7 +127,7 @@ function effect_damage(Effect obj, LeekRound shooter, LeekRound target, real AOE
   obj.applyErosion(target, PHYSICAL_EROSION, roundedDmg);
   if(target.id != shooter.id) {
     Object shooterDmg = obj.lifeSteal(shooter, roundedDmg, dmgReturn);
-	obj.applyLifeStealAndDmgReturn(shooter, shooterDmg);
+    obj.applyLifeStealAndDmgReturn(shooter, shooterDmg);
     obj.applyErosion(shooter, PHYSICAL_EROSION, dmgReturn);
     return {
       minEffect: roundedDmg.minEffect-shooterDmg.minEffect,

@@ -30,6 +30,7 @@ global real CRITICAL_EROSION    = 0.1;
 // colors
 //
 global integer COLOR_BROWN = 12019715;
+global integer COLOR_YELLOW = 15596544;
 
 //
 // DIRECTIONS

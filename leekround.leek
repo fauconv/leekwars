@@ -107,7 +107,7 @@ class LeekRound extends Objects {
       currentCellId = getCell(id)!;
       CellRound cellRound = roundObj.cellsRound[currentCellId];
       cellRound.leekOnCell = this;
-      currentCell = new MoveCell(cellRound, this, minMP);
+      currentCell = new MoveCell(cellRound, this, minMP, minTP);
 
       for(Tool tool in leek.tools) {
         if(tool.isChip) {
@@ -159,6 +159,34 @@ class LeekRound extends Objects {
     this.weapon = weapon;
   }
   
+  /**
+   * parcour
+   * flatReachableCells[cellId] = remainingMP (MAP)
+   * Attention, le moveCell doit appartenir au leekRound sinon il y a inconsistance. 
+   * TODO: ajouter la gestion de la chip de saut et du buff MP et TP
+   **/
+  Map<integer,MoveCell> parcour(MoveCell startCell = this.currentCell) {
+    Map<integer,Array<Cell>> reachableCells = [startCell.remainingMP:[startCell.cell]] //reachableCells[remainingMP][] = cell
+    Map<integer,MoveCell> flatReachableCells = [startCell.id:startCell]
+    Cell voisin
+    integer TP = startCell.remainingTP
+    for(integer i = startCell.remainingMP; i > 0; i--) {
+      integer futurMP = i-1
+      reachableCells[futurMP] = []
+      for(Cell cell2 in reachableCells[i]!) {
+        for(string direction in LINE_DIRECTION) {
+          if(!(voisin = cell2[direction] as Cell) || voisin.isWall) continue
+          integer voisinId = voisin.id
+          CellRound voisinRound = roundObj.cellsRound[voisinId];
+          (!mapContainsKey(flatReachableCells, voisinId)) && (!voisinRound.leekOnCell) and 
+            (push(reachableCells[futurMP]!, voisin) or true) and
+            (flatReachableCells[voisinId] = new MoveCell(voisinRound, this, futurMP, TP));
+        }
+      }
+    }
+    return flatReachableCells
+  }
+  
 }
 
 /******************************************************************************
@@ -185,6 +213,7 @@ class EnemyRound extends LeekRound {
    **/
   constructor(Leek leek, Round roundObj) {
     super(leek, roundObj);
+    moveCells = parcour();
   }
  
 }
@@ -205,6 +234,7 @@ class MeRound extends LeekRound {
    **/
   constructor(Round roundObj) {
     super(Board.me, roundObj);
+    moveCells = parcour();
   }
   
   /**

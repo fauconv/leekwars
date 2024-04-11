@@ -13,7 +13,7 @@ class GameDebug {
    * str
    **/
   static void display() {
-    addOperation(true, "( "+getTP()+" TP / "+getMP()+" MP left ) total operations, turn "+getTurn());
+    addOperation(true, "( "+getTP()+" TP / "+getMP()+" MP left ) total operations, turn "+getTurn(), 0,0);
     debug(str);
     str = "\n";
     opt = 0;
@@ -78,23 +78,23 @@ class GameDebug {
       if(obj instanceof Object) {
         str += "Object";
         return;
-	  }
+      }
       if(obj instanceof Objects) {
-		if(debugFunction == "shortString") str += (obj as Objects).shortString();
-      	else str += (obj as Objects).string();
-		return;
-	  }
-	  str += obj.class.name + ": not herite from Objects";
+        if(debugFunction == "shortString") str += (obj as Objects).shortString();
+          else str += (obj as Objects).string();
+        return;
+      }
+      str += obj.class.name + ": not herite from Objects";
       return;  
     }
     Array<string> keys;
     if(obj instanceof Object) {
-	  str += "Object {";
-	  keys = (obj as Object).keys();
-	} else {
-	  str += obj.class.name + " {";
+      str += "Object {";
+      keys = (obj as Object).keys();
+    } else {
+      str += obj.class.name + " {";
       keys = obj.class.fields;
-	}
+    }
     integer cpt = count(keys);
     if(cpt != 0) {
       str += "\n"
@@ -160,10 +160,10 @@ class GameDebug {
    * addOperation
    * calcul les opt et la ram depuis le dernier addOperation et l affiche
    **/
-  static void addOperation(boolean condition, string txt = "") {
+  static void addOperation(boolean condition, string txt = "", integer relativeOpt = opt, integer relativeRam = ram) {
     if(!condition) return;
-    integer opt2 = getOperations()-opt;
-    integer ram2 = getUsedRAM()-ram;
+    integer opt2 = getOperations()-relativeOpt;
+    integer ram2 = getUsedRAM()-relativeRam;
     str += txt+" : "+opt2+"("+(opt2*100.0/OPERATIONS_LIMIT)+"%Ops) / "+ram2+"("+(ram2*100.0/getMaxRAM())+"%RAM)\n";
     opt = getOperations();
     ram = getUsedRAM();

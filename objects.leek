@@ -6,9 +6,9 @@
  * permettre leur traitement generique dans gamedebug
  **/
 class Objects {
-	
+  
   integer id;
-	
+  
   /**
    * toString
    *

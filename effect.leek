@@ -199,7 +199,7 @@ class Effect extends Objects {
       minEffect: round(targetDmg.minEffect as real),
       maxEffect: round(targetDmg.maxEffect as real),
       midEffect: round(targetDmg.midEffect as real)
-	};
+    };
   }
 
   /**
@@ -256,13 +256,13 @@ class Effect extends Objects {
    * @return {integer minEffect, integer maxEffect, integer midEffect}
    **/
   Object lifeSteal(LeekRound shooter, Object roundedDmg, Object dmgReturn) {
-	return {
+    return {
       minEffect: max(dmgReturn.minEffect as integer - round(roundedDmg.maxEffect as integer * (shooter.maxWisdom / 1000)), shooter.minLife - shooter.minTotalLife), // le vol de vie ne peut pas ramener plus de vie que la totallife
       maxEffect: max(dmgReturn.maxEffect as integer - round(roundedDmg.minEffect as integer * (shooter.minWisdom / 1000)), shooter.maxLife - shooter.maxTotalLife),
       midEffect: max(dmgReturn.midEffect as integer - round(roundedDmg.midEffect as integer * (shooter.midWisdom / 1000)), shooter.midLife - shooter.midTotalLife)
     }
   }
-	
+  
   /**
    * applyLifeSteal
    * @param shooterDmg : {integer minEffect, integer maxEffect, integer midEffect}

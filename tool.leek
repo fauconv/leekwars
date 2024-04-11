@@ -168,6 +168,6 @@ class Chip extends Tool {
   Array<integer>|null getToolEffectiveArea(integer cellToId, integer | null cellFromId = null) {
     return getChipEffectiveArea(id, cellToId, cellFromId);
   }
-	
+  
 }
 
