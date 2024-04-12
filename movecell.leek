@@ -12,12 +12,13 @@ class MoveCell extends Objects {
   Round roundObj;
   LeekRound owner;
   Cell cell;
+  Array<ToolRound> usedTools;
   
   /**
    * constructor
-   * Attention CellRound et LeekRound doivent etre du meme round
+   * Attention cellRound, usedChips et owner doivent etre du meme round
    **/
-  constructor(CellRound cellRound, LeekRound owner, integer MP, integer TP) {
+  constructor(CellRound cellRound, LeekRound owner, integer MP, integer TP, Array<ToolRound> usedChips = []) {
     id = cellRound.id;
     this.cellRound = cellRound;
     this.owner = owner
@@ -25,6 +26,7 @@ class MoveCell extends Objects {
     this.cell = cellRound.cell;
     remainingMP = MP;
     remainingTP = TP; // pour la gestion de la chip de saut
+    usedTools = usedChips;
   }  
   
 }

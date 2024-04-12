@@ -1,3 +1,4 @@
+include("basicstrategyrules");
 /****************************************************************************
  * BasicStrategy
  ****************************************************************************/
@@ -35,6 +36,7 @@ class BasicStrategy extends Strategy {
       meRound.setWeaponRound(meRound.weaponsRound[0]);
     }
   }
+  
   
 }
 

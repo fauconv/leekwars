@@ -20,4 +20,15 @@ function objectSize(Object obj) => integer {
   return count(obj.keys());
 }
 
+/**
+ * arrayConcatOpti
+ * Plus interessant que arrayConcat si count(tab1) > 2*count(tab2) + 2
+ * O(count(tab2))
+ **/
+function arrayConcatOpti(Array<any> tab1, Array<any> tab2) => void {
+	for(any value in tab2) {
+		push(tab1, value);
+    }
+}
+
 
