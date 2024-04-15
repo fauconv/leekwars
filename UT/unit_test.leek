@@ -12,7 +12,7 @@ class UnitTest extends Strategy {
    * isValide
    **/
   static boolean isValide() {
-    return UNIT_TEST_DEBUG;
+    return UNIT_TEST_DEBUG && (getFightContext() == FIGHT_CONTEXT_TEST);
   }
   
   /**
