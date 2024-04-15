@@ -86,4 +86,27 @@ class Round extends Objects {
     }
   }
   
+  /**
+   * update
+   **/
+  update() {
+	  
+	//
+    // cells update
+    //
+    for(integer i = 0;i < NB_CELLS; i++) {
+      cellsRound[i].leekOnCell = null;
+    }
+	
+	for(integer id : LeekRound leek in leeksRound) {
+      if(!isAlive(id)) {
+        mapRemove(leeksRound,id);
+        if(leek.leek.isEnemy) removeElement(enemiesRound,leek);
+        else if(leek.leek.isAllie) removeElement(alliesRound,leek);
+      } else {
+	    leek.update();
+	  }  
+    }
+
+  }
 }

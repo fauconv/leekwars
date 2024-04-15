@@ -64,7 +64,7 @@ class LeekRound extends Objects {
   
   Map<integer, ToolRound> toolsRound = [:];
   Array<WeaponRound> weaponsRound = [];
-  Array<ChipRound> chipsRound = [];
+  Array<ChipRound|null> chipsRound = [];
   Round roundObj;
     
   Array<ToolRound> categoryDamage = [];
@@ -215,7 +215,53 @@ class LeekRound extends Objects {
 	}
     
   }
-  
+
+  /**
+   * update
+   **/
+  update() {
+    minTP = maxTP = midTP = getTP(id)!;
+    maxTotalLife = minTotalLife = midTotalLife = getTotalLife(id)!;
+    maxLife = midLife = minLife = getLife(id)!;
+    minResistance = maxResistance = midResistance = getResistance(id)!;
+    minAgility = maxAgility = midAgility = getAgility(id)!;
+    minStrength = maxStrength = midStrength = getStrength(id)!;
+    minMagic = maxMagic = midMagic = getMagic(id)!;
+    minScience = maxScience = midScience = getScience(id)!;
+    minWisdom = maxWisdom = midWisdom = getWisdom(id)!;
+    minAbsoluteShield = maxAbsoluteShield = midAbsoluteShield = getAbsoluteShield(id)!;
+    minRelativeShield = maxRelativeShield = midRelativeShield = getRelativeShield(id)!;
+    minDmgReturn = maxDmgReturn = midDmgReturn = getDamageReturn(id)!;
+    minMP = maxMP = midMP = getMP(id)!;
+    minPower = maxPower = midPower = getPower(id)!;
+
+    maxInjury = midInjury = minInjury = 0;
+
+    currentCellId = getCell(id)!;
+    currentCell = roundObj.cellsRound[currentCellId];
+    currentCell.leekOnCell = this;
+	
+	Array<ChipRound|null> tmp = chipsRound;
+	for(integer index : ChipRound|null chipRound in tmp) {
+	  if(chipRound != null && getCooldown(chipRound!.id) == 0) {
+        chipsRound[index] = null;
+		mapRemove(toolsRound, chipRound!.id);
+	  }
+	}
+
+    if(weaponId = getWeapon(id)) weapon = toolsRound[weaponId!];
+
+    Array<Array<integer | boolean>> effects = getEffects(id)!;
+	this.effects = [:];
+    for(Array<integer | boolean> effect in effects) {
+      if (mapContainsKey(this.effects,effect[0])) {
+        push(this.effects[effect[0] as integer]!, effect);
+      } else {
+        this.effects[effect[0] as integer] = [effect];
+      }
+    }
+  }
+	
    /**
    * categoriseTool
    **/

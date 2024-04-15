@@ -22,11 +22,11 @@ class Effect extends Objects {
   boolean modNoRep;
   boolean modOnCast;
   boolean modStack;
-  Function<Effect, LeekRound, LeekRound, real, real => Object> simulateShotFunction; // function (Effect obj, LeekRound shooter, LeekRound target, real AOE, real midCriticalLuck) => {integer minEffect, integer maxEffect, integer midEffect}
+  Function<Effect, LeekRound, LeekRound => Object> simulateShotFunction; // function (Effect obj, LeekRound shooter, LeekRound target, real AOE, real midCriticalLuck) => {integer minEffect, integer maxEffect, integer midEffect}
   
   Tool owner;
   
-  static Map<integer,Function<Effect, LeekRound, LeekRound, real, real => Object>> SIMULATE_SHOT_FUNCTION = [
+  static Map<integer,Function<Effect, LeekRound, LeekRound => Object>> SIMULATE_SHOT_FUNCTION = [
     EFFECT_ABSOLUTE_SHIELD:effect_absolute_shield,
     EFFECT_ABSOLUTE_VULNERABILITY:effect_absolute_vulnerability,
     EFFECT_ADD_STATE:effect_default, // TODO: effect_add_state
@@ -88,6 +88,14 @@ class Effect extends Objects {
     EFFECT_VULNERABILITY:effect_vulnerability
   ]; // function (Effect obj, LeekRound shooter, LeekRound target, real AOE, real midCriticalLuck) => {integer minEffect, integer maxEffect, integer midEffect}
 
+  //
+  // temporary variables
+  //
+  real tmpMidCriticalLuck;
+  real tmpMinEffect;
+  real tmpMaxEffect;
+  real tmpMidEffect;
+  
   
   /**
    * constructor
@@ -122,7 +130,7 @@ class Effect extends Objects {
    * TODO : ajouter les passif des armes oubliees
    * @return {integer minEffect, integer maxEffect, integer midEffect}
    **/
-  Object simulateShot(LeekRound shooter, LeekRound target, real AOE, integer nbTargets, real midCriticalLuck) {
+  Object simulateShot(LeekRound shooter, LeekRound target, real AOE, integer nbTargets, real midCriticalLuck, real maxFactor) {
     
     Leek targetLeek = target.leek;
     if((targetLeek.isAllie && !targetAllie) ||
@@ -136,20 +144,11 @@ class Effect extends Objects {
     
     GameDebug.add(EFFECT_DEBUG, EFFECT_TYPE_TRANSLATOR[type],"simulate shot effect");
 
-    return simulateShotFunction(this, shooter, target, AOE, midCriticalLuck);
-  }
-
-  /**
-   * baseDmg
-   * define critical damage + AOE 
-   * @return {real minEffect, real maxEffect, real midEffect}
-   **/
-  Object baseDmg(LeekRound shooter, real AOE, real midCriticalLuck) {
-    return {
-      minEffect: minEffect*AOE,
-      maxEffect: maxEffect*CRITICAL_FACTOR*AOE,
-      midEffect: midEffect*(1.0+CRITICAL_BONUS*midCriticalLuck)*AOE
-    }
+	tmpMidCriticalLuck = midCriticalLuck;
+	tmpMinEffect = minEffect*AOE;
+	tmpMaxEffect = maxEffect*AOE*maxFactor;
+	tmpMidEffect = midEffect*(1.0+CRITICAL_BONUS*midCriticalLuck)*AOE;
+    return simulateShotFunction(this, shooter, target);
   }
 
   /**
@@ -157,12 +156,11 @@ class Effect extends Objects {
    * define damage to target
    * @return {real minEffect, real maxEffect, real midEffect}
    **/
-  Object targetDmg(LeekRound shooter, real AOE, integer minCarac, integer maxCarac, integer midCarac, real midCriticalLuck) {
-    Object baseDmg = baseDmg(shooter, AOE, midCriticalLuck);
+  Object targetDmg(integer minCarac, integer maxCarac, integer midCarac) {
     return {
-      minEffect: max(0.0, baseDmg.minEffect as real*(1.0+(minCarac/100.0))),
-      maxEffect: max(0.0, baseDmg.maxEffect as real*(1.0+(maxCarac/100.0))),
-      midEffect: max(0.0, baseDmg.midEffect as real*(1.0+(midCarac/100.0)))
+      minEffect: max(0.0, tmpMinEffect*(1.0+(minCarac/100.0))),
+      maxEffect: max(0.0, tmpMaxEffect*(1.0+(maxCarac/100.0))),
+      midEffect: max(0.0, tmpMidEffect*(1.0+(midCarac/100.0)))
     }
   }
     
@@ -218,7 +216,7 @@ class Effect extends Objects {
     target.minLife -= maxDmg; // life target
     target.maxLife -= minDmg;
     target.midLife -= midDmg;
-    return {minEffect:minDmg, maxEfffect:maxDmg, midEffect:midDmg};
+    return {minEffect:minDmg, maxEffect:maxDmg, midEffect:midDmg};
   }
   
   /**
@@ -246,10 +244,10 @@ class Effect extends Objects {
   void applyErosion(LeekRound target, real erosionFactor, Object roundedDmg) {
     target.maxTotalLife = max(target.maxLife, target.maxTotalLife-round(erosionFactor * roundedDmg.minEffect as integer));
     target.minTotalLife = max(target.minLife, target.minTotalLife-round((erosionFactor + CRITICAL_EROSION) * roundedDmg.maxEffect as integer));
-    target.midTotalLife = max(target.midLife, target.midTotalLife-round((erosionFactor + CRITICAL_EROSION * roundedDmg.midCriticalLuck as real) * roundedDmg.maxEffect as integer));
+    target.midTotalLife = max(target.midLife, target.midTotalLife-round((erosionFactor + CRITICAL_EROSION * tmpMidCriticalLuck) * roundedDmg.maxEffect as integer));
   }
 
-  /**
+  /** 
    * lifeSteal
    * @param roundedDmg : {integer minEffect, integer maxEffect, integer midEffect}
    * @param dmgReturn : {integer minEffect, integer maxEffect, integer midEffect}

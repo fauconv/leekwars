@@ -3,8 +3,6 @@
  ****************************************************************************/
 class UnitTest extends Strategy {
   
-  static Enemy enemy;         
-  static integer enemyId;
   static MeRound meRound;       // MeRound
   static EnemyRound enemyRound;    // EnemyRound
   static Round currentRound;  // Round
@@ -39,12 +37,13 @@ class UnitTest extends Strategy {
       functions();
       leek();
       leekRound();
-      round();
       tool();
-      toolRound();
 	  oldRound = currentRound;
+	  moveTowardCell(meRound.getRelativeCenter().id);
       return
     }
+	roundTest();
+	toolRound();
     oldRound = currentRound;
   }
   
@@ -145,10 +144,14 @@ class UnitTest extends Strategy {
   }
   
   /**
-   * round
+   * roundTest
    **/
-  boolean round() {
-	// TODO: test de clonage
+  boolean roundTest() {
+	GameDebug.addOperation(true, "avant clonage");
+	Round newRound = new Round(currentRound);
+	GameDebug.addOperation(true,"cout clonage");
+	newRound.update();
+	GameDebug.addOperation(true,"cout update");
     return true;
   }
   
@@ -163,7 +166,17 @@ class UnitTest extends Strategy {
    * toolRound
    **/
   boolean toolRound() {
-    //GameDebug.add(true, meRound.weapon,"Current weapon",2);
+	if(canUseWeapon(enemyRound.id)) {
+	  Round simulation = new Round(currentRound);
+	  Round oldRound = new Round(currentRound);
+	  Object simValues = simulation.meRound.weapon!.simulateShot([enemyRound],[1.0]);
+	  GameDebug.add(true,simValues,"simulation des degats du tir");
+	  useWeaponOnCell(enemyRound.currentCell.id);
+	  currentRound.update();
+	  GameDebug.add(true, oldRound.enemiesRound[0].minLife+"-"+enemyRound.minLife+"="+(oldRound.enemiesRound[0].minLife-enemyRound.minLife), "degat reel par comparaison des rounds")
+	} else {
+	  moveToward(enemyRound.id);
+	}
     return true;
   }
   

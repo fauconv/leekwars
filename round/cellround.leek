@@ -5,7 +5,7 @@ include("../engine/board");
 class CellRound extends Objects {
   
   Cell cell;
-  LeekRound leekOnCell;
+  LeekRound|null leekOnCell = null;
   
   Round roundObj;
   
