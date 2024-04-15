@@ -1,0 +1,53 @@
+/**
+ * ordre d utilisation des chips :
+ * 1- CHIP_STRETCHING
+ * 2- CHIP_MOTIVATION
+ * 3- CHIP_LEATHER_BOOTS
+ **/
+
+/**
+ * condition d utilisation des chips lors de la phase de prediction des mouvements
+ * 1- CHIP_STRETCHING
+ * 2- CHIP_MOTIVATION
+ * 3- CHIP_LEATHER_BOOTS
+ **/
+function MPConditions(Map<integer, ToolRound> toolsRound) => Array<Array<ToolRound|null>> {
+  if(mapContainsKey(toolsRound, CHIP_LEATHER_BOOTS)) {
+	if(mapContainsKey(toolsRound, CHIP_STRETCHING)) {
+	  if(mapContainsKey(toolsRound, CHIP_MOTIVATION)) {
+	    return [[toolsRound[CHIP_STRETCHING],toolsRound[CHIP_MOTIVATION],toolsRound[CHIP_LEATHER_BOOTS]],
+				[toolsRound[CHIP_STRETCHING],toolsRound[CHIP_LEATHER_BOOTS]],                                     	
+			    [toolsRound[CHIP_MOTIVATION],toolsRound[CHIP_LEATHER_BOOTS]],
+				[toolsRound[CHIP_STRETCHING],toolsRound[CHIP_MOTIVATION]],
+				[toolsRound[CHIP_STRETCHING]],
+				[toolsRound[CHIP_MOTIVATION]],
+				[toolsRound[CHIP_LEATHER_BOOTS]],
+				[]];
+	  }
+	  return [[toolsRound[CHIP_STRETCHING],toolsRound[CHIP_LEATHER_BOOTS]],                                     	
+		      [toolsRound[CHIP_STRETCHING]],
+			  [toolsRound[CHIP_LEATHER_BOOTS]],
+			  []];
+    };
+    if(mapContainsKey(toolsRound, CHIP_MOTIVATION)) {
+      return [[toolsRound[CHIP_MOTIVATION],toolsRound[CHIP_LEATHER_BOOTS]],
+			  [toolsRound[CHIP_MOTIVATION]],
+			  [toolsRound[CHIP_LEATHER_BOOTS]],
+			  []];
+	}
+    return [[toolsRound[CHIP_LEATHER_BOOTS]],[]];
+  }
+  if(mapContainsKey(toolsRound, CHIP_STRETCHING)) {
+	if(mapContainsKey(toolsRound, CHIP_MOTIVATION)) {
+	  return [[toolsRound[CHIP_STRETCHING],toolsRound[CHIP_MOTIVATION]],
+			  [toolsRound[CHIP_STRETCHING]],
+			  [toolsRound[CHIP_MOTIVATION]],
+			  []];	
+	}
+	 return [[toolsRound[CHIP_STRETCHING]],[]];
+  }
+  if(mapContainsKey(toolsRound, CHIP_MOTIVATION)) return [[toolsRound[CHIP_MOTIVATION]],[]];
+  return [[]];
+};
+
+

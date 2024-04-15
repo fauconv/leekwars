@@ -6,7 +6,7 @@ include("toolround");
 class LeekRound extends Objects {
   
   Leek leek;
-  MoveCell currentCell;
+  CellRound currentCell;
   integer currentCellId;
   
   integer minTP;
@@ -62,7 +62,6 @@ class LeekRound extends Objects {
   
   Map<integer,Array<Array<integer|boolean>>> effects = [:];
   
-  Map<integer, MoveCell> moveCells = [:];
   Map<integer, ToolRound> toolsRound = [:];
   Array<WeaponRound> weaponsRound = [];
   Array<ChipRound> chipsRound = [];
@@ -81,10 +80,91 @@ class LeekRound extends Objects {
   /**
    * constructor
    **/
-  constructor(Leek leek, Round roundObj) {
-    
+  constructor(Leek|LeekRound leek, Round roundObj) {
+  
+    if(leek.class.super.name == "LeekRound") {
+	  
+	  //
+      // clonage
+      //
+      id = leek.id;
+      this.leek = (leek as LeekRound).leek;
+      this.roundObj = roundObj;
+      
+      minTP = (leek as LeekRound).minTP
+      maxTP = (leek as LeekRound).maxTP
+      midTP = (leek as LeekRound).midTP;
+      maxTotalLife = (leek as LeekRound).maxTotalLife
+      minTotalLife = (leek as LeekRound).minTotalLife
+      midTotalLife = (leek as LeekRound).midTotalLife
+      maxLife = (leek as LeekRound).maxLife
+      midLife = (leek as LeekRound).midLife
+      minLife = (leek as LeekRound).minLife
+      minResistance = (leek as LeekRound).minResistance
+      maxResistance = (leek as LeekRound).maxResistance
+      midResistance = (leek as LeekRound).midResistance
+      minAgility = (leek as LeekRound).minAgility
+      maxAgility = (leek as LeekRound).maxAgility
+      midAgility = (leek as LeekRound).midAgility
+      minStrength = (leek as LeekRound).minStrength
+      maxStrength = (leek as LeekRound).maxStrength
+      midStrength = (leek as LeekRound).midStrength
+      minMagic = (leek as LeekRound).minMagic
+      maxMagic = (leek as LeekRound).maxMagic
+      midMagic = (leek as LeekRound).midMagic
+      minScience = (leek as LeekRound).minScience
+      maxScience = (leek as LeekRound).maxScience
+      midScience = (leek as LeekRound).midScience
+      minWisdom = (leek as LeekRound).minWisdom
+      maxWisdom = (leek as LeekRound).maxWisdom
+      midWisdom = (leek as LeekRound).midWisdom
+      minAbsoluteShield = (leek as LeekRound).minAbsoluteShield
+      maxAbsoluteShield = (leek as LeekRound).maxAbsoluteShield
+      midAbsoluteShield = (leek as LeekRound).midAbsoluteShield
+      minRelativeShield = (leek as LeekRound).minRelativeShield
+      maxRelativeShield = (leek as LeekRound).maxRelativeShield
+      midRelativeShield = (leek as LeekRound).midRelativeShield
+      minDmgReturn = (leek as LeekRound).minDmgReturn
+      maxDmgReturn = (leek as LeekRound).maxDmgReturn
+      midDmgReturn = (leek as LeekRound).midDmgReturn
+      minMP = (leek as LeekRound).minMP
+      maxMP = (leek as LeekRound).maxMP
+      midMP = (leek as LeekRound).midMP
+      minPower = (leek as LeekRound).minPower
+      maxPower = (leek as LeekRound).maxPower
+      midPower = (leek as LeekRound).midPower
+      maxInjury = (leek as LeekRound).maxInjury
+      midInjury = (leek as LeekRound).midInjury
+      minInjury = (leek as LeekRound).minInjury
+      
+      maxAOERange = leek.maxAOERange
+      weapon = (leek as LeekRound).weapon
+      weaponId = (leek as LeekRound).weaponId
+      
+      currentCellId = (leek as LeekRound).currentCellId
+      CellRound cellRound = roundObj.cellsRound[currentCellId];
+      cellRound.leekOnCell = this;
+      
+      currentCell = roundObj.cellsRound[currentCellId];
+      
+      effects = (leek as LeekRound).effects
+      
+      for(ToolRound toolRound in (leek as LeekRound).toolsRound) {
+        if(toolRound.tool.isChip) {
+          categoriseTool(new ChipRound(toolRound, this)); 
+        } else {
+          categoriseTool(new WeaponRound(toolRound, this));
+        }
+      }
+	  
+		
+	} else {
+	  
+	  //
+	  // cas normal
+	  //
       id = leek.id; 
-      this.leek = leek;
+      this.leek = leek as Leek;
       this.roundObj = roundObj;
 
       minTP = maxTP = midTP = getTP(id)!;
@@ -105,11 +185,10 @@ class LeekRound extends Objects {
       maxInjury = midInjury = minInjury = 0;
 
       currentCellId = getCell(id)!;
-      CellRound cellRound = roundObj.cellsRound[currentCellId];
-      cellRound.leekOnCell = this;
-      currentCell = new MoveCell(cellRound, this, minMP, minTP);
+      currentCell = roundObj.cellsRound[currentCellId];
+      currentCell.leekOnCell = this;
 
-      for(Tool tool in leek.tools) {
+      for(Tool tool in (leek as Leek).tools) {
         if(tool.isChip) {
           if(getCooldown(tool.id) == 0) {
             ChipRound c = new ChipRound(tool, this);
@@ -133,6 +212,7 @@ class LeekRound extends Objects {
           this.effects[effect[0] as integer] = [effect];
         }
       }
+	}
     
   }
   
@@ -147,7 +227,6 @@ class LeekRound extends Objects {
       (tool.maxAOERange > maxAOERange) and (maxAOERange = tool.maxAOERange);
   }
   
-  
   /**
    * simulateSetWeaponRound
    **/
@@ -157,34 +236,6 @@ class LeekRound extends Objects {
     midTP--;
     weaponId = weapon.id;
     this.weapon = weapon;
-  }
-  
-  /**
-   * parcour
-   * flatReachableCells[cellId] = remainingMP (MAP)
-   * Attention, le moveCell doit appartenir au leekRound sinon il y a inconsistance. 
-   * TODO: ajouter la gestion de la chip de saut et du buff MP et TP
-   **/
-  Map<integer,MoveCell> parcour(MoveCell startCell = this.currentCell) {
-    Map<integer,Array<Cell>> reachableCells = [startCell.remainingMP:[startCell.cell]] //reachableCells[remainingMP][] = cell
-    Map<integer,MoveCell> flatReachableCells = [startCell.id:startCell]
-    Cell voisin
-    integer TP = startCell.remainingTP
-    for(integer i = startCell.remainingMP; i > 0; i--) {
-      integer futurMP = i-1
-      reachableCells[futurMP] = []
-      for(Cell cell2 in reachableCells[i]!) {
-        for(string direction in LINE_DIRECTION) {
-          if(!(voisin = cell2[direction] as Cell) || voisin.isWall) continue
-          integer voisinId = voisin.id
-          CellRound voisinRound = roundObj.cellsRound[voisinId];
-          (!mapContainsKey(flatReachableCells, voisinId)) && (!voisinRound.leekOnCell) and 
-            (push(reachableCells[futurMP]!, voisin) or true) and
-            (flatReachableCells[voisinId] = new MoveCell(voisinRound, this, futurMP, TP));
-        }
-      }
-    }
-    return flatReachableCells
   }
   
 }
@@ -197,7 +248,7 @@ class AllieRound extends LeekRound {
   /**
    * constructor
    **/
-  constructor(Leek leek, Round roundObj) {
+  constructor(Leek|AllieRound leek, Round roundObj) {
     super(leek, roundObj);
   }
   
@@ -211,9 +262,8 @@ class EnemyRound extends LeekRound {
   /**
    * constructor
    **/
-  constructor(Leek leek, Round roundObj) {
+  constructor(EnemyRound|Leek leek, Round roundObj) {
     super(leek, roundObj);
-    moveCells = parcour();
   }
  
 }
@@ -232,9 +282,12 @@ class MeRound extends LeekRound {
   /**
    * constructor
    **/
-  constructor(Round roundObj) {
-    super(Board.me, roundObj);
-    moveCells = parcour();
+  constructor(Round roundObj, MeRound|null clone = null) {
+    if(clone != null) {
+      super(clone!, roundObj);
+    } else {
+      super(Board.me, roundObj);
+    }
   }
   
   /**

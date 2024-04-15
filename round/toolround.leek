@@ -1,8 +1,8 @@
-include("movecell");
+include("cellround");
 /******************************************************************************
  * ToolRound
  *
- * Exist only if cooldown == 0 ou si le tool viens d etre utilise dans ce tour
+ * Exist only if cooldown == 0
  ******************************************************************************/
 class ToolRound extends Objects {
   
@@ -14,11 +14,16 @@ class ToolRound extends Objects {
   /**
    * constructor
    **/
-  constructor(Tool tool, LeekRound owner) {
-    this.owner = owner;
+  constructor(Tool|ToolRound tool, LeekRound owner) {
+	this.owner = owner;
     id = tool.id;
-    this.tool = tool;
-    cooldown = 0;
+    if(tool.class.super.name == "Tool") {
+      this.tool = tool as Tool;
+      cooldown = 0;
+    } else {
+      this.tool = (tool as ToolRound).tool;
+      cooldown = tool.cooldown;
+    }
   }
 
   /**
@@ -74,7 +79,7 @@ class WeaponRound extends ToolRound {
   /**
    * constructor
    **/
-  constructor(Tool tool, LeekRound owner) {
+  constructor(Tool|ToolRound tool, LeekRound owner) {
     super(tool, owner);
   }
   
@@ -90,7 +95,7 @@ class ChipRound extends ToolRound {
   /**
    * constructor
    **/
-  constructor(Tool tool, LeekRound owner) {
+  constructor(Tool|ToolRound tool, LeekRound owner) {
     super(tool, owner);
   }
   

@@ -4,13 +4,13 @@
 global boolean EFFECT_DEBUG = false;
 global boolean BASIC_STRATEGY_DEBUG = false;
 global boolean UNIT_TEST_DEBUG = true;
-include("gamedebug");
+include("utils/gamedebug");
 //include("gamenodebug");
 
 /**************************************************************************
  * init
  **************************************************************************/
-include("strategy");
+include("round/round");
 if(gFirstRound) {
   Board.init();
 } else {
@@ -20,8 +20,8 @@ if(gFirstRound) {
 /*************************************************************************
  * include strategy files
  *************************************************************************/
-include("unit_test");
-include("basicstrategy");
+include("UT/unit_test");
+include("basicstrategy/basicstrategy");
 if(UnitTest.isValide()) gAvailableStrategie = new UnitTest();
 else if(BasicStrategy.isValide()) gAvailableStrategie = new BasicStrategy();
 else gAvailableStrategie = new Strategy();

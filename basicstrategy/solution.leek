@@ -1,0 +1,36 @@
+include("action");
+
+/******************************************************************************
+ * Solution
+ ******************************************************************************/
+class Solution extends Objects {
+
+  Array<Action> actions = []; // les id des actions sont les index du tableau comme une map
+  LeekRound owner;
+
+  /**
+   * constructor
+   * Attention le owner doit etre le meme que le owner des chip de la liste
+   **/
+  constructor(integer id, Array<ToolRound|null> chipList, LeekRound owner) {
+    this.id = id;
+	this.owner = owner;
+    for(integer index : ToolRound chip in chipList) {
+      push(actions, new ToolAction(index, chip));
+    }
+  }
+  
+  /**
+   * string
+   **/
+  string string() {
+    string ret = "Solution #"+owner.id+"-"+id+ " {\n";
+	for(Action a in actions) {
+	  ret += "  "+a.string()+"\n";
+	}
+	return ret+"}";
+  }
+  string shortString() {
+    return "Solution #"+owner.id+"-"+id;
+  }
+}

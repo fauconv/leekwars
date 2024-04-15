@@ -8,7 +8,6 @@ class UnitTest extends Strategy {
   static MeRound meRound;       // MeRound
   static EnemyRound enemyRound;    // EnemyRound
   static Round currentRound;  // Round
-  static Round simRound;
   static Round oldRound;
   
   /**
@@ -30,7 +29,7 @@ class UnitTest extends Strategy {
     Talk.text = "UnitTest mode";
     
     if(gFirstRound) {
-      if(Board.me.weapons[0]) meRound.setWeaponRound(meRound.weaponsRound[0]);
+      if(meRound.weaponsRound[0]) meRound.setWeaponRound(meRound.weaponsRound[0]);
       else debugC("no weapon", COLOR_RED);
       board();
       cell();
@@ -40,14 +39,13 @@ class UnitTest extends Strategy {
       functions();
       leek();
       leekRound();
-      moveCell();
       round();
       tool();
       toolRound();
-      oldRound = simRound = currentRound;
+	  oldRound = currentRound;
       return
     }
-    
+    oldRound = currentRound;
   }
   
   /**
@@ -137,13 +135,8 @@ class UnitTest extends Strategy {
   boolean leekRound() {
     meRound.getRelativeCenter()
     //GameDebug.add(true, enemyRound,"enemyRound",2);
-    debug("Legend: MoveCells = yellow");
-    for(MoveCell mv in meRound.moveCells) {
-      mark(mv.id, COLOR_YELLOW,1);
-      markText(mv.id, mv.remainingMP,0,1);
-    }
     debug("Legend: path to relative center = red");
-    GameDebug.addBackground(true, meRound.pathToCenter, COLOR_RED);
+    GameDebug.addBackground(true, meRound.pathToCenter as Array<integer>, COLOR_RED);
     if(enemyRound.minTP == 10 && enemyRound.maxAOERange == 10 && enemyRound.currentCell.cell.id == enemyRound.currentCellId)
       debugC("LeekRound OK", COLOR_GREEN);
     else 
@@ -152,16 +145,10 @@ class UnitTest extends Strategy {
   }
   
   /**
-   * moveCell
-   **/
-  boolean moveCell() {
-    return true;
-  }
-  
-  /**
    * round
    **/
   boolean round() {
+	// TODO: test de clonage
     return true;
   }
   

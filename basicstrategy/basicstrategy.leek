@@ -1,0 +1,120 @@
+include("basicstrategyrules");
+include("solution");
+include("movecell");
+
+/****************************************************************************
+ * BasicStrategy
+ ****************************************************************************/
+class BasicStrategy extends Strategy {
+  
+  static Enemy enemy;          
+  static integer enemyId;
+  static MeRound meRound;       // MeRound
+  static EnemyRound enemyRound;    // EnemyRound
+  static Round currentRound;  // Round
+  static Array<Solution> mySoluces = []; // l id des soluce correspond a l id de l index du tableau comme si c etait une map
+  static Array<Solution> enemySoluces = []; // l id des soluce correspond a l id de l index du tableau comme si c etait une map
+  
+  /**
+   * isValide
+   *
+   * refuse les match avec AOE, en groupe, ou avec bulb
+   **/
+  static boolean isValide() {
+    if(count(Board.enemies) > 1) return false;
+    enemy = Board.enemies[0];
+    enemyId = enemy.id;
+    return isEmpty(enemy.categoryBulb);
+  }
+  
+  /**
+   * apply
+   **/
+  void apply() {
+    
+    currentRound = Board.currentRound;
+    meRound = currentRound.meRound;
+    enemyRound = currentRound.enemiesRound[0];
+    
+	//
+	// first round
+	//
+    if(gFirstRound) {
+      moveTowardCell(meRound.getRelativeCenter().id);
+      meRound.setWeaponRound(meRound.weaponsRound[0]);
+      return;
+    }
+	  
+	//
+	// other rounds
+	//
+	
+	//
+	// phase 1 : on determine les mouvements possibles de chaque poireau
+	// phase 1.1 : on determine quel chip utilisable pour se mouvoir
+	//
+	Array<Array<ToolRound|null>> myMPToolList = MPConditions(meRound.toolsRound);
+    Array<Array<ToolRound|null>> enemyMPToolList = MPConditions(enemyRound.toolsRound);
+	
+	for(Integer index : Array<ToolRound|null> chipsList in myMPToolList) {
+	  push(mySoluces, new Solution(index, chipsList, meRound));
+	}
+	for(Integer index : Array<ToolRound|null> chipsList in enemyMPToolList) {
+	  push(enemySoluces, new Solution(index, chipsList, enemyRound));
+	}
+	  
+	//
+	// phase 1.2 : on calcul chaque mouvement possible et chaque solution implique
+	//
+	
+	//
+	// phase 2 : on determine les tire et degat possible
+	//
+	
+	//
+	// phase 3 : on determine les mouvement de retraite
+	//
+	
+	//
+	// phase 4 : on determine les chip de soin et de protection a utiliser
+	//
+	
+	//
+	// phase 5 : on choisi la meilleure soluce
+	//
+	
+  }
+
+  /**
+   * parcour
+   * flatReachableCells[cellId] = remainingMP (MAP)
+   * Attention, le moveCell doit appartenir au leekRound sinon il y a inconsistance. 
+   * TODO: ajouter la gestion de la chip de saut et du buff MP et TP
+   **/
+	
+	/*
+  Map<integer,MoveCell> parcour(MoveCell startCell) {
+    Map<integer,Array<Cell>> reachableCells = [startCell.remainingMP:[startCell.cell]] //reachableCells[remainingMP][] = cell
+    Map<integer,MoveCell> flatReachableCells = [startCell.id:startCell]
+    Cell voisin
+    integer TP = startCell.remainingTP
+    for(integer i = startCell.remainingMP; i > 0; i--) {
+      integer futurMP = i-1
+      reachableCells[futurMP] = []
+      for(Cell cell2 in reachableCells[i]!) {
+        for(string direction in LINE_DIRECTION) {
+          if(!(voisin = cell2[direction] as Cell) || voisin.isWall) continue
+          integer voisinId = voisin.id
+          CellRound voisinRound = roundObj.cellsRound[voisinId];
+          (!mapContainsKey(flatReachableCells, voisinId)) && (!voisinRound.leekOnCell) and 
+            (push(reachableCells[futurMP]!, voisin) or true) and
+            (flatReachableCells[voisinId] = new MoveCell(voisinRound, this, futurMP, TP));
+        }
+      }
+    }
+    return flatReachableCells
+  }
+  */
+  
+}
+

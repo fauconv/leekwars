@@ -1,0 +1,89 @@
+include("leekround");
+
+/******************************************************************************
+ * Round
+ ******************************************************************************/
+class Round extends Objects {
+  
+  MeRound meRound;
+  
+  Array<CellRound> cellsRound = [];
+  
+  Array<AllieRound> alliesRound = [];
+  Array<EnemyRound> enemiesRound = [];
+  
+  Map<integer, LeekRound> leeksRound = [:];
+  
+  /**
+   * constructor
+   **/
+  constructor(Round|null clone = null) {
+    
+    //
+    // cells creations
+    //
+    for(integer i = 0;i < NB_CELLS; i++) {
+      push(cellsRound, new CellRound(Board.cells[i],this));
+    }
+    
+	//
+	// clonage
+	//
+	//
+    // clonage
+    // 
+    if(clone != null) {
+      //
+      // add me
+      //
+      meRound = new MeRound(this, (clone!).meRound);
+      leeksRound[meRound.id] = meRound;
+
+      //
+      // add enemies
+      //
+      for(EnemyRound enemy in (clone!).enemiesRound) {
+        EnemyRound en = new EnemyRound(enemy, this); 
+        push(enemiesRound, en);
+        leeksRound[en.id] = en;
+      }
+
+      //
+      // add allies
+      //
+      for(AllieRound enemy in (clone!).alliesRound) {
+        AllieRound en = new AllieRound(enemy, this);
+        push(alliesRound, en);
+        leeksRound[en.id] = en;
+      }
+      
+    } else {
+	
+      //
+      // add me
+      //
+      meRound = new MeRound(this);
+      leeksRound[meRound.id] = meRound;
+
+      //
+      // add enemies
+      //
+      for(Leek enemy in Board.enemies) {
+        EnemyRound en = new EnemyRound(enemy, this);
+        push(enemiesRound, en);
+        leeksRound[en.id] = en;
+      }
+
+      //
+      // add allies
+      //
+      for(Leek enemy in Board.allies) {
+        AllieRound en = new AllieRound(enemy, this);
+        push(alliesRound, en);
+        leeksRound[en.id] = en;
+      }
+    
+    }
+  }
+  
+}

@@ -1,0 +1,100 @@
+/******************************************************************************
+ * Action
+ ******************************************************************************/
+class Action extends Objects {
+
+  /**
+   * execute
+   */
+  boolean execute() {
+    return false;
+  }
+	
+  /**
+   * simulate
+   */
+  boolean simulate() {
+    return false;
+  }
+}
+
+/******************************************************************************
+ * MoveAction
+ ******************************************************************************/
+class MoveAction extends Action {
+
+  MoveCell cellRound;
+
+  /**
+   * constructor
+   **/
+  constructor(integer id, MoveCell cellRound) {
+    this.id = id;
+	this.cellRound = cellRound;
+  }
+
+  /**
+   * execute
+   */
+  boolean execute() {
+    return false;
+  }
+	
+  /**
+   * simulate
+   */
+  boolean simulate() {
+    return false;
+  }
+  
+  /**
+   * string
+   **/
+  string string() {
+    return shortString();
+  }
+  string shortString() {
+    return this.class.name+" #"+id+"(cell:"+cellRound.id+")";
+  }
+}
+
+/******************************************************************************
+ * ToolAction
+ ******************************************************************************/
+class ToolAction extends Action {
+
+  ToolRound toolRound;
+
+  /**
+   * constructor
+   **/
+  constructor(integer id, ToolRound toolRound) {
+    this.id = id;
+	this.toolRound = toolRound;
+  }
+
+  /**
+   * execute
+   */
+  boolean execute() {
+    return false;
+  }
+	
+  /**
+   * simulate
+   */
+  boolean simulate() {
+    return false;
+  }
+
+  /**
+   * string
+   **/
+  string string() {
+    return shortString();
+  }
+  string shortString() {
+    return this.class.name+" #"+id+"("+TOOL_NAME_TRANSLATOR[toolRound.id]!+")";
+  }
+
+}
