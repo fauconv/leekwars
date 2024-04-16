@@ -39,17 +39,17 @@ class ToolRound extends Objects {
     cooldown = tool.cooldown;
     Object delta = {minEffect:0,maxEffect:0,midEffect:0};
     real midCriticalLuck = owner.midAgility/1000.0;
-	real maxFactor = CRITICAL_BONUS;
-	if(owner.maxAgility <= 0) maxFactor = 1.0;
+	real criticalFactor = CRITICAL_FACTOR;
+	if(owner.maxAgility <= 0) criticalFactor = 1.0;
     for(Effect effect in tool.effects) {
       if(effect.modOnCast) {
-        Object delta2 = effect.simulateShot(owner, owner, 1.0, 1, midCriticalLuck, maxFactor)
+        Object delta2 = effect.simulateShot(owner, owner, 1.0, 1, midCriticalLuck, criticalFactor)
         delta.minEffect += delta2.minEffect;
         delta.maxEffect += delta2.maxEffect;
         delta.midEffect += delta2.midEffect;
       } else {
         for(integer i : LeekRound target in targets) {
-          Object delta2 = effect.simulateShot(owner, target, AOEs[i], nbTargets, midCriticalLuck, maxFactor)
+          Object delta2 = effect.simulateShot(owner, target, AOEs[i], nbTargets, midCriticalLuck, criticalFactor)
           delta.minEffect += delta2.minEffect;
           delta.maxEffect += delta2.maxEffect;
           delta.midEffect += delta2.midEffect;

@@ -24,9 +24,9 @@ class UnitTest extends Strategy {
     meRound = currentRound.meRound;
     enemyRound = currentRound.enemiesRound[0];
     GameDebug.addOperation(true, "round init");
-    Talk.text = "UnitTest mode";
     
     if(gFirstRound) {
+      Talk.text = "UnitTest mode";
       if(meRound.weaponsRound[0]) meRound.setWeaponRound(meRound.weaponsRound[0]);
       else debugC("no weapon", COLOR_RED);
       board();
@@ -166,16 +166,15 @@ class UnitTest extends Strategy {
    * toolRound
    **/
   boolean toolRound() {
+	moveToward(enemyRound.id);
 	if(canUseWeapon(enemyRound.id)) {
 	  Round simulation = new Round(currentRound);
 	  Round oldRound = new Round(currentRound);
 	  Object simValues = simulation.meRound.weapon!.simulateShot([enemyRound],[1.0]);
 	  GameDebug.add(true,simValues,"simulation des degats du tir");
-	  useWeaponOnCell(enemyRound.currentCell.id);
+	  useWeaponOnCell(enemyRound.currentCellId);
 	  currentRound.update();
 	  GameDebug.add(true, oldRound.enemiesRound[0].minLife+"-"+enemyRound.minLife+"="+(oldRound.enemiesRound[0].minLife-enemyRound.minLife), "degat reel par comparaison des rounds")
-	} else {
-	  moveToward(enemyRound.id);
 	}
     return true;
   }

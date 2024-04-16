@@ -1,7 +1,7 @@
 /**************************************************************************
  * debug
  **************************************************************************/
-global boolean EFFECT_DEBUG = false;
+global boolean EFFECT_DEBUG = true;
 global boolean BASIC_STRATEGY_DEBUG = false;
 global boolean UNIT_TEST_DEBUG = true;
 include("utils/gamedebug");
