@@ -36,13 +36,13 @@ class Round extends Objects {
       //
       // add me
       //
-      meRound = new MeRound(this, (clone!).meRound);
+      meRound = new MeRound(this, clone!.meRound);
       leeksRound[meRound.id] = meRound;
 
       //
       // add enemies
       //
-      for(EnemyRound enemy in (clone!).enemiesRound) {
+      for(EnemyRound enemy in clone!.enemiesRound) {
         EnemyRound en = new EnemyRound(enemy, this); 
         push(enemiesRound, en);
         leeksRound[en.id] = en;
@@ -51,7 +51,7 @@ class Round extends Objects {
       //
       // add allies
       //
-      for(AllieRound enemy in (clone!).alliesRound) {
+      for(AllieRound enemy in clone!.alliesRound) {
         AllieRound en = new AllieRound(enemy, this);
         push(alliesRound, en);
         leeksRound[en.id] = en;

@@ -27,11 +27,10 @@ class ToolRound extends Objects {
   }
 
   /**
-   * simulateShot
+   * simulateUse
    * @return {integer minEffect, integer maxEffect, integer midEffect}
    **/
-  Object simulateShot(Array<LeekRound> targets, Array<real> AOEs) {
-    integer nbTargets = count(targets);
+  Object simulateUse(Array<LeekRound> targets = [this.owner], Array<real> AOEs = [1.0]) {
     integer cost = tool.cost;
     owner.minTP -= cost;
     owner.maxTP -= cost;
@@ -43,13 +42,15 @@ class ToolRound extends Objects {
 	if(owner.maxAgility <= 0) criticalFactor = 1.0;
     for(Effect effect in tool.effects) {
       if(effect.modOnCast) {
-        Object delta2 = effect.simulateShot(owner, owner, 1.0, 1, midCriticalLuck, criticalFactor)
+		GameDebug.add(EFFECT_DEBUG,"apply on caster only:");
+        Object delta2 = effect.simulateUse(owner, owner, 1.0, 1, midCriticalLuck, criticalFactor)
         delta.minEffect += delta2.minEffect;
         delta.maxEffect += delta2.maxEffect;
         delta.midEffect += delta2.midEffect;
       } else {
+		integer nbTargets = count(targets);
         for(integer i : LeekRound target in targets) {
-          Object delta2 = effect.simulateShot(owner, target, AOEs[i], nbTargets, midCriticalLuck, criticalFactor)
+          Object delta2 = effect.simulateUse(owner, target, AOEs[i], nbTargets, midCriticalLuck, criticalFactor)
           delta.minEffect += delta2.minEffect;
           delta.maxEffect += delta2.maxEffect;
           delta.midEffect += delta2.midEffect;

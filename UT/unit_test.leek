@@ -170,8 +170,13 @@ class UnitTest extends Strategy {
 	if(canUseWeapon(enemyRound.id)) {
 	  Round simulation = new Round(currentRound);
 	  Round oldRound = new Round(currentRound);
-	  Object simValues = simulation.meRound.weapon!.simulateShot([enemyRound],[1.0]);
+	  MeRound meSim = simulation.meRound;
+	  if(meSim.toolsRound[CHIP_PROTEIN]) meSim.toolsRound[CHIP_PROTEIN]!.simulateUse();
+	  GameDebug.add(EFFECT_DEBUG, meSim.minStrength, "(meSim) minStrength de:"+meSim.id);
+      GameDebug.add(EFFECT_DEBUG, meRound.minStrength, "(currentRound) minStrength de:"+meRound.id);
+	  Object simValues = meSim.weapon!.simulateUse([enemyRound],[1.0]);
 	  GameDebug.add(true,simValues,"simulation des degats du tir");
+	  useChip(CHIP_PROTEIN);
 	  useWeaponOnCell(enemyRound.currentCellId);
 	  currentRound.update();
 	  GameDebug.add(true, oldRound.enemiesRound[0].minLife+"-"+enemyRound.minLife+"="+(oldRound.enemiesRound[0].minLife-enemyRound.minLife), "degat reel par comparaison des rounds")

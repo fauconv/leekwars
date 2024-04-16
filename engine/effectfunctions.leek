@@ -117,6 +117,7 @@ function effect_buff_wisdom(Effect obj, LeekRound shooter, LeekRound target) => 
  * effect_damage
  **/
 function effect_damage(Effect obj, LeekRound shooter, LeekRound target) => Object {
+  GameDebug.add(EFFECT_DEBUG, shooter.minStrength, "minStrength de:"+shooter.id);
   Object targetDmg = obj.targetDmg(shooter.minStrength, shooter.maxStrength, shooter.midStrength);
   GameDebug.add(EFFECT_DEBUG && UNIT_TEST_DEBUG, targetDmg, "targetDmg");
   // TODO: puissance
@@ -313,6 +314,7 @@ function effect_raw_buff_strength(Effect obj, LeekRound shooter, LeekRound targe
   target.minStrength += round(obj.tmpMinEffect);
   target.maxStrength += round(obj.tmpMaxEffect);
   target.midStrength += round(obj.tmpMidEffect);
+  GameDebug.add(EFFECT_DEBUG, target.minStrength, "minStrength de:"+target.id);
   return {minEffect:0,maxEffect:0,midEffect:0};
 }
 

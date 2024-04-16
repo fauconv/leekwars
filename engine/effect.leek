@@ -22,11 +22,11 @@ class Effect extends Objects {
   boolean modNoRep;
   boolean modOnCast;
   boolean modStack;
-  Function<Effect, LeekRound, LeekRound => Object> simulateShotFunction; // function (Effect obj, LeekRound shooter, LeekRound target, real AOE, real midCriticalLuck) => {integer minEffect, integer maxEffect, integer midEffect}
+  Function<Effect, LeekRound, LeekRound => Object> simulateUseFunction; // function (Effect obj, LeekRound shooter, LeekRound target, real AOE, real midCriticalLuck) => {integer minEffect, integer maxEffect, integer midEffect}
   
   Tool owner;
   
-  static Map<integer,Function<Effect, LeekRound, LeekRound => Object>> SIMULATE_SHOT_FUNCTION = [
+  static Map<integer,Function<Effect, LeekRound, LeekRound => Object>> SIMULATE_USE_FUNCTION = [
     EFFECT_ABSOLUTE_SHIELD:effect_absolute_shield,
     EFFECT_ABSOLUTE_VULNERABILITY:effect_absolute_vulnerability,
     EFFECT_ADD_STATE:effect_default, // TODO: effect_add_state
@@ -121,16 +121,17 @@ class Effect extends Objects {
     modNoRep  = (targets & EFFECT_MODIFIER_NOT_REPLACEABLE) > 0;
     modOnCast = (targets & EFFECT_MODIFIER_ON_CASTER) > 0;
     modStack  = (targets & EFFECT_MODIFIER_STACKABLE) > 0;
-    simulateShotFunction = Effect.SIMULATE_SHOT_FUNCTION[type]!;
+    simulateUseFunction = Effect.SIMULATE_USE_FUNCTION[type]!;
   }
   
   /**
-   * simulateShot
-   * TODO : ajouter la puissance pour les battle royal
-   * TODO : ajouter les passif des armes oubliees
+   * simulateUse
+   * TODO: ajouter la puissance pour les battle royal
+   * TODO: ajouter les passif des armes oubliees
+   * TODO: test des damage return
    * @return {integer minEffect, integer maxEffect, integer midEffect}
    **/
-  Object simulateShot(LeekRound shooter, LeekRound target, real AOE, integer nbTargets, real midCriticalLuck, real criticalFactor) {
+  Object simulateUse(LeekRound shooter, LeekRound target, real AOE, integer nbTargets, real midCriticalLuck, real criticalFactor) {
     
     Leek targetLeek = target.leek;
     if((targetLeek.isAllie && !targetAllie) ||
@@ -142,14 +143,14 @@ class Effect extends Objects {
     
     if (modMulti) AOE = AOE*nbTargets;
     
-    GameDebug.add(EFFECT_DEBUG, EFFECT_TYPE_TRANSLATOR[type],"simulate shot effect");
+    GameDebug.add(EFFECT_DEBUG, EFFECT_TYPE_TRANSLATOR[type],"simulate use effect");
 
 	tmpMidCriticalLuck = midCriticalLuck;
 	tmpMinEffect = minEffect*AOE;
 	tmpMaxEffect = maxEffect*AOE*criticalFactor;
 	tmpMidEffect = midEffect*(1.0+CRITICAL_BONUS*midCriticalLuck)*AOE;
 	GameDebug.add(EFFECT_DEBUG, {tmpMinEffect:tmpMinEffect,tmpMaxEffect:tmpMaxEffect,tmpMidEffect:tmpMidEffect,criticalFactor:criticalFactor,midCriticalLuck:midCriticalLuck},"tmp dmg");
-    return simulateShotFunction(this, shooter, target);
+    return simulateUseFunction(this, shooter, target);
   }
 
   /**
@@ -257,8 +258,8 @@ class Effect extends Objects {
    **/
   Object lifeSteal(LeekRound shooter, Object roundedDmg, Object dmgReturn) {
     return {
-      minEffect: max(dmgReturn.minEffect as integer - round(roundedDmg.maxEffect as integer * (shooter.maxWisdom / 1000)), shooter.minLife - shooter.minTotalLife), // le vol de vie ne peut pas ramener plus de vie que la totallife
-      maxEffect: max(dmgReturn.maxEffect as integer - round(roundedDmg.minEffect as integer * (shooter.minWisdom / 1000)), shooter.maxLife - shooter.maxTotalLife),
+      maxEffect: max(dmgReturn.minEffect as integer - round(roundedDmg.maxEffect as integer * (shooter.maxWisdom / 1000)), shooter.minLife - shooter.minTotalLife), // le vol de vie ne peut pas ramener plus de vie que la totallife
+      minEffect: max(dmgReturn.maxEffect as integer - round(roundedDmg.minEffect as integer * (shooter.minWisdom / 1000)), shooter.maxLife - shooter.maxTotalLife),
       midEffect: max(dmgReturn.midEffect as integer - round(roundedDmg.midEffect as integer * (shooter.midWisdom / 1000)), shooter.midLife - shooter.midTotalLife)
     }
   }
