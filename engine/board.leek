@@ -70,7 +70,7 @@ class Board extends Objects {
       for(string direction in STAR_DIRECTION) {
         Object xy = XY_DIRECTION[direction] as Object;
         integer|null cellId = getCellFromXY((objCell.x+xy.x) as integer,(objCell.y+xy.y) as integer);
-        if(cellId) objCell[direction] = cells[cellId as integer];
+        (cellId) and (objCell[direction] = cells[cellId as integer]);
       }
     }
     
@@ -84,7 +84,7 @@ class Board extends Objects {
         if(objCell.isDeadEnd) continue;
         integer deadCount = 0;
         for(string direction in LINE_DIRECTION) {
-          if((!objCell[direction]) || (objCell[direction] as Cell).isDeadEnd) deadCount++;
+          ((!objCell[direction]) || (objCell[direction] as Cell).isDeadEnd) and (deadCount++);
         }
         if(deadCount >= 3) {
           objCell.isDeadEnd = true;
@@ -128,7 +128,7 @@ class Board extends Objects {
       if(!isAlive(id)) {
         mapRemove(leeks,id);
         if(leek.isEnemy) removeElement(enemies,leek);
-        else if(leek.isAllie) removeElement(allies,leek);
+        else (leek.isAllie) and (removeElement(allies,leek));
       }
     }
     currentRound = new Round();

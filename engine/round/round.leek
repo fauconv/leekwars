@@ -17,48 +17,14 @@ class Round extends Objects {
   /**
    * constructor
    **/
-  constructor(Round|null clone = null) {
-    
+  constructor() {
     //
     // cells creations
     //
     for(integer i = 0;i < NB_CELLS; i++) {
       push(cellsRound, new CellRound(Board.cells[i],this));
     }
-    
-	//
-	// clonage
-	//
-	//
-    // clonage
-    // 
-    if(clone != null) {
-      //
-      // add me
-      //
-      meRound = new MeRound(this, clone!.meRound);
-      leeksRound[meRound.id] = meRound;
-
-      //
-      // add enemies
-      //
-      for(EnemyRound enemy in clone!.enemiesRound) {
-        EnemyRound en = new EnemyRound(enemy, this); 
-        push(enemiesRound, en);
-        leeksRound[en.id] = en;
-      }
-
-      //
-      // add allies
-      //
-      for(AllieRound enemy in clone!.alliesRound) {
-        AllieRound en = new AllieRound(enemy, this);
-        push(alliesRound, en);
-        leeksRound[en.id] = en;
-      }
-      
-    } else {
-	
+	 id = getTurn();
       //
       // add me
       //
@@ -83,11 +49,54 @@ class Round extends Objects {
         leeksRound[en.id] = en;
       }
     
+  }
+  /**
+   * constructor
+   * @param clone : le round a cloner
+   **/
+  constructor(Round clone) {
+	  
+    //
+    // cells creations
+    //
+    for(integer i = 0;i < NB_CELLS; i++) {
+      push(cellsRound, new CellRound(Board.cells[i],this));
     }
+    
+	id = clone.id;
+	  
+    //
+    // add me
+    //
+    meRound = new MeRound(this, clone.meRound);
+    leeksRound[meRound.id] = meRound;
+
+    //
+    // add enemies
+    //
+    for(EnemyRound enemy in clone.enemiesRound) {
+      EnemyRound en = new EnemyRound(enemy, this); 
+      push(enemiesRound, en);
+      leeksRound[en.id] = en;
+    }
+
+    //
+    // add allies
+    //
+    for(AllieRound enemy in clone.alliesRound) {
+      AllieRound en = new AllieRound(enemy, this);
+      push(alliesRound, en);
+      leeksRound[en.id] = en;
+    }
+     
   }
   
   /**
    * update
+   * mets a jour le round par rapport au simulation (de deplacement ou de tire)
+   * - met a jour leekOnCell
+   * - met a jour la liste des leek vivant
+   * - met a jour la liste des arme dispo de chaque leek
    **/
   update() {
 	  

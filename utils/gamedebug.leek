@@ -57,7 +57,7 @@ class GameDebug {
           continue;
         }
         str += space2+key+": ";
-        add(true, value, "", depth, limit, start, revers, space2, debugFunction); // ret2 pour bug de compil
+        add(true, value, "", depth, limit, start, revers, debugFunction, space2); // ret2 pour bug de compil
         cnt++;
       }
       str += space+"]";
@@ -104,7 +104,7 @@ class GameDebug {
       depth--;
       for(any value in keys) {
         str += space2+value+": ";
-        add(true, obj[value], "", depth, limit, start, revers, space2, debugFunction);
+        add(true, obj[value], "", depth, limit, start, revers, debugFunction, space2);
       }
       str += space+"}";
     } else {
@@ -117,7 +117,7 @@ class GameDebug {
    *
    * ajoute un element a debugger dans la liste a afficher
    **/
-  static void add(boolean condition, any element, string txt = "", integer depth = 1, Array<integer> limit = [], Array<integer> start = [], Array<boolean> revers = [], string space = "", string debugFunction = "shortString") {
+  static void add(boolean condition, any element, string txt = "", integer depth = 1, Array<integer> limit = [], Array<integer> start = [], Array<boolean> revers = [], string debugFunction = "shortString", string space = "") {
     if(!condition) return;
     if(txt != "") str+= txt +" => ";
     integer type = typeOf(element);
@@ -152,7 +152,7 @@ class GameDebug {
         for(Objects cell in cellsOrCellId as Array<Objects>|Map<any,Objects>) {
           mark(cell.id, color, 1);
         }
-      } else { // attention bug si ce n est pas un integer ce n est pas sense arrive
+      } else { // Attention: bug si ce n est pas un integer ce n est pas sense arrive
         for(integer cell in cellsOrCellId  as Array<integer>|Map<any,integer>) {
           mark(cell, color, 1);
         }

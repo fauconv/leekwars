@@ -1,0 +1,24 @@
+/******************************************************************************
+ * MoveCell
+ ******************************************************************************/
+class MoveCell extends Objects {
+  
+  integer ownerId;
+  Cell cell;
+  Array<Simulation> simulations;
+  Array<integer> MPRemainingBySimulation;
+  integer maxMPRemaining;
+  
+  /**
+   * constructor
+   * Attention: simulations et MPRemainingBySimulation doivent etre de la meme taille
+   **/
+  constructor(Cell cell, integer ownerId, Array<Simulation> simulations, Array<integer> MPRemainingBySimulation, integer maxMPRemaining) {
+    id = cell.id;
+    this.cell = cell;
+    this.ownerId = ownerId;
+	this.simulations = simulations;
+	this.MPRemainingBySimulation = MPRemainingBySimulation;
+  }  
+  
+}

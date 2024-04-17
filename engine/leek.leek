@@ -38,16 +38,16 @@ class Leek extends Objects {
     
     Array<integer> weapons = getWeapons(id)!;
     if(weapons) for(integer weaponId in weapons) {
-    Weapon weapon = new Weapon(weaponId, this);
+      Weapon weapon = new Weapon(weaponId, this);
       categoriseTool(weapon);
       push(this.weapons, weapon);
     }
 
     Array<integer> chips = getChips(id)!;
     if(chips) for(integer chipId in chips) {
-    Chip chip = new Chip(chipId, this);
-    categoriseTool(chip);
-    push(this.chips, chip);
+      Chip chip = new Chip(chipId, this);
+      categoriseTool(chip);
+      push(this.chips, chip);
     }
     
   }
@@ -58,8 +58,7 @@ class Leek extends Objects {
   void categoriseTool(Tool tool) {
     tools[tool.id] = tool;
     for(string category in tool.categories) push(this[category] as Array<Tool>, tool);
-    (tool.categories["categoryDamage"]) and
-      (tool.maxAOERange > maxAOERange) and (maxAOERange = tool.maxAOERange);
+    ((tool.categories["categoryDamage"]) && (tool.maxAOERange > maxAOERange)) and (maxAOERange = tool.maxAOERange);
   }
   
   /**

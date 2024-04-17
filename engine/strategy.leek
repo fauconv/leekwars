@@ -15,9 +15,7 @@ class Strategy extends Objects {
    * apply
    **/
   void apply() {
-    if (gFirstRound) {
-      Talk.text = "Je n'ai pas été codé pour ce format de combat, donc je bouge pas et toc !";
-    }
+    (gFirstRound) and (Talk.text = "Je n'ai pas été codé pour ce format de combat, donc je bouge pas et toc !");
   }
 }
     

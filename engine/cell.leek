@@ -17,7 +17,7 @@ class Cell extends Objects {
   Cell leftBottom;
   Cell rightBottom;
   
-  // Attention NB_CELLS statiques !!!! si NB_CELLS change il faut changer a la main ici
+  // Attention: NB_CELLS statiques !!!! si NB_CELLS change il faut changer a la main ici
   Array<Object> interCellInfo = [
                   {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
                   {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
@@ -665,9 +665,7 @@ class Cell extends Objects {
       incY = -1;
       dy = y-y2;
     }
-    if(x > x2) {
-      incX = -1;
-    }
+    (x > x2) and (incX = -1);
     if(abs(dy) > abs(dx)) {
       real rap = (x2-x)/(y2-y);
       for(integer newY = y+incY; newY != y2; newY=newY+incY) {

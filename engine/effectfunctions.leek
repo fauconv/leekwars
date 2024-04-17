@@ -122,7 +122,7 @@ function effect_damage(Effect obj, LeekRound shooter, LeekRound target) => Objec
   GameDebug.add(EFFECT_DEBUG && UNIT_TEST_DEBUG, targetDmg, "targetDmg");
   // TODO: puissance
   Object dmgReturn;
-  if(target.id != shooter.id) dmgReturn = obj.dmgReturn(target, targetDmg);
+  (target.id != shooter.id) and (dmgReturn = obj.dmgReturn(target, targetDmg));
   GameDebug.add(EFFECT_DEBUG && UNIT_TEST_DEBUG, dmgReturn, "dmgReturn");
   obj.shield(target, targetDmg);
   GameDebug.add(EFFECT_DEBUG && UNIT_TEST_DEBUG, targetDmg, "shield");
@@ -185,7 +185,7 @@ function effect_life_damage(Effect obj, LeekRound shooter, LeekRound target) => 
   }
   // TODO: puissance
   Object dmgReturn;
-  if(target.id != shooter.id) dmgReturn = obj.dmgReturn(target, targetDmg);
+  (target.id != shooter.id) and (dmgReturn = obj.dmgReturn(target, targetDmg));
   obj.shield(target, targetDmg);
   Object roundedDmg = obj.applyDmg(target, targetDmg);
   obj.applyErosion(target, PHYSICAL_EROSION, roundedDmg);

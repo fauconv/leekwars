@@ -129,6 +129,7 @@ class Effect extends Objects {
    * TODO: ajouter la puissance pour les battle royal
    * TODO: ajouter les passif des armes oubliees
    * TODO: test des damage return
+   * le shooter et le target doivent etre du meme round
    * @return {integer minEffect, integer maxEffect, integer midEffect}
    **/
   Object simulateUse(LeekRound shooter, LeekRound target, real AOE, integer nbTargets, real midCriticalLuck, real criticalFactor) {
@@ -141,7 +142,7 @@ class Effect extends Objects {
        (modNoRep && mapContainsKey(target.effects, type)) ||
        (shooter.id == target.id && !targetCaster)) return {minEffect:0,maxEffect:0,midEffect:0};
     
-    if (modMulti) AOE = AOE*nbTargets;
+    (modMulti) and (AOE *= nbTargets);
     
     GameDebug.add(EFFECT_DEBUG, EFFECT_TYPE_TRANSLATOR[type],"simulate use effect");
 
@@ -149,7 +150,6 @@ class Effect extends Objects {
 	tmpMinEffect = minEffect*AOE;
 	tmpMaxEffect = maxEffect*AOE*criticalFactor;
 	tmpMidEffect = midEffect*(1.0+CRITICAL_BONUS*midCriticalLuck)*AOE;
-	GameDebug.add(EFFECT_DEBUG, {tmpMinEffect:tmpMinEffect,tmpMaxEffect:tmpMaxEffect,tmpMidEffect:tmpMidEffect,criticalFactor:criticalFactor,midCriticalLuck:midCriticalLuck},"tmp dmg");
     return simulateUseFunction(this, shooter, target);
   }
 
@@ -184,7 +184,6 @@ class Effect extends Objects {
    * @param targetDmg : {real minEffect, real maxEffect, real midEffect}
    **/
   void shield(LeekRound target, Object targetDmg) {
-	  debug("shield:"+target.maxRelativeShield+"/"+target.maxAbsoluteShield);
     targetDmg.minEffect = max(0.0, (targetDmg.minEffect as real*(1-(target.maxRelativeShield/100))-target.maxAbsoluteShield));
     targetDmg.maxEffect = max(0.0, (targetDmg.maxEffect as real*(1-(target.minRelativeShield/100))-target.minAbsoluteShield));
     targetDmg.midEffect = max(0.0, (targetDmg.midEffect as real*(1-(target.midRelativeShield/100))-target.midAbsoluteShield));

@@ -1,0 +1,57 @@
+include("action");
+
+/******************************************************************************
+ * Simulation
+ * stock l historique des actions qui ont ete faite dans le round associer
+ ******************************************************************************/
+class Simulation extends Objects {
+
+  Array<Action> actions;
+  Round roundObj;
+
+  /**
+   * constructor
+   * @param roundObj_simulation : le round ou la simulation sont clone
+   **/
+  constructor(Round|Simulation roundObj_simulation) {
+	if(roundObj_simulation instanceof Simulation) {
+	  // clonage
+	  roundObj = new Round((roundObj_simulation as Simulation).roundObj);
+	  // Attention: je copie le tableau d action mais pas les actions, a voir par la suite
+	  actions = clone((roundObj_simulation as Simulation).actions,1) as Array<Action>;
+	} else {
+      // cas normal
+      actions = [];
+	  roundObj = new Round(roundObj_simulation as Round);
+	}
+  }
+  
+  /**
+   * ajoute une action de type ToolAction mais ne fait pas le update du round
+   **/
+  Object addToolAction(integer ownerId, integer toolId, integer targetCell) {
+	ToolAction t = new ToolAction(roundObj.leeksRound[ownerId]!.toolsRound[toolId]!, roundObj.cellsRound[targetCell])
+    push(actions, t);
+	return t.simulateUse();
+  }
+  
+  /**
+   * ajoute une action de type MoveAction mais ne fait pas le update du round
+   **/
+  Object addMoveAction(integer ownerId, integer cellId) {
+    MoveAction t = new MoveAction(roundObj.leeksRound[ownerId]!, roundObj.cellsRound[cellId]);
+	push(actions, t);
+    return t.simulateUse();
+  }
+	
+  /**
+   * string
+   **/
+  string string() {
+    string ret = "Solution {\n";
+	for(Action a in actions) {
+	  ret += "  "+a.string()+"\n";
+	}
+	return ret+"}";
+  }
+}

@@ -1,0 +1,136 @@
+include("basicstrategyrules");
+include("movecell");
+
+/****************************************************************************
+ * BasicStrategy
+ ****************************************************************************/
+class BasicStrategy extends Strategy {
+  
+  static Enemy enemy;          
+  static integer enemyId;
+  static MeRound meRound;       // MeRound
+  static EnemyRound enemyRound;    // EnemyRound
+  static Round currentRound;  // Round
+  static Array<Simulation> mySoluces = []; // l id des soluce correspond a l id de l index du tableau comme si c etait une map
+  
+  /**
+   * isValide
+   *
+   * refuse les match avec AOE, en groupe, ou avec bulb
+   **/
+  static boolean isValide() {
+    if(count(Board.enemies) > 1) return false;
+    enemy = Board.enemies[0];
+    enemyId = enemy.id;
+    return isEmpty(enemy.categoryBulb);
+  }
+  
+  /**
+   * apply
+   **/
+  void apply() {
+    currentRound = Board.currentRound;
+    meRound = currentRound.meRound;
+    enemyRound = currentRound.enemiesRound[0];
+    
+	//
+	// first round
+	//
+    if(gFirstRound) {
+      moveTowardCell(meRound.getRelativeCenter().id);
+      meRound.setWeaponRound(meRound.weaponsRound[0]);
+      return;
+    }
+	  
+	//
+	// other rounds
+	//
+	
+	//
+	// phase 1 : on determine les mouvements possibles de mon poireau
+	// phase 1.1 : on determine quel chip utilisable pour se mouvoir
+	//
+	Array<Simulation> myMPToolList = MPConditions(meRound);
+	GameDebug.add(BASIC_STRATEGY_DEBUG, myMPToolList,"",1,[], [], [], "string");
+	  
+	//
+	// phase 1.2 : on calcul chaque mouvement possible et chaque solution implique
+	//
+	Map<integer,MoveCell> myMoveCells = parcour(meRound.currentCell, myMPToolList, meRound.id)
+	if(BASIC_STRATEGY_DEBUG) {
+	  for(MoveCell mc in myMoveCells) {
+	    mark(mc.id,COLOR_YELLOW,1);
+		markText(mc.id,count(mc.simulations),0,1);
+	  }
+    }
+	
+	//
+	// phase 2 : on determine les tire et degat possible
+	//
+	
+	//
+	// phase 3 : on determine les mouvement de retraite
+	//
+	
+	//
+	// phase 4 : on determine les chip de soin et de protection a utiliser
+	//
+	
+	//
+	// phase 5 : on choisi la meilleure soluce
+	//
+	
+  }
+
+	
+  /**
+   * parcour
+   * Attention: on utilise le round de la startCell comme reference pour determiner la position des poireaux
+   * TODO: ajouter la gestion de la chip de saut
+   **/
+  Map<integer,MoveCell> parcour(CellRound startCell, Array<Simulation> simulations, integer leekId) {
+	  
+	integer maxRemainingMP = 0;
+	Array<integer> remainingMPBySimulation = [];
+	for(Simulation sim in simulations) {
+	  integer mp = sim.roundObj.leeksRound[leekId]!.minMP;
+	  (mp > maxRemainingMP) and (maxRemainingMP = mp);
+	  push(remainingMPBySimulation, mp);
+	}
+	Cell voisin;
+	Array<CellRound> referenceBoard = startCell.roundObj.cellsRound;
+		
+    Map<integer,Array<Cell>> reachableCells = [maxRemainingMP:[startCell.cell]] //reachableCells[remainingMP][] = cell
+    Map<integer,MoveCell> flatReachableCells = [startCell.id:new MoveCell(startCell.cell, leekId, simulations, remainingMPBySimulation, maxRemainingMP)]
+    
+    for(integer i = maxRemainingMP; i > 0; i--) {
+      integer futurMP = i-1
+      reachableCells[futurMP] = [];
+	  Array<Simulation> remainingSimulation2 = [];
+	  Array<integer> remainingMPBySimulation2 = [];
+	  for(integer index: integer remainingMP in remainingMPBySimulation) {
+		if(remainingMP > 0) {
+		  push(remainingMPBySimulation2,remainingMP-1);
+		  push(remainingSimulation2, simulations[index]);
+		}
+	  }
+	  remainingMPBySimulation = remainingMPBySimulation2;
+	  simulations = remainingSimulation2;
+      for(Cell cell2 in reachableCells[i]!) {
+        for(string direction in LINE_DIRECTION) {
+          if(!(voisin = cell2[direction] as Cell) || voisin.isWall) continue
+          integer voisinId = voisin.id;
+          LeekRound|null leekvoisin = referenceBoard[voisinId].leekOnCell;
+          if(!mapContainsKey(flatReachableCells, voisinId) && (!leekvoisin || leekvoisin!.id == leekId)) { // dans le cas d un deuxieme appel a parcour il se peut qu on retombe sur la position initial du poireau concerne
+            push(reachableCells[futurMP]!, voisin);
+            flatReachableCells[voisinId] = new MoveCell(voisin, leekId, simulations, remainingMPBySimulation, futurMP);
+		  }
+        }
+      }
+    }
+    return flatReachableCells
+	  
+  }
+  
+}
+

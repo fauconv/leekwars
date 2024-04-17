@@ -3,19 +3,6 @@
  ******************************************************************************/
 class Action extends Objects {
 
-  /**
-   * execute
-   */
-  boolean execute() {
-    return false;
-  }
-	
-  /**
-   * simulate
-   */
-  boolean simulate() {
-    return false;
-  }
 }
 
 /******************************************************************************
@@ -23,30 +10,26 @@ class Action extends Objects {
  ******************************************************************************/
 class MoveAction extends Action {
 
-  MoveCell cellRound;
+  LeekRound owner;
+  CellRound cellRound;
 
   /**
    * constructor
+   * Attention: le owner et le cellRound doivent appartenir au meme round
    **/
-  constructor(integer id, MoveCell cellRound) {
-    this.id = id;
+  constructor(LeekRound owner, CellRound cellRound) {
+	this.owner = owner;
 	this.cellRound = cellRound;
   }
 
   /**
-   * execute
-   */
-  boolean execute() {
-    return false;
+   * simulateUse
+   * TODO: TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+   **/
+  Object simulateUse() {
+    return {};
   }
-	
-  /**
-   * simulate
-   */
-  boolean simulate() {
-    return false;
-  }
-  
+
   /**
    * string
    **/
@@ -54,7 +37,7 @@ class MoveAction extends Action {
     return shortString();
   }
   string shortString() {
-    return this.class.name+" #"+id+"(cell:"+cellRound.id+")";
+    return this.class.name+": "+owner.leek.name+"+ move to "+cellRound.id;
   }
 }
 
@@ -64,29 +47,25 @@ class MoveAction extends Action {
 class ToolAction extends Action {
 
   ToolRound toolRound;
+  CellRound targetCell;
 
   /**
    * constructor
+   * Attention: le toolRound et le targetCell doivent appartenir au meme round
    **/
-  constructor(integer id, ToolRound toolRound) {
+  constructor(ToolRound toolRound, CellRound targetCell) {
     this.id = id;
 	this.toolRound = toolRound;
+	this.targetCell = targetCell;
   }
 
   /**
-   * execute
-   */
-  boolean execute() {
-    return false;
+   * simulateUse
+   **/
+  Object simulateUse() {
+    return toolRound.simulateUseOnCell(targetCell);
   }
 	
-  /**
-   * simulate
-   */
-  boolean simulate() {
-    return false;
-  }
-
   /**
    * string
    **/
@@ -94,7 +73,7 @@ class ToolAction extends Action {
     return shortString();
   }
   string shortString() {
-    return this.class.name+" #"+id+"("+TOOL_NAME_TRANSLATOR[toolRound.id]!+")";
+    return this.class.name+": "+toolRound.owner.leek.name+" use "+TOOL_NAME_TRANSLATOR[toolRound.id]!+" on "+targetCell.id;
   }
 
 }

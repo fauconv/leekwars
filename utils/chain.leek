@@ -15,9 +15,9 @@ class Chain {
    **/
   constructor(Array<any>|null fromArray) {
     if(fromArray != null) {
-      for(any elem in fromArray) {
+      for(any elem in fromArray!) {
         current = new ChainElement(last,elem,null);
-        if(last != null) last.next = current;
+        if(last != null) last!.next = current;
         else first = current;
         last = current;
       }
@@ -42,7 +42,7 @@ class Chain {
    * O(1)
    **/
   any getFirst() {
-    if(first != null) return first.element;
+    if(first != null) return first!.element;
     return null;
   }
   /**
@@ -50,7 +50,7 @@ class Chain {
    * O(1)
    **/
   any getLast() {
-    if(last != null) return last.element;
+    if(last != null) return last!.element;
     return null;
   }
   /**
@@ -58,7 +58,7 @@ class Chain {
    * O(1)
    **/
   any getNext() {
-    if(current != null && current.next != null) return current.next.element;
+    if(current != null && current!.next != null) return current!.next!.element;
     return null;
   }
   /**
@@ -66,7 +66,7 @@ class Chain {
    * O(1)
    **/
   any getPrevious() {
-    if(current != null && current.previous != null) return current.previous.element;
+    if(current != null && current!.previous != null) return current!.previous!.element;
     return null;
   }
   /**
@@ -74,7 +74,7 @@ class Chain {
    * O(1)
    **/
   any current() {
-    if(current != null) return current.element;
+    if(current != null) return current!.element;
     return null;
   }
   /**
@@ -82,7 +82,7 @@ class Chain {
    **/
   any first() {
     current = first;
-    if(current != null) return current.element;
+    if(current != null) return current!.element;
     return null;
   }
   /**
@@ -91,7 +91,7 @@ class Chain {
    **/
   any last() {
     current = last;
-    if(current != null) return current.element;
+    if(current != null) return current!.element;
     return null;
   }
   /**
@@ -101,9 +101,9 @@ class Chain {
    * O(1)
    **/
   any next() {
-    if(current != null && current.next != null) {
-      current = current.next;
-      return current.element;
+    if(current != null && current!.next != null) {
+      current = current!.next;
+      return current!.element;
     }
     return null;
   }
@@ -114,9 +114,9 @@ class Chain {
    * O(1)
    **/
   any previous() {
-    if(current != null && current.previous != null) {
-      current = current.previous;
-      return current.element;
+    if(current != null && current!.previous != null) {
+      current = current!.previous;
+      return current!.element;
     }
     return null;
   }
@@ -129,10 +129,10 @@ class Chain {
   any forward(integer count) {
     if(current == null) return null;
     for(integer i = 0; i < count; i++) {
-      if(current.next != null) current = current.next;
+      if(current!.next != null) current = current!.next;
       else break;
     }
-    return current.element;
+    return current!.element;
   }
   /**
    * backward
@@ -143,10 +143,10 @@ class Chain {
   any backward(integer count) {
     if(current == null) return null;
     for(integer i = 0; i < count; i++) {
-      if(current.previous != null) current = current.previous;
+      if(current!.previous != null) current = current!.previous;
       else break;
     }
-    return current.element;
+    return current!.element;
   }
   /**
    * getElement
@@ -161,18 +161,18 @@ class Chain {
       cursor = last;
       integer XX = size-X-1;
       for(integer i = 0; i < XX; i++) {
-        if(cursor.previous != null) cursor = cursor.previous;
+        if(cursor!.previous != null) cursor = cursor!.previous;
         else break;
       }
     } else {
       cursor = first;
       for(integer i = 0; i < X; i++) {
-        if(cursor.next != null) cursor = cursor.next;
+        if(cursor!.next != null) cursor = cursor!.next;
         else break;
       }
     }
     if(setCursor) current = cursor;
-    return cursor.element;
+    return cursor!.element;
   }
   /**
    * isEmpty
@@ -193,14 +193,14 @@ class Chain {
    * O(1)
    **/
   boolean isFirst() {
-    return (current == null || current.previous == null);
+    return (current == null || current!.previous == null);
   }
   /**
    * isLast
    * O(1)
    **/
   boolean isLast() {
-    return (current == null || current.next == null);
+    return (current == null || current!.next == null);
   }
   /**
    * push
@@ -208,7 +208,7 @@ class Chain {
    **/
   void push(any element) {
     current = new ChainElement(last,element,null);
-    if(last != null) last.next = current;
+    if(last != null) last!.next = current;
     last = current;
     size++;
   }
@@ -218,7 +218,7 @@ class Chain {
    **/
   void unshift(any element) {
     current = new ChainElement(null,element,first);
-    if(first != null) first.previous = current;
+    if(first != null) first!.previous = current;
     first = current;
     size++;
   }
@@ -229,9 +229,9 @@ class Chain {
    **/
   void insert(any element) {
     if(current != null) {
-      current = new ChainElement(current.previous,element,current);
-      current.next.previous = current;
-      if(current.previous != null) current.previous.next = current;
+      current = new ChainElement(current!.previous,element,current);
+      current!.next!.previous = current;
+      if(current!.previous != null) current!.previous!.next = current;
     } else {
       current  = new ChainElement(null,element,null);
       first = last = current;
@@ -245,9 +245,9 @@ class Chain {
    **/
   void insertAfter(any element) {
     if(current != null) {
-      current  = new ChainElement(current,element,current.next);
-      if(current.next != null) current.next.previous = current;
-      current.previous.next = current;
+      current  = new ChainElement(current,element,current!.next);
+      if(current!.next != null) current!.next!.previous = current;
+      current!.previous!.next = current;
     } else {
       current  = new ChainElement(null,element,null);
       first = last = current;
@@ -260,13 +260,13 @@ class Chain {
    **/
   any pop() {
     if(last != null) {
-      any elem = last.element;
-      if(last.previous == null) {
+      any elem = last!.element;
+      if(last!.previous == null) {
         first = current = last = null;
         size = 0;
       } else {
-        last = current = last.previous;
-        current.next = null;
+        last = current = last!.previous;
+        current!.next = null;
         size--;
       }
       return elem;
@@ -279,13 +279,13 @@ class Chain {
    **/
   any shift() {
     if(first != null) {
-      any elem = first.element;
-      if(first.next == null) {
+      any elem = first!.element;
+      if(first!.next == null) {
         first = current = last = null;
         size = 0;
       } else {
-        first = current = first.next;
-        current.previous = null;
+        first = current = first!.next;
+        current!.previous = null;
         size--;
       }
       return elem;
@@ -298,25 +298,25 @@ class Chain {
    **/
   any remove() {
     if(current != null) {
-      any elem = current.element;
-      if(current.next == null) {
-        if(current.previous == null) {
+      any elem = current!.element;
+      if(current!.next == null) {
+        if(current!.previous == null) {
           first = current = last = null;
           size = 0;
         } else {
-          current = current.previous;
-          current.next = null;
+          current = current!.previous;
+          current!.next = null;
           size--;
         }
       } else {
-        if(current.previous == null) {
-          current = current.next;
-          current.previous = null;
+        if(current!.previous == null) {
+          current = current!.next;
+          current!.previous = null;
           size--;
         } else {
-          current = current.next;
-          current.previous = current.previous.previous;
-          current.previous.next = current;
+          current = current!.next;
+          current!.previous = current!.previous!.previous;
+          current!.previous!.next = current;
           size--;
         }
       }
@@ -332,8 +332,8 @@ class Chain {
     Array<any> ret = [];
     ChainElement|null cursor = first;
     while(cursor != null) {
-      push(ret, cursor.element);
-      cursor = cursor.next;
+      push(ret, cursor!.element);
+      cursor = cursor!.next;
     }
     return ret;
   }
@@ -343,8 +343,8 @@ class Chain {
    * O(1)
    **/
   void concat(Chain chain) {
-    last.next = chain.first;
-    chain.first.previous = last;
+    last!.next = chain.first;
+    chain.first!.previous = last;
     last = chain.last;
     size += chain.size;
     chain.first = null;

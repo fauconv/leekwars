@@ -82,14 +82,15 @@ class LeekRound extends Objects {
    **/
   constructor(Leek|LeekRound leek, Round roundObj) {
   
+	id = leek.id;
+    this.roundObj = roundObj;
+	
     if(leek.class.super.name == "LeekRound") {
 	  
 	  //
       // clonage
       //
-      id = leek.id;
       this.leek = (leek as LeekRound).leek;
-      this.roundObj = roundObj;
       
       minTP = (leek as LeekRound).minTP
       maxTP = (leek as LeekRound).maxTP
@@ -162,9 +163,7 @@ class LeekRound extends Objects {
 	  //
 	  // cas normal
 	  //
-      id = leek.id; 
       this.leek = leek as Leek;
-      this.roundObj = roundObj;
 
       minTP = maxTP = midTP = getTP(id)!;
       maxTotalLife = minTotalLife = midTotalLife = getTotalLife(id)!;
@@ -274,6 +273,7 @@ class LeekRound extends Objects {
   
   /**
    * simulateSetWeaponRound
+   * Attention: le weaponround doit etre du meme round que le leekround
    **/
   simulateSetWeaponRound(WeaponRound weapon) {
     minTP--;
@@ -352,7 +352,7 @@ class MeRound extends LeekRound {
    **/
   CellRound getRelativeCenter() {
     if(relativeCenterCellRound != null) return relativeCenterCellRound!;
-    if(!Board.centerCell.isDeadEnd) pathToCenter = getPath(currentCellId, CENTER_CELL_ID)
+    (!Board.centerCell.isDeadEnd) and (pathToCenter = getPath(currentCellId, CENTER_CELL_ID));
     if (pathToCenter) {
       relativeCenterCellId    = CENTER_CELL_ID;
       relativeCenterCell      = Board.cells[relativeCenterCellId];
@@ -383,6 +383,7 @@ class MeRound extends LeekRound {
   
   /**
    * setWeaponRound
+   * Attention: le weaponround doit etre du meme round que le leekround
    **/
   boolean setWeaponRound(WeaponRound weapon) {
     if(setWeapon(weapon.id)) {

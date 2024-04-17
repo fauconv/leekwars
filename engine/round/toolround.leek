@@ -25,9 +25,24 @@ class ToolRound extends Objects {
       cooldown = tool.cooldown;
     }
   }
+  
+  /**
+   * simulateUseOnCell
+   * TODO: TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+   * Pour le moment ne fonctionne qu en tire direct sur un target
+   * calcul de l AOE via parcour pour determiner la liste des target atteinte 
+   * on peut peut etre utiliser getWeaponTargets et getChipTarget et calculer l AOE de chaque target apres ?
+   * Attention: le cellRound doit etre du meme round que le toolround
+   **/
+  Object simulateUseOnCell(CellRound cellRound) {
+	debug("simulateUseOnCell: TODOOOOOOOOOO");
+	if(cellRound.leekOnCell != null) return simulateUse([cellRound.leekOnCell!]);
+	else return {minEffect:0,maxEffect:0,midEffect:0};
+  }
 
   /**
    * simulateUse
+   * Attention: le round des targets doit etre le meme que le round du tool
    * @return {integer minEffect, integer maxEffect, integer midEffect}
    **/
   Object simulateUse(Array<LeekRound> targets = [this.owner], Array<real> AOEs = [1.0]) {
@@ -39,11 +54,12 @@ class ToolRound extends Objects {
     Object delta = {minEffect:0,maxEffect:0,midEffect:0};
     real midCriticalLuck = owner.midAgility/1000.0;
 	real criticalFactor = CRITICAL_FACTOR;
-	if(owner.maxAgility <= 0) criticalFactor = 1.0;
+	(owner.maxAgility <= 0) and (criticalFactor = 1.0);
     for(Effect effect in tool.effects) {
       if(effect.modOnCast) {
 		GameDebug.add(EFFECT_DEBUG,"apply on caster only:");
         Object delta2 = effect.simulateUse(owner, owner, 1.0, 1, midCriticalLuck, criticalFactor)
+		GameDebug.add(EFFECT_DEBUG, delta2,"effect dmg");
         delta.minEffect += delta2.minEffect;
         delta.maxEffect += delta2.maxEffect;
         delta.midEffect += delta2.midEffect;
@@ -51,6 +67,7 @@ class ToolRound extends Objects {
 		integer nbTargets = count(targets);
         for(integer i : LeekRound target in targets) {
           Object delta2 = effect.simulateUse(owner, target, AOEs[i], nbTargets, midCriticalLuck, criticalFactor)
+		  GameDebug.add(EFFECT_DEBUG, delta2,"effect dmg");
           delta.minEffect += delta2.minEffect;
           delta.maxEffect += delta2.maxEffect;
           delta.midEffect += delta2.midEffect;
