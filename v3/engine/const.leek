@@ -1,5 +1,3 @@
-include("strategy");
-
 /******************************************************
  * globals
  *******************************************************/
@@ -25,6 +23,8 @@ global real CRITICAL_BONUS      = CRITICAL_FACTOR - 1;
 global real PHYSICAL_EROSION    = 0.05;
 global real POISON_EROSION      = 0.1;
 global real CRITICAL_EROSION    = 0.1;
+global real AOE_DEC_LINE_FACTOR = 0.2;
+global real AOE_DEC_DIAG_FACTOR = 0.4;
 
 //
 // colors

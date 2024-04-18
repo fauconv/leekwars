@@ -1,9 +1,9 @@
-include("objects");
+include("chain");
 
 /*****************************************************************************
  * GameDebug
  *****************************************************************************/
-class GameDebug {
+class GameDebug extends Objects {
   
   static string str = "\n";
   static integer opt = 0;

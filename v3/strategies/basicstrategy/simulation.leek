@@ -27,12 +27,12 @@ class Simulation extends Objects {
   }
   
   /**
-   * ajoute une action de type ToolAction mais ne fait pas le update du round
+   * ajoute une action de type ToolAction et l execute dans le round mais ne fait pas le update du round
    **/
   Object addToolAction(integer ownerId, integer toolId, integer targetCell) {
 	ToolAction t = new ToolAction(roundObj.leeksRound[ownerId]!.toolsRound[toolId]!, roundObj.cellsRound[targetCell])
     push(actions, t);
-	return t.simulateUse();
+	return t.simulate();
   }
   
   /**
@@ -41,14 +41,14 @@ class Simulation extends Objects {
   Object addMoveAction(integer ownerId, integer cellId) {
     MoveAction t = new MoveAction(roundObj.leeksRound[ownerId]!, roundObj.cellsRound[cellId]);
 	push(actions, t);
-    return t.simulateUse();
+    return t.simulate();
   }
-	
+
   /**
    * string
    **/
   string string() {
-    string ret = "Solution {\n";
+    string ret = "Simulation {\n";
 	for(Action a in actions) {
 	  ret += "  "+a.string()+"\n";
 	}

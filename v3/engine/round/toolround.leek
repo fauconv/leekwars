@@ -1,4 +1,3 @@
-include("cellround");
 /******************************************************************************
  * ToolRound
  *
@@ -8,7 +7,7 @@ class ToolRound extends Objects {
   
   Tool tool;
   integer cooldown; 
-  
+  Round roundObj;
   LeekRound owner;
   
   /**
@@ -16,6 +15,7 @@ class ToolRound extends Objects {
    **/
   constructor(Tool|ToolRound tool, LeekRound owner) {
 	this.owner = owner;
+	roundObj = owner.roundObj;
     id = tool.id;
     if(tool.class.super.name == "Tool") {
       this.tool = tool as Tool;
@@ -34,9 +34,9 @@ class ToolRound extends Objects {
    * on peut peut etre utiliser getWeaponTargets et getChipTarget et calculer l AOE de chaque target apres ?
    * Attention: le cellRound doit etre du meme round que le toolround
    **/
-  Object simulateUseOnCell(CellRound cellRound) {
-	debug("simulateUseOnCell: TODOOOOOOOOOO");
-	if(cellRound.leekOnCell != null) return simulateUse([cellRound.leekOnCell!]);
+  Object simulateUseOnCell(integer cellId) {
+	debug("ToolRound=>simulateUseOnCell=> TODOOOOOOOOOOOOOOOOOOOOOO");
+	if(roundObj.cellsRound[cellId].leekOnCell != null) return simulateUse([roundObj.cellsRound[cellId].leekOnCell!.id]);
 	else return {minEffect:0,maxEffect:0,midEffect:0};
   }
 
@@ -45,7 +45,7 @@ class ToolRound extends Objects {
    * Attention: le round des targets doit etre le meme que le round du tool
    * @return {integer minEffect, integer maxEffect, integer midEffect}
    **/
-  Object simulateUse(Array<LeekRound> targets = [this.owner], Array<real> AOEs = [1.0]) {
+  Object simulateUse(Array<Integer> targets = [this.owner.id], Array<real> AOEs = [1.0]) {
     integer cost = tool.cost;
     owner.minTP -= cost;
     owner.maxTP -= cost;
@@ -65,7 +65,8 @@ class ToolRound extends Objects {
         delta.midEffect += delta2.midEffect;
       } else {
 		integer nbTargets = count(targets);
-        for(integer i : LeekRound target in targets) {
+        for(integer i : integer targetId in targets) {
+		  LeekRound target = roundObj.leeksRound[targetId]!;
           Object delta2 = effect.simulateUse(owner, target, AOEs[i], nbTargets, midCriticalLuck, criticalFactor)
 		  GameDebug.add(EFFECT_DEBUG, delta2,"effect dmg");
           delta.minEffect += delta2.minEffect;

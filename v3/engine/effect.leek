@@ -1,5 +1,3 @@
-include("effectfunctions");
-
 /******************************************************************************
  * Effect
  * [0:type, 1:min, 2:max, 3:turns, 4:targets, 5:modifiers]
@@ -144,7 +142,7 @@ class Effect extends Objects {
     
     (modMulti) and (AOE *= nbTargets);
     
-    GameDebug.add(EFFECT_DEBUG, EFFECT_TYPE_TRANSLATOR[type],"simulate use effect");
+    GameDebug.add(EFFECT_DEBUG, EFFECT_TYPE_TRANSLATOR[type]+" on "+target.leek.name+"(AOE:"+AOE+")","simulate use effect");
 
 	tmpMidCriticalLuck = midCriticalLuck;
 	tmpMinEffect = minEffect*AOE;

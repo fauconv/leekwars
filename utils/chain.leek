@@ -1,7 +1,9 @@
+include("objects");
+
 /****************************************************************************
  * Chain
  ****************************************************************************/
-class Chain {
+class Chain extends Objects {
   
   private ChainElement|null first = null;
   private ChainElement|null current = null;
@@ -368,7 +370,7 @@ class Chain {
 /****************************************************************************
  * ChainElement
  ****************************************************************************/
-class ChainElement {
+class ChainElement extends Objects {
   
   ChainElement|null previous;
   any element;

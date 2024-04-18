@@ -1,0 +1,112 @@
+include("../v3/utils/functions");
+integer opts, opts2;
+opts = getOperations();
+
+/*
+opts2 = getOperations();
+debug((opts2 - opts - 2) + " add obj");
+opts = getOperations();
+*/
+
+// creation :
+var obj = { };     // 1 op
+var array = [];    // 1 op
+var map = [:];     // 1 op
+var set = <>;      // 1 op
+var interval  = [0..1]; // 3 ops
+var interval2 = [0..5]; // 3 ops
+
+
+
+
+// ajout d'un element a la fin :
+obj[1] = 4;     // 3 ops (on ne peut pas creer de propriete numerique dans un objet)
+obj.deux = 4;
+debug(obj);
+push(array,4);  // 2 ops
+map["un"] = 4;  // 4 ops
+map[1] = 4;     // 4 ops (les maps acceptent un index string ou numerique)
+setPut(set, 4); // 3 ops
+interval = intervalCombine(interval, interval2); // 4 ops
+
+// ajout d'un element au milieu :
+                     // impossible pour les objets
+insert(array, 5, 0); // O(n) ops
+                     // impossible pour les maps
+                     // impossible avec un set
+                     // impossible avec un interval
+
+// modification d'un element :
+obj.un = 1;     // 2 ops
+array[0] = 1;   // 2 ops
+map["un"] = 1;  // 4 ops
+                // impossible avec un set
+                // impossible avec un interval
+
+// suppression d'un element :
+                     // impossible pour les objets
+remove(array,0)      // O(n) ops
+push(array,4);  // 2 ops
+push(array,4);  // 2 ops
+push(array,4);  // 2 ops
+var c = count(array) - 1;
+remove(array,c)      // 1 op , suppression en fin de tableau
+mapRemove(map, "un") // 2 ops
+setRemove(set, 4)    // 2 ops
+                     // impossible avec un interval
+
+// acces a un element
+obj.un                // 1 op
+array[0]              // 1 op
+arrayGet(array, 0, 0) // 1 ops (tres interessant puisqu il combine acces + un if)
+map["un"]             // 2 ops
+mapGet(map, "un", 0)  // 2 ops (tres interessant puisqu il combine acces + un if)
+setContains(set, 3)   // 2 ops
+// intervalContains(interval,3) // non code
+
+// count
+opts2 = getOperations();
+debug((opts2 - opts - 2) + "");
+opts = getOperations();
+objectSize(obj);        // 3 ops
+opts2 = getOperations();
+debug((opts2 - opts - 2) + " add obj");
+opts = getOperations();
+count(array)             // 1 op
+opts2 = getOperations();
+debug((opts2 - opts - 2) + " add arr");
+opts = getOperations();
+mapSize(map)             // 1 op
+opts2 = getOperations();
+debug((opts2 - opts - 2) + " add map");
+opts = getOperations();
+setSize(set)             // 1 op
+opts2 = getOperations();
+debug((opts2 - opts - 2) + " add set");
+opts = getOperations();
+intervalSize(interval)   // 1 op
+opts2 = getOperations();
+debug((opts2 - opts - 2) + " add int");
+opts = getOperations();
+
+// ordonnancement :
+var obj3 = {z:1 , a:2, e:3};
+var array3 = [1 , 2, 3];
+var map3 = ["z":1 , "a":2, "e":3];
+var set3 = <6,3,"mot">;
+var interval3 = [1..4];
+debug(obj3);   // {z: 1, a: 2, e: 3} -> ordre concerve
+debug(array3); // [1 , 2, 3]; -> ordre concerve
+debug(map3);   // ["a":2 , "e":3, "z":1] -> ordre perdu
+debug(set3);   // <3, "mot,6> -> ordre perdu
+debug(interval3); // [1..4] -> ordre conserve
+
+// modification d'un element indexe par une variable :
+var maVar = 0;
+obj[maVar] = 2    // fonctionne en creation et en modification
+array[maVar] = 2  // si maVar contient un numero d'index existant
+map[maVar] = 2    // fonctionne en creation et en modification
+                  // impossible avec un set
+                  // impossible avec une interval
+
+pause();

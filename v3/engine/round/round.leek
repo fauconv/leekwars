@@ -1,5 +1,3 @@
-include("leekround");
-
 /******************************************************************************
  * Round
  ******************************************************************************/
@@ -18,36 +16,39 @@ class Round extends Objects {
    * constructor
    **/
   constructor() {
+	  
     //
     // cells creations
     //
     for(integer i = 0;i < NB_CELLS; i++) {
       push(cellsRound, new CellRound(Board.cells[i],this));
     }
-	 id = getTurn();
-      //
-      // add me
-      //
-      meRound = new MeRound(this);
-      leeksRound[meRound.id] = meRound;
+	 
+	id = getTurn();
+	 
+    //
+    // add me
+    //
+    meRound = new MeRound(this);
+    leeksRound[meRound.id] = meRound;
 
-      //
-      // add enemies
-      //
-      for(Leek enemy in Board.enemies) {
-        EnemyRound en = new EnemyRound(enemy, this);
-        push(enemiesRound, en);
-        leeksRound[en.id] = en;
-      }
+    //
+    // add enemies
+    //
+    for(Leek enemy in Board.enemies) {
+      EnemyRound en = new EnemyRound(enemy, this);
+      push(enemiesRound, en);
+      leeksRound[en.id] = en;
+    }
 
-      //
-      // add allies
-      //
-      for(Leek enemy in Board.allies) {
-        AllieRound en = new AllieRound(enemy, this);
-        push(alliesRound, en);
-        leeksRound[en.id] = en;
-      }
+    //
+    // add allies
+    //
+    for(Leek enemy in Board.allies) {
+      AllieRound en = new AllieRound(enemy, this);
+      push(alliesRound, en);
+      leeksRound[en.id] = en;
+    }
     
   }
   /**
@@ -97,25 +98,20 @@ class Round extends Objects {
    * - met a jour leekOnCell
    * - met a jour la liste des leek vivant
    * - met a jour la liste des arme dispo de chaque leek
+   * - met a jour les valeurs caracteristique des leek
+   * @param full : si false ne met pas  a jour la liste des caracteristique des leek
+   *               - true s utilise pour mettre a jour le round courant a mesure que l on fait des actions
+   *               - false s utilise quand on simule des actions car les caracteristiques des poireau son calcule par simulation
    **/
-  update() {
-	  
-	//
-    // cells update
-    //
-    for(integer i = 0;i < NB_CELLS; i++) {
-      cellsRound[i].leekOnCell = null;
-    }
-	
+  update(boolean full = true) {
 	for(integer id : LeekRound leek in leeksRound) {
       if(!isAlive(id)) {
         mapRemove(leeksRound,id);
         if(leek.leek.isEnemy) removeElement(enemiesRound,leek);
         else if(leek.leek.isAllie) removeElement(alliesRound,leek);
       } else {
-	    leek.update();
+	    leek.update(full);
 	  }  
     }
-
   }
 }

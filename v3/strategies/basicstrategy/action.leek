@@ -26,7 +26,8 @@ class MoveAction extends Action {
    * simulateUse
    * TODO: TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
    **/
-  Object simulateUse() {
+  Object simulate() {
+	debug("MoveAction=>simulate=> TODOOOOOOOOOOOOOOOOOOOOOO");
     return {};
   }
 
@@ -62,8 +63,8 @@ class ToolAction extends Action {
   /**
    * simulateUse
    **/
-  Object simulateUse() {
-    return toolRound.simulateUseOnCell(targetCell);
+  Object simulate() {
+    return toolRound.simulateUseOnCell(targetCell.id);
   }
 	
   /**
