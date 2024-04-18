@@ -3,7 +3,7 @@
  **************************************************************************/
 global boolean EFFECT_DEBUG = false;
 global boolean BASIC_STRATEGY_DEBUG = true;
-global boolean UNIT_TEST_DEBUG = true;
+global boolean UNIT_TEST_DEBUG = false;
 include("../utils/gamedebug");
 //include("../utils/gamenodebug");
 
