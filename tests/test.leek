@@ -1,5 +1,10 @@
-var obj = { };
 
-obj.deux = 2;
-debug(obj);
+if(getTurn() == 1) setWeapon(WEAPON_BAZOOKA)
+moveTowardCell(220);
+if(canUseWeaponOnCell(395)) {
+	debug("oui");
+	useWeaponOnCell(395);
+} else {
+	debug("non");
+}
 pause();

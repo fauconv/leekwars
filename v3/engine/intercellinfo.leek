@@ -1,0 +1,34 @@
+/**
+ * InterCellInfo
+ **/
+class InterCellInfo extends Objects {
+  integer range;
+  boolean isInline;
+  boolean isDiag;
+  boolean isInsight;
+  Array<integer> interCells;
+
+  /**
+   * constructor
+   **/
+  constructor() {
+    range = END_RANGE;
+	isInline = false;
+	isDiag = false;
+	isInsight = false;
+	interCells = [];
+  }
+  constructor(Cell cellFrom, Cell cellTo, integer range) {																						  ;
+    this.range = range;
+	this.isInline = (cellFrom.x == cellTo.x || cellFrom.y == cellTo.y);
+	this.isDiag = (abs(cellFrom.x-cellTo.x) == abs(cellFrom.y-cellTo.y));
+    interCells = cellFrom.getTrajectory(cellTo);
+	isInsight = true;
+    for(integer cell in interCells) {
+	  if(Board.cells[cell].isWall) {
+	    isInsight = false; // lineOfSight ne marche pas car il prend les poireau comme des mur donc on doit tester nous meme
+		break;
+	  }
+	}
+  }
+}

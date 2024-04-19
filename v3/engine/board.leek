@@ -8,7 +8,8 @@ class Board extends Objects {
   static integer maxAOERange;
   static Me me;       
   static Round currentRound;
-  static Cell centerCell; 
+  static Cell centerCell;
+  static integer oldX = 1; // pour le cas ou on doit repprendre l initialisation au tour 2 si elle est trop longue
   
   static Array<Enemy> enemies = []; 
   static Array<Allie> allies  = [];
@@ -19,101 +20,93 @@ class Board extends Objects {
   /**
    * constructor
    **/
-  static void init() {
+  static boolean init() {
     
-    //
-    // add me
-    //
-    me    = new Me();
-    myId  = me.id;
-    leeks = [myId:me];
-    maxAOERange = me.maxAOERange;
+	if(gFirstRound) {
+	
+      //
+      // add me
+      //
+      me    = new Me();
+      myId  = me.id;
+      leeks = [myId:me];
+      maxAOERange = me.maxAOERange;
     
-    //
-    // add enemies
-    //
-    Array<integer> ens = getEnemies();
-    for(integer en in ens) {
-      Enemy leek = new Enemy(en); 
-      leeks[en] = leek;
-      push(enemies, leek);
-      if(leek.maxAOERange > maxAOERange) { 
-        maxAOERange = leek.maxAOERange;
+      //
+      // add enemies
+      //
+      Array<integer> ens = getEnemies();
+      for(integer en in ens) {
+        Enemy leek = new Enemy(en); 
+        leeks[en] = leek;
+        push(enemies, leek);
+        if(leek.maxAOERange > maxAOERange) { 
+          maxAOERange = leek.maxAOERange;
+        }
       }
-    }
     
-    //
-    // add allies
-    //
-    ens = getAllies();
-    for(integer en in ens) {
-      if(en != myId) {
-        leeks[en] = new Allie(en);
-        push(allies, leeks[en]);
+      //
+      // add allies
+      //
+      ens = getAllies();
+      for(integer en in ens) {
+        if(en != myId) {
+          leeks[en] = new Allie(en);
+          push(allies, leeks[en]);
+        }
       }
-    }
     
-    //
-    // cells creations
-    //
-    for(integer i = 0;i < NB_CELLS; i++) {
-      push(cells, (getCellContent(i) == CELL_OBSTACLE)?new Wall(i):new FreeCell(i));
-    }
-    centerCell = cells[CENTER_CELL_ID];
-    
-    //
-    // voisin creations
-    //
-    for(Cell objCell in cells) {
-      for(string direction in STAR_DIRECTION) {
-        Object xy = XY_DIRECTION[direction] as Object;
-        integer|null cellId = getCellFromXY((objCell.x+xy.x) as integer,(objCell.y+xy.y) as integer);
-        (cellId) and (objCell[direction] = cells[cellId as integer]);
+      //
+      // cells creations
+      //
+	  InterCellInfo interCellNull = new InterCellInfo();
+      for(integer i = 0;i < NB_CELLS; i++) {
+        push(cells, (getCellContent(i) == CELL_OBSTACLE)?new Wall(i, interCellNull):new FreeCell(i, interCellNull));
       }
-    }
+      centerCell = cells[CENTER_CELL_ID];
     
-    //
-    // deadend
-    //
-    boolean deadEndLoop = true;
-    while(deadEndLoop) {
-      deadEndLoop = false;
+      //
+      // voisin creations
+      //
       for(Cell objCell in cells) {
-        if(objCell.isDeadEnd) continue;
-        integer deadCount = 0;
-        for(string direction in LINE_DIRECTION) {
-          ((!objCell[direction]) || (objCell[direction] as Cell).isDeadEnd) and (deadCount++);
-        }
-        if(deadCount >= 3) {
-          objCell.isDeadEnd = true;
-          deadEndLoop = true;
-          push(deadEnds, objCell);
+        for(string direction in STAR_DIRECTION) {
+          Object xy = XY_DIRECTION[direction] as Object;
+          integer|null cellId = getCellFromXY((objCell.x+xy.x) as integer,(objCell.y+xy.y) as integer);
+          (cellId) and (objCell[direction] = cells[cellId as integer]);
         }
       }
-    }
     
-    //
-    // define los, distance, diag and line
-    //
-    for(integer x = 1; x < NB_CELLS; x++) {
-      Cell cellFrom = cells[x];
-      if(cellFrom.isWall) continue;
-      for(integer y = 0; y < x; y++) {
-        Cell cellTo = cells[y];
-        if(cellTo.isWall) continue;
-        integer range = getCellDistance(x, y);
-        if(range > MAX_RANGE) continue;
-        cellFrom.interCellInfo[cellTo.id] = cellTo.interCellInfo[cellFrom.id] = 
-          {range:range, isInsight:lineOfSight(x, y), isInline:(cellFrom.x == cellTo.x || cellFrom.y == cellTo.y), isDiag:(abs(cellFrom.x-cellTo.x) == abs(cellFrom.y-cellTo.y))};
+      //
+      // deadend
+      //
+      boolean deadEndLoop = true;
+      while(deadEndLoop) {
+        deadEndLoop = false;
+        for(Cell objCell in cells) {
+          if(objCell.isDeadEnd) continue;
+          integer deadCount = 0;
+          for(string direction in LINE_DIRECTION) {
+            ((!objCell[direction]) || (objCell[direction] as Cell).isDeadEnd) and (deadCount++);
+          }
+          if(deadCount >= 3) {
+            objCell.isDeadEnd = true;
+            deadEndLoop = true;
+            push(deadEnds, objCell);
+          }
+        }
       }
-    }
+	} // First Round
+	  
+    if(!interCellCompute()) return false;
   
     //
     // first round
     //
     currentRound = new Round();
+	
+	return true;
   }
-  
+	
   /**
    * update
    **/
@@ -131,6 +124,33 @@ class Board extends Objects {
     }
     currentRound = new Round();
   
+  }
+	
+  /**
+   * interCellCompute
+   * define los, distance, diag and line
+   **/
+  static boolean interCellCompute() {
+	integer limit = MAX_OPERATION - ROUND_OPERATIONS;
+	integer m = 0;
+    for(integer x = Board.oldX; x < NB_CELLS; x++) {
+      Cell cellFrom = cells[x];
+      if(cellFrom.isWall) continue;
+      for(integer y = 0; y < x; y++) {
+        Cell cellTo = cells[y];
+        if(cellTo.isWall) continue;
+        integer range = getCellDistance(x, y);
+        if(range > MAX_RANGE) continue;
+        cellFrom.interCellInfo[cellTo.id] = cellTo.interCellInfo[cellFrom.id] = new InterCellInfo(cellFrom, cellTo, range);
+      }
+	  if(x > PERF_INIT) {
+	    if(getOperations() > limit) {
+		  oldX = x+1;
+		  return false
+		}
+	  }
+    }
+	return true;
   }
   
 }

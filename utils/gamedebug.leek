@@ -165,12 +165,12 @@ class GameDebug extends Objects {
    * calcul les opt et la ram depuis le dernier addOperation et l affiche
    **/
   static void addOperation(boolean condition, string txt = "", integer relativeOpt = opt, integer relativeRam = ram) {
+	integer opt2 = getOperations()-relativeOpt;
     if(!condition) return;
-    integer opt2 = getOperations()-relativeOpt;
     integer ram2 = getUsedRAM()-relativeRam;
-    str += txt+" : "+opt2+"("+(opt2*100.0/OPERATIONS_LIMIT)+"%Ops) / "+ram2+"("+(ram2*100.0/getMaxRAM())+"%RAM)\n";
-    opt = getOperations();
+	if(str != "") str += txt+" : "+opt2+"("+(opt2*100.0/OPERATIONS_LIMIT)+"%Ops) / "+ram2+"("+(ram2*100.0/getMaxRAM())+"%RAM)\n";
     ram = getUsedRAM();
+	opt = getOperations();
   }
   
 }

@@ -114,4 +114,18 @@ class Round extends Objects {
 	  }  
     }
   }
+
+  /**
+   * lineOfSight
+   * test si il y a un poireau sur la trajectoire entre les 2 cellules (ne test pas la cellule de depart ni d arrive)
+   * @return false si un poireau est sur la trajectoire
+   **/
+  boolean lineOfSight(InterCellInfo interCellInfo) {
+    Array<integer> cellList = interCellInfo.interCells;
+	for(integer cellId in cellList) {
+	  if(cellsRound[cellId].leekOnCell != null) return false;
+	}
+	return true;
+  }
+	
 }

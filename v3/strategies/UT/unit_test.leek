@@ -62,7 +62,7 @@ class UnitTest extends Strategy {
    * cell
    **/
   boolean cell() {
-    Object inter = Board.cells[306].interCellInfo[300];
+    InterCellInfo inter = Board.cells[306].interCellInfo[300];
     if(inter.range == 12 && inter.isDiag && !inter.isInline || Board.cells[306].isWall && inter.range == END_RANGE || Board.cells[300].isWall && inter.range == END_RANGE) 
       debugC("Cell OK",COLOR_GREEN);
     else {
@@ -70,12 +70,15 @@ class UnitTest extends Strategy {
       if(!inter.isDiag) debugC("Cell KO: 300-306 not is diag", COLOR_RED);
       if(!inter.isInline) debugC("Cell KO: 300-306 is inline", COLOR_RED);
     }
-    debugC("300 and 306 are " + ((inter.isInsight)?"":"NOT") + " inSight",COLOR_BLUE);
+	debugC("300 and 306 are " + ((inter.isInsight)?"":"NOT") + " inSight",COLOR_BLUE);
     debug("Legend: 300 and 306 = blue");
     GameDebug.addBackground(true, 306, COLOR_BLUE);
     GameDebug.addBackground(true, 300, COLOR_BLUE);
     debug("Legend: trajectory 306-> 241, 288->163, 305->531 = green");
-    GameDebug.addBackground(true, Board.cells[306].getTrajectory(Board.cells[241]), COLOR_GREEN);
+	GameDebug.addOperation(true);
+	Array<integer> listCells = Board.cells[306].getTrajectory(Board.cells[241]);
+	GameDebug.addOperation(true,"getTrajectory");
+    GameDebug.addBackground(true, listCells, COLOR_GREEN);
     GameDebug.addBackground(true, Board.cells[288].getTrajectory(Board.cells[163]), COLOR_GREEN);
     GameDebug.addBackground(true, Board.cells[305].getTrajectory(Board.cells[531]), COLOR_GREEN);
     return true;

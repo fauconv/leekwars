@@ -1,0 +1,49 @@
+/******************************************************************************
+ * RelativeCell
+ * toutes les relativeCell ne sont pas mise en cache seulement celle dont 
+ * les armes peuvent vraiment l atteindre
+ ******************************************************************************/
+class RelativeCell extends Objects {
+  real AOE;
+  integer targetCell; // cell where is the target leek
+  Array<Tool> toolsList;
+  
+  static Map<integer,Map<string,Map<integer,RelativeCell>>> cache = [:] // [relativeCellId][hashToolList][targetCell] = RelativeCell
+	                                                                    // en visant relativeCellId avec cette liste d arme hashToolList 
+	                                                                    // on peut atteindre la/les targetCell ayant chacune son AOE
+
+  /**
+   * constructor
+   * @param tools : Attention: le tableau n est pas copie
+   **/
+  constructor(integer id, real AOE, integer targetCell, Array<Tool> tools) {
+    this.id = id;
+	this.AOE = AOE;
+	this.targetCell = targetCell;
+	toolsList = tools;
+  }
+  
+  /**
+   * getCachedRelativeCell
+   * renvoi la RelativeCell demande en l ayant mis en cache si il ne l etait pas deja
+   **/
+  static RelativeCell getCachedRelativeCell(integer id, real AOE, integer targetCell, Array<Tool> toolsList) {
+    string hash = "";
+    for(Tool tool in toolsList) {
+	  hash += tool.id+".";
+	}
+	if(!mapContainsKey(RelativeCell.cache, id)) {
+	   RelativeCell.cache[id] = [hash:[targetCell:new RelativeCell(id, AOE,targetCell,toolsList)]];
+	   return RelativeCell.cache[id]![hash]![targetCell]!;
+	}
+	if(!mapContainsKey(RelativeCell.cache[id]!, hash)) {
+	   RelativeCell.cache[id]![hash] = [targetCell:new RelativeCell(id, AOE,targetCell,toolsList)];
+	   return RelativeCell.cache[id]![hash]![targetCell]!;
+	}
+	if(!mapContainsKey(RelativeCell.cache[id]![hash]!, targetCell)) {
+	   RelativeCell.cache[id]![hash]![targetCell] = new RelativeCell(id, AOE,targetCell,toolsList);
+	   return RelativeCell.cache[id]![hash]![targetCell]!;
+	}
+  }
+	
+}

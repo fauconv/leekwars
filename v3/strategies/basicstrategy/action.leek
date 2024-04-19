@@ -27,7 +27,7 @@ class MoveAction extends Action {
    * TODO: TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
    **/
   Object simulate() {
-	debug("MoveAction=>simulate=> TODOOOOOOOOOOOOOOOOOOOOOO");
+	debugC("MoveAction=>simulate=> TODOOOOOOOOOOOOOOOOOOOOOO",COLOR_RED);
     return {};
   }
 

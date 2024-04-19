@@ -16,649 +16,38 @@ class Cell extends Objects {
   Cell leftBottom;
   Cell rightBottom;
   
-  // Attention: NB_CELLS statiques !!!! si NB_CELLS change il faut changer a la main ici
-  Array<Object> interCellInfo = [
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false},
-                  {range:END_RANGE, isInsight:false, isInline:false, isDiag:false}]
+  Array<InterCellInfo> interCellInfo = []
   
   /**
    * constructor
    **/
-  constructor(integer idCell) {
+  constructor(integer idCell, InterCellInfo interCellNull) {
+	  
     id = idCell;
     x = getCellX(idCell) as integer;
     y = getCellY(idCell) as integer;
+	
+	fill(interCellInfo, interCellNull, NB_CELLS);
+	  
   }
   
   /**
    * getTrajectory
    * equivalent de getPath mais en ligne droite
    * calcule d interpolation lineaire pour obtenir le meme resultat que lineOfSight
-   * renvoi la liste des celules en ligne droite entre la cellule courante et endCell
-   * Conformement a getPath, la cellule courante n est pas inclu dans la liste, mais endCell oui
+   * renvoi la liste des cellules en ligne droite entre la cellule courante et endCell
+   * La cellule de depart et d arrivee ne sont pas incluse dans la liste
    * O(n) n = longueur de la liste
    *
-   * @return Array(Cell)
    **/
-  Array<Cell> getTrajectory(Cell endCell) {
+  Array<Integer> getTrajectory(Cell endCell) {
     integer x2 = endCell.x;
     integer y2 = endCell.y;
     integer dx = x2-x;
     integer dy = y2-y;
     integer incX = 1;
     integer incY = 1;
-    Array<Cell> ret = [];
+    Array<integer> ret = [];
     
     if(y > y2) {
       incY = -1;
@@ -668,19 +57,129 @@ class Cell extends Objects {
     if(abs(dy) > abs(dx)) {
       real rap = (x2-x)/(y2-y);
       for(integer newY = y+incY; newY != y2; newY=newY+incY) {
-        push(ret,Board.cells[getCellFromXY(round((newY-y)*rap+x), newY) as integer]);
+        push(ret,getCellFromXY(round((newY-y)*rap+x), newY));
       }
     } else if (dx != 0) {
       real rap = (y2-y)/(x2-x);
       for(integer newX = x+incX; newX != x2; newX=newX+incX) {
-        push(ret,Board.cells[getCellFromXY(newX, round((newX-x)*rap+y)) as integer]);
+        push(ret,getCellFromXY(newX, round((newX-x)*rap+y)));
       }
     }
-    push(ret,endCell);
     
     return ret;
   }
   
+  
+  /**
+   * getRelativeCells
+   * determine les cellules que l on peut viser pour atteindre this grace a l AOE des tools
+   * ne verifie pas que le tool peut atteindre la cellule vise
+   **/
+  Map<integer,RelativeCell> getRelativeCells(Array<Tool> tools) {
+    Map<integer,RelativeCell> ret = [:];
+	Cell|null reachableCell = this;
+	for(Tool tool in tools) {
+      if(ret[id]) push(ret[id]!.toolsList,tool);
+	  else ret[id] = new RelativeCell(id, 1.0, id, [tool]);		
+      if(tool.isAOE) {
+        if(tool.AOELaunchType == LAUNCH_TYPE_CIRCLE) { //  ------------ LAUNCH_TYPE_CIRCLE
+          for(string direction in HEIGHT_DIRECTION) {
+			reachableCell = this;
+            real pourcent = 1.0;
+            for(integer i = tool.AOERange; i > 0; i--) {
+			  pourcent -= AOE_DEC_LINE_FACTOR;
+			  reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent,id);
+			  if(reachableCell == null) break;
+            }
+          }
+          for(string direction in WIDTH_DIRECTION) {
+            reachableCell = this;
+            real pourcent = 1.0;
+            for(integer i = tool.AOERange; i > 0; i--) {
+			  pourcent -= AOE_DEC_LINE_FACTOR;
+			  reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent,id);
+			  if(reachableCell == null) break;
+              for(string direction2 in HEIGHT_DIRECTION) {
+                Cell|null reachableCell2 = reachableCell;
+                var pourcent2 = pourcent;
+                for(var i2 = (i-1); i2 > 0; i2--) {
+                  pourcent2 -= AOE_DEC_LINE_FACTOR;
+			      reachableCell2 = addRelativeCell(ret,reachableCell2!,direction2,tool,pourcent2,id);
+				  if(reachableCell2 == null) break;
+                }
+              }
+            }
+          }
+        } else if(tool.AOELaunchType == LAUNCH_TYPE_SQUARE) { //  ---------  LAUNCH_TYPE_SQUARE
+          for(var direction in HEIGHT_DIRECTION) {
+            reachableCell = this;
+            real pourcent = 1.0;
+            for(integer i = tool.AOERange; i > 0; i--) {
+			  pourcent -= AOE_DEC_LINE_FACTOR;
+			  reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent,id);
+			  if(reachableCell == null) break;
+            }
+          }
+          for(string direction in WIDTH_DIRECTION) {
+            reachableCell = this;
+            real pourcent = 1.0;
+            for(var i = tool.AOERange; i > 0; i--) {
+              pourcent -= AOE_DEC_LINE_FACTOR;
+              reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent,id);
+			  if(reachableCell == null) break;
+              for(var direction2 in HEIGHT_DIRECTION) {
+                Cell|null reachableCell2 = reachableCell;
+                var pourcent2 = pourcent;
+                for(var i2 = tool.AOERange; i2 > 0; i2--) {
+                  pourcent2 -= AOE_DEC_LINE_FACTOR;
+			      reachableCell2 = addRelativeCell(ret,reachableCell2!,direction2,tool,pourcent2,id);
+				  if(reachableCell2 == null) break;
+                }
+              }
+            }
+          }
+        } else if(tool.AOELaunchType == LAUNCH_TYPE_DIAGONAL) { //  ---------   LAUNCH_TYPE_DIAGONAL 
+          for(var direction in DIAG_DIRECTION) {
+            reachableCell = this;
+            real pourcent = 1.0;
+            for(var i = tool.AOERange; i > 0; i--) {
+              pourcent -= AOE_DEC_DIAG_FACTOR;
+              reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent,id);
+			  if(reachableCell == null) break;
+            }
+          }
+        } else  { // ------       LAUNCH_TYPE_LINE
+          for(var direction in LINE_DIRECTION) {
+            reachableCell = this;
+            real pourcent = 1.0;
+            for(var i = tool.AOERange; i > 0; i--) {
+              pourcent -= AOE_DEC_LINE_FACTOR;
+			  reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent,id);
+			  if(reachableCell == null) break;
+            }
+          }
+        }
+      }
+	}
+	return ret;
+  }
+
+  /**
+   * addRelativeCell
+   * macro pour getRelativeCells
+   **/
+  private Cell|null addRelativeCell(Map<integer,RelativeCell> ret, Cell reachableCell, string direction, Tool tool, real pourcent, integer targetCellId) {
+    if(reachableCell[direction]) {
+	  reachableCell = reachableCell[direction] as Cell;
+	  if(!reachableCell.isWall) {
+      	if(ret[reachableCell.id]) push(ret[reachableCell.id]!.toolsList,tool)
+	  	else ret[reachableCell.id] = new RelativeCell(reachableCell.id, pourcent, targetCellId, [tool]);
+	  }
+	  return reachableCell;
+	}
+	return null;
+  }
+	
   /**
    * toString
    *
@@ -699,8 +198,8 @@ class FreeCell extends Cell {
   /**
    * constructor
    **/
-  constructor(integer idCell) {
-    super(idCell);
+  constructor(integer idCell, InterCellInfo interCellNull) {
+    super(idCell, interCellNull);
     isWall = false;
     isDeadEnd = false;
   }
@@ -715,8 +214,8 @@ class Wall extends Cell {
   /**
    * constructor
    **/
-  constructor(integer idCell) {
-    super(idCell);
+  constructor(integer idCell, InterCellInfo interCellNull) {
+    super(idCell, interCellNull);
     isWall = true;
     isDeadEnd = true;
   }

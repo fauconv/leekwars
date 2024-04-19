@@ -47,7 +47,7 @@ class Tool extends Objects {
       targetNonSummon = targetNonSummon || eff.targetNonSummon;
     }
     
-    if(areaType == AREA_POINT || areaType == AREA_LASER_LINE) {
+    if(areaType == AREA_POINT || areaType == AREA_LASER_LINE || areaType == AREA_ALLIES || areaType == AREA_ENEMIES) {
       isAOE = false;
       maxAOERange = maxRange;
       minAOERange = minRange;
@@ -55,7 +55,7 @@ class Tool extends Objects {
         isLaser = true;
         AOELaunchType = LAUNCH_TYPE_LINE;
       }
-    } else {
+	} else {
       isAOE = true;
       maxAOERange = maxRange+AOERange;
       minAOERange = max(minRange-AOERange,1);
@@ -86,7 +86,7 @@ class Tool extends Objects {
       } else if(areaType == AREA_PLUS_3) {
         AOERange = 3;
         AOELaunchType = LAUNCH_TYPE_LINE;
-      } else { // AREA_CIRCLE_1 || AREA_PLUS_1
+      } else { // AREA_CIRCLE_1 || AREA_PLUS_1 || AREA_FIRST_INLINE || 
         AOERange = 1;
         AOELaunchType = LAUNCH_TYPE_LINE;
       }

@@ -1,6 +1,5 @@
 include("basicstrategyrules");
 include("movecell");
-include("relativecell");
 
 /****************************************************************************
  * BasicStrategy
@@ -34,6 +33,8 @@ class BasicStrategy extends Strategy {
     meRound = currentRound.meRound;
     enemyRound = currentRound.enemiesRound[0];
     
+	GameDebug.addOperation(true,"init");
+	  
 	//
 	// first round
 	//
@@ -56,6 +57,7 @@ class BasicStrategy extends Strategy {
 	  
 	//
 	// phase 1.2 : on calcul chaque mouvement possible et chaque simulation impliquee
+	// certaine simulation permettent d aller plus loin grace au chips de buff MP
 	//
 	Map<integer,MoveCell> myMoveCells = parcour(meRound.currentCell, myMPToolList, meRound.id)
 	if(BASIC_STRATEGY_DEBUG) {
@@ -70,13 +72,53 @@ class BasicStrategy extends Strategy {
 	// phase 2.1: on determine pour chaque arme les relativeCell possible
 	//
 	GameDebug.add(BASIC_STRATEGY_DEBUG,meRound.categoryDamage,"liste des armes");
-	Map<integer, RelativeCell> enemyRelativeCells = getRelativeCells(meRound.categoryDamage, enemyRound);
+	Array<Tool> tools = [];
+	for(ToolRound toolR in meRound.categoryDamage) push(tools,toolR.tool);
+	Map<integer, RelativeCell> enemyRelativeCells = enemyRound.currentCell.cell.getRelativeCells(tools);
 	if(BASIC_STRATEGY_DEBUG) {
 	  for(RelativeCell mc in enemyRelativeCells) {
 	    mark(mc.id,COLOR_YELLOW,1);
-		markText(mc.id,count(mc.toolsIdsList),0,1);
+		markText(mc.id,count(mc.toolsList),0,1);
 	  }
     }
+	
+	//
+	// phase 2.2: pour chaque movecell on regarde si on peut atteindre une relative cell pour chaque arme de la relativecell
+	// canUseWeaponOnCell ne convient pas car il ne prend pas en compte les moveCell il ne considere que MA cellule courante et pas les mouvement que je peux faire
+	// il n a pas de parametre pour indiquer la cellule source
+	//
+	GameDebug.addOperation(true,"avant le gros");
+	for(MoveCell myMoveCell in myMoveCells) {
+	  for(RelativeCell enemyRelativeCell in enemyRelativeCells) {
+		InterCellInfo interCellInfo = myMoveCell.cell.interCellInfo[enemyRelativeCell.id];
+        integer range = interCellInfo.range;
+		if(range >= END_RANGE) continue;
+        boolean isInsight = interCellInfo.isInsight && currentRound.lineOfSight(interCellInfo);
+        boolean isDiag = interCellInfo.isDiag;
+        boolean isInLine = interCellInfo.isInline;		
+		Array<Tool> toolsList = [];
+	    for(Tool tool in enemyRelativeCell.toolsList) {
+          integer launch = tool.launchType;
+          if(range > tool.maxRange || range < tool.minRange || tool.needLos && !isInsight || 
+             launch == LAUNCH_TYPE_LINE && !isInLine || launch == LAUNCH_TYPE_DIAGONAL && !isDiag || 
+             launch == LAUNCH_TYPE_STAR && !isDiag && !isInLine || launch == LAUNCH_TYPE_STAR_INVERTED && (isDiag || isInLine)) continue
+		  push(toolsList,tool);
+		}
+		// TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		//push(myMoveCell.targetCells,enemyRelativeCell.getUsableRelativeCellClone(toolsList));
+	  }
+	}
+	  
+	// ===> a ce point j ai des movecell pour chaque case vers laquelle je peux aller 
+	//      contenant LES simulationS de chip de MP qui doivent etre utiliser pour y aller (y compris la simulation vide quand elle est utilisable)
+	//     pour chaque movecell j ai egalement la liste des relativecell que je peux toucher avec les armes utilisable sur cette relativeCell
+	// ===> la relativecell contient UN poireau cible (ne gere pas le multi target) avec l AOE correspondant.
+	// ===> les enemyRelativeCells contienne la liste des arme qui doivent etre utilise pour cette relativecell pour atteindre le leek cible
+	//      par contre les relativeCell contenu dans les movecell contienne les armes qui peuvent etre utilise a partir de ce movecell sur la 
+	//      relativecell pour atteindre le leek cible
+	  
+	//
+    // phase 2.3: pour chaque combinaison d arme, AOE, nbtarget,tp touche on determine les degat obtenu et la meilleure combi
 	  
 	//
 	// phase 3 : on determine les mouvement de retraite
@@ -142,105 +184,6 @@ class BasicStrategy extends Strategy {
     return flatReachableCells
 	  
   }
-  
-  /**
-   * getRelativeCells
-   **/
-  Map<integer,RelativeCell> getRelativeCells(Array<ToolRound>|Map<integer,ToolRound> toolsRound, LeekRound targetLeek) {
-    Map<integer,RelativeCell> ret = [:];
-	integer leekId = targetLeek.id;
-	integer targetCellId = targetLeek.currentCellId;
-	Cell reachableCell = targetLeek.currentCell.cell;
-	for(ToolRound toolRound in toolsRound) {
-      integer toolId = toolRound.id;
-	  Tool tool = toolRound.tool;
-      if(ret[targetCellId]) push(ret[targetCellId]!.toolsIdsList,toolId);
-	  else ret[targetCellId] = new RelativeCell(targetCellId, 1.0, leekId, targetCellId, toolId);		
-      if(tool.isAOE) {
-        if(tool.AOELaunchType == LAUNCH_TYPE_CIRCLE) { //  ------------ LAUNCH_TYPE_CIRCLE
-          for(string direction in HEIGHT_DIRECTION) {
-			reachableCell = targetLeek.currentCell.cell;
-            real pourcent = 1.0;
-            for(integer i = tool.AOERange; i > 0; i--) {
-			  pourcent -= AOE_DEC_LINE_FACTOR;
-			  reachableCell = addRelativeCell(ret,reachableCell,direction,toolId,pourcent,leekId,targetCellId);
-            }
-          }
-          for(string direction in WIDTH_DIRECTION) {
-            reachableCell = targetLeek.currentCell.cell;
-            real pourcent = 1.0;
-            for(integer i = tool.AOERange; i > 0; i--) {
-			  pourcent -= AOE_DEC_LINE_FACTOR;
-			  reachableCell = addRelativeCell(ret,reachableCell,direction,toolId,pourcent,leekId,targetCellId);
-              for(string direction2 in HEIGHT_DIRECTION) {
-                Cell reachableCell2 = reachableCell;
-                var pourcent2 = pourcent;
-                for(var i2 = (i-1); i2 > 0; i2--) {
-                  pourcent2 -= AOE_DEC_LINE_FACTOR;
-			      reachableCell2 = addRelativeCell(ret,reachableCell2,direction2,toolId,pourcent2,leekId,targetCellId);
-                }
-              }
-            }
-          }
-        } else if(tool.AOELaunchType == LAUNCH_TYPE_SQUARE) { //  ---------  LAUNCH_TYPE_SQUARE
-          for(var direction in HEIGHT_DIRECTION) {
-            reachableCell = targetLeek.currentCell.cell;
-            real pourcent = 1.0;
-            for(integer i = tool.AOERange; i > 0; i--) {
-			  pourcent -= AOE_DEC_LINE_FACTOR;
-			  reachableCell = addRelativeCell(ret,reachableCell,direction,toolId,pourcent,leekId,targetCellId);
-            }
-          }
-          for(string direction in WIDTH_DIRECTION) {
-            reachableCell = targetLeek.currentCell.cell;
-            real pourcent = 1.0;
-            for(var i = tool.AOERange; i > 0; i--) {
-              pourcent -= AOE_DEC_LINE_FACTOR;
-              reachableCell = addRelativeCell(ret,reachableCell,direction,toolId,pourcent,leekId,targetCellId);
-              for(var direction2 in HEIGHT_DIRECTION) {
-                Cell reachableCell2 = reachableCell;
-                var pourcent2 = pourcent;
-                for(var i2 = tool.AOERange; i2 > 0; i2--) {
-                  pourcent2 -= AOE_DEC_LINE_FACTOR;
-			      reachableCell2 = addRelativeCell(ret,reachableCell2,direction2,toolId,pourcent2,leekId,targetCellId);
-                }
-              }
-            }
-          }
-        } else if(tool.AOELaunchType == LAUNCH_TYPE_DIAGONAL) { //  ---------   LAUNCH_TYPE_DIAGONAL 
-          for(var direction in DIAG_DIRECTION) {
-            reachableCell = targetLeek.currentCell.cell;
-            real pourcent = 1.0;
-            for(var i = tool.AOERange; i > 0; i--) {
-              pourcent -= AOE_DEC_DIAG_FACTOR;
-              reachableCell = addRelativeCell(ret,reachableCell,direction,toolId,pourcent,leekId,targetCellId);
-            }
-          }
-        } else  { // ------       LAUNCH_TYPE_LINE
-          for(var direction in LINE_DIRECTION) {
-            reachableCell = targetLeek.currentCell.cell;
-            real pourcent = 1.0;
-            for(var i = tool.AOERange; i > 0; i--) {
-              pourcent -= AOE_DEC_LINE_FACTOR;
-			  reachableCell = addRelativeCell(ret,reachableCell,direction,toolId,pourcent,leekId,targetCellId);
-            }
-          }
-        }
-      }
-	}
-	return ret;
-  }
 
-  /**
-   * addRelativeCell
-   * macro pour getRelativeCells
-   **/
-  private Cell addRelativeCell(Map<integer,RelativeCell> ret, Cell reachableCell, string direction, integer toolId, real pourcent, integer leekId, integer targetCellId) {
-    if(reachableCell = reachableCell[direction] as Cell) {
-      if(ret[reachableCell.id]) push(ret[reachableCell.id]!.toolsIdsList,toolId)
-	  else ret[reachableCell.id] = new RelativeCell(reachableCell.id, pourcent, leekId, targetCellId, toolId);
-	}
-	return reachableCell;
-  }
 }
 

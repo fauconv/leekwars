@@ -354,12 +354,11 @@ class MeRound extends LeekRound {
       relativeCenterCell      = Board.cells[relativeCenterCellId];
       relativeCenterCellRound = roundObj.cellsRound[relativeCenterCellId];
     } else {
-      Array<Cell> trajectoryToCenter = currentCell.cell.getTrajectory(Board.centerCell)
-      pop(trajectoryToCenter) // remove center cell 306
+      Array<integer> trajectoryToCenter = currentCell.cell.getTrajectory(Board.centerCell)
       boolean ok = false;
       Cell finalCell;
       while(!isEmpty(trajectoryToCenter)) {
-        finalCell = pop(trajectoryToCenter) as Cell;
+        finalCell = Board.cells[pop(trajectoryToCenter) as integer];
         if(!finalCell.isDeadEnd) {
           if (pathToCenter = getPath(currentCellId, finalCell.id)) {
             ok = true;

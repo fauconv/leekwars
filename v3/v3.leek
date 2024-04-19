@@ -13,18 +13,24 @@ include("../utils/gamedebug");
 include("engine/const");
 include("engine/talk");
 include("engine/strategy");
+include("engine/intercellinfo");
 include("engine/cell");
 include("engine/board");
 include("engine/effect");
 include("engine/effectfunctions");
 include("engine/tool");
 include("engine/leek");
+include("engine/relativecell");
 include("engine/round/round");
 include("engine/round/cellround");
 include("engine/round/leekround");
 include("engine/round/toolround");
-if(gFirstRound) {
-  Board.init();
+if(!gBoardInit) {
+  if(!(gBoardInit = Board.init())) {
+	debugC("Initialisation en 2 temps",COLOR_RED);
+	end();
+    return;
+  }
 } else {
   Board.update();
 }
@@ -41,23 +47,19 @@ else gAvailableStrategie = new Strategy();
 /*******************************************************
  * main
  *******************************************************/
-//
-// apply strategy
-//
 gAvailableStrategie.apply()
+end();
 
-//
-// update nbturn
-//
-if(gFirstRound) {
-  gFirstRound = false;
-  gSecondRound = true;
-} else {
-  gSecondRound = false;
+/*********************************************************
+ * end
+ *********************************************************/
+function end() => void {
+  if(gFirstRound) {
+    gFirstRound = false;
+    gSecondRound = true;
+  } else {
+    gSecondRound = false;
+  }
+  Talk.talk();
+  GameDebug.display();
 }
-
-//
-// talk and debug
-//
-Talk.talk();
-GameDebug.display();

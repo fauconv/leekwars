@@ -35,7 +35,7 @@ class ToolRound extends Objects {
    * Attention: le cellRound doit etre du meme round que le toolround
    **/
   Object simulateUseOnCell(integer cellId) {
-	debug("ToolRound=>simulateUseOnCell=> TODOOOOOOOOOOOOOOOOOOOOOO");
+	debugC("ToolRound=>simulateUseOnCell=> TODOOOOOOOOOOOOOOOOOOOOOO",COLOR_RED);
 	if(roundObj.cellsRound[cellId].leekOnCell != null) return simulateUse([roundObj.cellsRound[cellId].leekOnCell!.id]);
 	else return {minEffect:0,maxEffect:0,midEffect:0};
   }
