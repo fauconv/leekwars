@@ -37,6 +37,10 @@ global integer MAX_OPERATION = 20000000; // pour remplacer LIMIT_OPERATION
 //
 global integer COLOR_BROWN = 12019715;
 global integer COLOR_YELLOW = 15596544;
+global integer COLOR_ORANGE = 16545280;
+global integer COLOR_PINK = 16515255;
+global integer COLOR_PURPLE = 13762812;
+global integer COLOR_CYAN = 62716;
 
 //
 // DIRECTIONS

@@ -1,1 +1,1 @@
-moveTowardCell(431);
+moveToward(getEnemies()[0]);

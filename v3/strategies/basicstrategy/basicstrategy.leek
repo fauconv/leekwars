@@ -68,7 +68,7 @@ class BasicStrategy extends Strategy {
     }
 	
 	//
-	// phase 2 : on determine les tire et degat possible
+	// phase 2 : on determine les tire que je peux faire
 	// phase 2.1: on determine pour chaque arme les relativeCell possible
 	//
 	GameDebug.add(BASIC_STRATEGY_DEBUG,meRound.categoryDamage,"liste des armes");
@@ -84,10 +84,11 @@ class BasicStrategy extends Strategy {
 	
 	//
 	// phase 2.2: pour chaque movecell on regarde si on peut atteindre une relative cell pour chaque arme de la relativecell
-	// canUseWeaponOnCell ne convient pas car il ne prend pas en compte les moveCell il ne considere que MA cellule courante et pas les mouvement que je peux faire
-	// il n a pas de parametre pour indiquer la cellule source
+	// canUseWeaponOnCell ne convient pas car il ne prend pas en compte les moveCell
 	//
-	GameDebug.addOperation(true,"avant le gros");
+    Map<integer,Map<string,Map<integer,RelativeCell>>> relativeCellsCache = [:] // [relativeCellId][hashToolList][targetCell] = RelativeCell
+	                                                                            // en visant relativeCellId avec cette liste d arme hashToolList 
+	                                                                            // on peut atteindre la/les targetCell ayant chacune son AOE
 	for(MoveCell myMoveCell in myMoveCells) {
 	  for(RelativeCell enemyRelativeCell in enemyRelativeCells) {
 		InterCellInfo interCellInfo = myMoveCell.cell.interCellInfo[enemyRelativeCell.id];
@@ -104,8 +105,20 @@ class BasicStrategy extends Strategy {
              launch == LAUNCH_TYPE_STAR && !isDiag && !isInLine || launch == LAUNCH_TYPE_STAR_INVERTED && (isDiag || isInLine)) continue
 		  push(toolsList,tool);
 		}
-		// TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		//push(myMoveCell.targetCells,enemyRelativeCell.getUsableRelativeCellClone(toolsList));
+        string hash = "";
+		for(Tool tool in toolsList) {
+		  hash += tool.id+".";
+		}
+		integer id = enemyRelativeCell.id;
+		integer targetCell = enemyRelativeCell.targetCell;
+		if(!mapContainsKey(relativeCellsCache, id)) {
+		   relativeCellsCache[id] = [hash:[targetCell:new RelativeCell(id, enemyRelativeCell.AOE,targetCell,toolsList)]];
+		} else if(!mapContainsKey(relativeCellsCache[id]!, hash)) {
+		   relativeCellsCache[id]![hash] = [targetCell:new RelativeCell(id, enemyRelativeCell.AOE,targetCell,toolsList)];
+		} else if(!mapContainsKey(relativeCellsCache[id]![hash]!, targetCell)) {
+		   relativeCellsCache[id]![hash]![targetCell] = new RelativeCell(id, enemyRelativeCell.AOE,targetCell,toolsList);
+		}  
+		push(myMoveCell.targetCells,relativeCellsCache[id]![hash]![targetCell]!);
 	  }
 	}
 	  
@@ -118,18 +131,30 @@ class BasicStrategy extends Strategy {
 	//      relativecell pour atteindre le leek cible
 	  
 	//
-    // phase 2.3: pour chaque combinaison d arme, AOE, nbtarget,tp touche on determine les degat obtenu et la meilleure combi
+	// phase 3: on determine les mouvements possibles du poireau ennemi (identique a phase 1)
+	//
+	Array<Simulation> enemyMPToolList = MPConditions(enemyRound);
+	Map<integer,MoveCell> enemyMoveCells = parcour(enemyRound.currentCell, enemyMPToolList, enemyRound.id);
 	  
 	//
-	// phase 3 : on determine les mouvement de retraite
+	// phase 4: on determine les tires que l ennemi pourra faire
+	// pour chaqu une de mes moveCell je regarde si il peut me tirer dessus depuis au moins une de ces moveCell 
+	// comment je determine quel est sa meilleure moveCell pour ma movecell ? je cumule ses armes dans ma moveCell ?
+	//
+	  
+	//
+    // phase X: pour chaque combinaison d arme, AOE, nbtarget,tp touche on determine les degat obtenu et la meilleure combi
+	  
+	//
+	// phase X : on determine les mouvement de retraite
 	//
 	
 	//
-	// phase 4 : on determine les chip de soin et de protection a utiliser
+	// phase X : on determine les chip de soin et de protection a utiliser
 	//
 	
 	//
-	// phase 5 : on choisi la meilleure soluce
+	// phase X : on choisi la meilleure soluce
 	//
 	
   }

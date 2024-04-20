@@ -27,7 +27,7 @@ include("engine/round/leekround");
 include("engine/round/toolround");
 if(!gBoardInit) {
   if(!(gBoardInit = Board.init())) {
-	debugC("Initialisation en 2 temps",COLOR_RED);
+	debugC("Initialisation en 2 temps",COLOR_BLUE);
 	end();
     return;
   }
