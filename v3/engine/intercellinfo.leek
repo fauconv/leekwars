@@ -11,8 +11,8 @@ class InterCellInfo extends Objects {
   /**
    * constructor
    **/
-  constructor() {
-    range = END_RANGE;
+  constructor(integer maxAOERange) {
+    range = maxAOERange+1;
 	isInline = false;
 	isDiag = false;
 	isInsight = false;

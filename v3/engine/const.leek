@@ -10,16 +10,15 @@ global boolean gSecondRound = false;       // deuxieme tour
 global Strategy gAvailableStrategie;       // selected strategy
 
 global boolean gBoardInit   = false;       // true quand le board est initialise completement
-global integer PERF_INIT = 550;            // entre 1 et 612. plus il est haut plus l init est rapide, 
+global integer INTERCELL_TEST = 550;       // entre 1 et 612. plus il est haut plus l init est rapide, 
                                            // plus il est bas moins il y a risque de depasser le nombre max  d operation a l initialisation
-global integer ROUND_OPERATIONS = 65000;   // nombre d operation minimum pour terminer l init;
+global integer INTERCELL_OPERATIONS = 65000;   // nombre d operation max pour calculer un intercell 
+                                               // (INTERCELL_OPERATIONS > nombre max d operation pour initialiser le round)
 
 //
 // const
 //
-global integer LAUNCH_TYPE_SQUARE = 4;     // a missing launch_type constant
-global integer MAX_RANGE          = 14;    // max range to compute fight (max weapon range)
-global integer END_RANGE          = 15;    // = MAX_RANGE + 1; 
+global integer LAUNCH_TYPE_SQUARE = 4;     // a missing launch_type constant 
 global integer NB_CELLS           = 613;
 global integer CENTER_CELL_ID     = 306;
 global integer MIN_COORD          = -17;
@@ -30,7 +29,6 @@ global real POISON_EROSION      = 0.1;
 global real CRITICAL_EROSION    = 0.1;
 global real AOE_DEC_LINE_FACTOR = 0.2;
 global real AOE_DEC_DIAG_FACTOR = 0.4;
-global integer MAX_OPERATION = 20000000; // pour remplacer LIMIT_OPERATION
 
 //
 // colors

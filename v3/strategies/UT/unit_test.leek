@@ -63,7 +63,7 @@ class UnitTest extends Strategy {
    **/
   boolean cell() {
     InterCellInfo inter = Board.cells[306].interCellInfo[300];
-    if(inter.range == 12 && inter.isDiag && !inter.isInline || Board.cells[306].isWall && inter.range == END_RANGE || Board.cells[300].isWall && inter.range == END_RANGE) 
+    if(inter.range == 12 && inter.isDiag && !inter.isInline || Board.cells[306].isWall && inter.range == (Board.maxAOERange+1) || Board.cells[300].isWall && inter.range == (Board.maxAOERange+1)) 
       debugC("Cell OK",COLOR_GREEN);
     else {
       if(inter.range != 12) debugC("Cell KO: 300-306 range(12) = "+ inter.range, COLOR_RED);

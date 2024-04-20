@@ -34,6 +34,7 @@ class BasicStrategy extends Strategy {
     enemyRound = currentRound.enemiesRound[0];
     
 	GameDebug.addOperation(true,"init");
+	GameDebug.add(true,Board.maxAOERange,"maxAOERange");
 	  
 	//
 	// first round
@@ -53,31 +54,31 @@ class BasicStrategy extends Strategy {
 	// phase 1.1 : on determine quel chip utilisable pour se mouvoir => simulations
 	//
 	Array<Simulation> myMPToolList = MPConditions(meRound);
-	GameDebug.add(BASIC_STRATEGY_DEBUG, myMPToolList,"",1,[], [], [], "string");
+	//GameDebug.add(BASIC_STRATEGY_DEBUG, myMPToolList,"",1,[], [], [], "string");
 	  
 	//
 	// phase 1.2 : on calcul chaque mouvement possible et chaque simulation impliquee
 	// certaine simulation permettent d aller plus loin grace au chips de buff MP
 	//
 	Map<integer,MoveCell> myMoveCells = parcour(meRound.currentCell, myMPToolList, meRound.id)
-	if(BASIC_STRATEGY_DEBUG) {
+	/*if(BASIC_STRATEGY_DEBUG) {
 	  for(MoveCell mc in myMoveCells) {
 	    mark(mc.id,COLOR_YELLOW,1);
 		markText(mc.id,count(mc.simulations),0,1);
 	  }
-    }
+    }*/
 	
 	//
 	// phase 2 : on determine les tire que je peux faire
 	// phase 2.1: on determine pour chaque arme les relativeCell possible
 	//
-	GameDebug.add(BASIC_STRATEGY_DEBUG,meRound.categoryDamage,"liste des armes");
+	//GameDebug.add(BASIC_STRATEGY_DEBUG,meRound.leek.categoryDamage,"liste de mes armes",1,[],[],[],"string");
 	Array<Tool> tools = [];
 	for(ToolRound toolR in meRound.categoryDamage) push(tools,toolR.tool);
 	Map<integer, RelativeCell> enemyRelativeCells = enemyRound.currentCell.cell.getRelativeCells(tools);
 	if(BASIC_STRATEGY_DEBUG) {
 	  for(RelativeCell mc in enemyRelativeCells) {
-	    mark(mc.id,COLOR_YELLOW,1);
+	    mark(mc.id,COLOR_PINK,1);
 		markText(mc.id,count(mc.toolsList),0,1);
 	  }
     }
@@ -86,14 +87,14 @@ class BasicStrategy extends Strategy {
 	// phase 2.2: pour chaque movecell on regarde si on peut atteindre une relative cell pour chaque arme de la relativecell
 	// canUseWeaponOnCell ne convient pas car il ne prend pas en compte les moveCell
 	//
-    Map<integer,Map<string,Map<integer,RelativeCell>>> relativeCellsCache = [:] // [relativeCellId][hashToolList][targetCell] = RelativeCell
+    Map<integer,Map<string,Map<integer,RelativeCell>>> enemyRelativeCellsCache = [:] // [relativeCellId][hashToolList][targetCell] = RelativeCell
 	                                                                            // en visant relativeCellId avec cette liste d arme hashToolList 
 	                                                                            // on peut atteindre la/les targetCell ayant chacune son AOE
 	for(MoveCell myMoveCell in myMoveCells) {
 	  for(RelativeCell enemyRelativeCell in enemyRelativeCells) {
 		InterCellInfo interCellInfo = myMoveCell.cell.interCellInfo[enemyRelativeCell.id];
         integer range = interCellInfo.range;
-		if(range >= END_RANGE) continue;
+		if(range > Board.maxAOERange) continue;
         boolean isInsight = interCellInfo.isInsight && currentRound.lineOfSight(interCellInfo);
         boolean isDiag = interCellInfo.isDiag;
         boolean isInLine = interCellInfo.isInline;		
@@ -111,14 +112,14 @@ class BasicStrategy extends Strategy {
 		}
 		integer id = enemyRelativeCell.id;
 		integer targetCell = enemyRelativeCell.targetCell;
-		if(!mapContainsKey(relativeCellsCache, id)) {
-		   relativeCellsCache[id] = [hash:[targetCell:new RelativeCell(id, enemyRelativeCell.AOE,targetCell,toolsList)]];
-		} else if(!mapContainsKey(relativeCellsCache[id]!, hash)) {
-		   relativeCellsCache[id]![hash] = [targetCell:new RelativeCell(id, enemyRelativeCell.AOE,targetCell,toolsList)];
-		} else if(!mapContainsKey(relativeCellsCache[id]![hash]!, targetCell)) {
-		   relativeCellsCache[id]![hash]![targetCell] = new RelativeCell(id, enemyRelativeCell.AOE,targetCell,toolsList);
+		if(!mapContainsKey(enemyRelativeCellsCache, id)) {
+		   enemyRelativeCellsCache[id] = [hash:[targetCell:new RelativeCell(id, enemyRelativeCell.AOE,targetCell,toolsList)]];
+		} else if(!mapContainsKey(enemyRelativeCellsCache[id]!, hash)) {
+		   enemyRelativeCellsCache[id]![hash] = [targetCell:new RelativeCell(id, enemyRelativeCell.AOE,targetCell,toolsList)];
+		} else if(!mapContainsKey(enemyRelativeCellsCache[id]![hash]!, targetCell)) {
+		   enemyRelativeCellsCache[id]![hash]![targetCell] = new RelativeCell(id, enemyRelativeCell.AOE,targetCell,toolsList);
 		}  
-		push(myMoveCell.targetCells,relativeCellsCache[id]![hash]![targetCell]!);
+		push(myMoveCell.targetCells,enemyRelativeCellsCache[id]![hash]![targetCell]!);
 	  }
 	}
 	  
@@ -138,9 +139,34 @@ class BasicStrategy extends Strategy {
 	  
 	//
 	// phase 4: on determine les tires que l ennemi pourra faire
-	// pour chaqu une de mes moveCell je regarde si il peut me tirer dessus depuis au moins une de ces moveCell 
+	// pour chaqu une de mes moveCell je regarde si il peut me tirer dessus depuis au moins une de ces moveCell
+	// je dois calculer les relativecell de chaqu une de mes moveCells 
 	// comment je determine quel est sa meilleure moveCell pour ma movecell ? je cumule ses armes dans ma moveCell ?
 	//
+	tools = [];
+	for(ToolRound toolR in enemyRound.categoryDamage) push(tools,toolR.tool);
+	for(MoveCell myMoveCell in myMoveCells) {
+	  Map<integer, RelativeCell> myRelativeCells = myMoveCell.cell.getRelativeCells(tools);
+	  for(RelativeCell myRelativeCell in myRelativeCells) {
+		for(MoveCell enemyMoveCell in enemyMoveCells) {
+			InterCellInfo interCellInfo = enemyMoveCell.cell.interCellInfo[myRelativeCell.id];
+        integer range = interCellInfo.range;
+		if(range > Board.maxAOERange) continue;
+        boolean isInsight = interCellInfo.isInsight && currentRound.lineOfSight(interCellInfo);
+        boolean isDiag = interCellInfo.isDiag;
+        boolean isInLine = interCellInfo.isInline;		
+		Array<Tool> toolsList = [];
+	    for(Tool tool in myRelativeCell.toolsList) {
+          integer launch = tool.launchType;
+          if(range > tool.maxRange || range < tool.minRange || tool.needLos && !isInsight || 
+             launch == LAUNCH_TYPE_LINE && !isInLine || launch == LAUNCH_TYPE_DIAGONAL && !isDiag || 
+             launch == LAUNCH_TYPE_STAR && !isDiag && !isInLine || launch == LAUNCH_TYPE_STAR_INVERTED && (isDiag || isInLine)) continue
+		    push(toolsList,tool);
+		  }
+		  // TODO: on en fait quoi de tout ce bazard ?
+		}
+	  }
+	}
 	  
 	//
     // phase X: pour chaque combinaison d arme, AOE, nbtarget,tp touche on determine les degat obtenu et la meilleure combi

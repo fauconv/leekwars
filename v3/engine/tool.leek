@@ -57,8 +57,6 @@ class Tool extends Objects {
       }
 	} else {
       isAOE = true;
-      maxAOERange = maxRange+AOERange;
-      minAOERange = max(minRange-AOERange,1);
       if(areaType == AREA_X_3) {
         AOERange = 6;
         AOELaunchType = LAUNCH_TYPE_DIAGONAL;
@@ -90,6 +88,8 @@ class Tool extends Objects {
         AOERange = 1;
         AOELaunchType = LAUNCH_TYPE_LINE;
       }
+	  maxAOERange = maxRange+AOERange;
+      minAOERange = max(minRange-AOERange,1);
     }
     
   }
@@ -101,7 +101,7 @@ class Tool extends Objects {
    **/
   string string() {
     return this.class.name+"("+TOOL_NAME_TRANSLATOR[id]+"):\n  areaType:"+areaType+"\n  needLos:"+needLos+"\n  cost:"+cost+
-          "\n  launchType:"+TOOL_LAUNCHTYPE_TRANSLATOR[launchType]+"\n  minRange:"+minRange+"\n  maxRange:"+maxRange;
+          "\n  launchType:"+TOOL_LAUNCHTYPE_TRANSLATOR[launchType]+"\n  minRange:"+minRange+"\n  maxRange:"+maxRange+"\n  cooldown:"+cooldown;
   }
   string shortString() {
     return this.class.name+"("+TOOL_NAME_TRANSLATOR[id]!+")";

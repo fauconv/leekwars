@@ -59,7 +59,7 @@ class Board extends Objects {
       //
       // cells creations
       //
-	  InterCellInfo interCellNull = new InterCellInfo();
+	  InterCellInfo interCellNull = new InterCellInfo(maxAOERange);
       for(integer i = 0;i < NB_CELLS; i++) {
         push(cells, (getCellContent(i) == CELL_OBSTACLE)?new Wall(i, interCellNull):new FreeCell(i, interCellNull));
       }
@@ -131,7 +131,7 @@ class Board extends Objects {
    * define los, distance, diag and line
    **/
   static boolean interCellCompute() {
-	integer limit = MAX_OPERATION - ROUND_OPERATIONS;
+	integer limit = getMaxOperations() - INTERCELL_OPERATIONS;
 	integer m = 0;
     for(integer x = Board.oldX; x < NB_CELLS; x++) {
       Cell cellFrom = cells[x];
@@ -140,10 +140,10 @@ class Board extends Objects {
         Cell cellTo = cells[y];
         if(cellTo.isWall) continue;
         integer range = getCellDistance(x, y);
-        if(range > MAX_RANGE) continue;
+        if(range > maxAOERange) continue;
         cellFrom.interCellInfo[cellTo.id] = cellTo.interCellInfo[cellFrom.id] = new InterCellInfo(cellFrom, cellTo, range);
       }
-	  if(x > PERF_INIT) {
+	  if(x > INTERCELL_TEST) {
 	    if(getOperations() > limit) {
 		  oldX = x+1;
 		  return false
