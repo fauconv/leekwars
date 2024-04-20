@@ -41,7 +41,7 @@ class BasicStrategy extends Strategy {
 	//
     if(gFirstRound) {
       moveTowardCell(meRound.getRelativeCenter().id);
-	  setWeapon(meRound.weaponsRound[0].id)
+	  if(count(meRound.weaponsRound) > 0) setWeapon(meRound.weaponsRound[0].id)
       return;
     }
 	  
@@ -61,12 +61,6 @@ class BasicStrategy extends Strategy {
 	// certaine simulation permettent d aller plus loin grace au chips de buff MP
 	//
 	Map<integer,MoveCell> myMoveCells = parcour(meRound.currentCell, myMPToolList, meRound.id)
-	/*if(BASIC_STRATEGY_DEBUG) {
-	  for(MoveCell mc in myMoveCells) {
-	    mark(mc.id,COLOR_YELLOW,1);
-		markText(mc.id,count(mc.simulations),0,1);
-	  }
-    }*/
 	
 	//
 	// phase 2 : on determine les tire que je peux faire
@@ -147,33 +141,73 @@ class BasicStrategy extends Strategy {
 	for(ToolRound toolR in enemyRound.categoryDamage) push(tools,toolR.tool);
 	for(MoveCell myMoveCell in myMoveCells) {
 	  Map<integer, RelativeCell> myRelativeCells = myMoveCell.cell.getRelativeCells(tools);
+	  Map<real,Map<integer,Tool>> enemyTools = myMoveCell.enemyTools;
 	  for(RelativeCell myRelativeCell in myRelativeCells) {
 		for(MoveCell enemyMoveCell in enemyMoveCells) {
-			InterCellInfo interCellInfo = enemyMoveCell.cell.interCellInfo[myRelativeCell.id];
-        integer range = interCellInfo.range;
-		if(range > Board.maxAOERange) continue;
-        boolean isInsight = interCellInfo.isInsight && currentRound.lineOfSight(interCellInfo);
-        boolean isDiag = interCellInfo.isDiag;
-        boolean isInLine = interCellInfo.isInline;		
-		Array<Tool> toolsList = [];
-	    for(Tool tool in myRelativeCell.toolsList) {
-          integer launch = tool.launchType;
-          if(range > tool.maxRange || range < tool.minRange || tool.needLos && !isInsight || 
-             launch == LAUNCH_TYPE_LINE && !isInLine || launch == LAUNCH_TYPE_DIAGONAL && !isDiag || 
-             launch == LAUNCH_TYPE_STAR && !isDiag && !isInLine || launch == LAUNCH_TYPE_STAR_INVERTED && (isDiag || isInLine)) continue
-		    push(toolsList,tool);
+	      InterCellInfo interCellInfo = enemyMoveCell.cell.interCellInfo[myRelativeCell.id];
+          integer range = interCellInfo.range;
+		  if(range > Board.maxAOERange) continue;
+          boolean isInsight = interCellInfo.isInsight && currentRound.lineOfSight(interCellInfo);
+          boolean isDiag = interCellInfo.isDiag;
+          boolean isInLine = interCellInfo.isInline;		
+	      for(Tool tool in myRelativeCell.toolsList) {
+            integer launch = tool.launchType;
+            if(range > tool.maxRange || range < tool.minRange || tool.needLos && !isInsight || 
+               launch == LAUNCH_TYPE_LINE && !isInLine || launch == LAUNCH_TYPE_DIAGONAL && !isDiag || 
+               launch == LAUNCH_TYPE_STAR && !isDiag && !isInLine || launch == LAUNCH_TYPE_STAR_INVERTED && (isDiag || isInLine)) continue
+		    if(!mapContainsKey(enemyTools, myRelativeCell.AOE)) enemyTools[myRelativeCell.AOE] = [tool.id:tool];
+			else enemyTools[myRelativeCell.AOE]![tool.id] = tool; // si il existe deja on l ecrase c est pas grave
 		  }
-		  // TODO: on en fait quoi de tout ce bazard ?
 		}
 	  }
 	}
+	 
+	Object myColoredMoveCells {
+	  neutral:[], // il me touche pas je le touche pas
+	  bad:[], // il me touche, je le touche pas
+	  good:[], // je le touche, il me touche pas
+	  annihilation:[] // on se touche tous les 2
+    }
+	for(MoveCell mc in myMoveCells) {
+	  if(count(mc.targetCells) == 0) {
+	    if(mapSize(mc.enemyTools) == 0) {
+		  push(myColoredMoveCells.neutral as Array, mc);
+		  mark(mc.id,COLOR_BLUE,1); // je ne peux pas toucher, il ne peut pas me toucher
+		} else {
+		  push(myColoredMoveCells.bad as Array, mc);
+		  mark(mc.id,COLOR_RED,1); // je ne peux pas toucher, il peut me toucher
+		}
+      } else {
+		if(mapSize(mc.enemyTools) == 0) {
+		  push(myColoredMoveCells.good as Array, mc);
+		  mark(mc.id,COLOR_GREEN,1); // je peux le toucher, il peut pas me toucher
+		} else {
+		  push(myColoredMoveCells.annihilation as Array, mc);
+		  mark(mc.id,COLOR_YELLOW,1); // on peut se toucher tous les 2
+		}
+      }
+	}
+	
+	// ===> a ce point j ai des movecell pour chaque case vers laquelle je peux aller, contenant : 
+	//      - LES simulationS de chip de MP qui doivent etre utiliser pour y aller (y compris la simulation vide quand elle est utilisable)
+	//      - la liste des relativecell que je peux toucher avec, les armes utilisable sur cette relativeCell, 
+	//                                                            le poireau que je touche (pas de gestion multi target), et l AOE
+	//      - la liste des tools enemy qui peuvent me toucher sur cette moveCell et l AOE correspondant
+	// ===> les moveCells sont trier par couleur
+	
+	// TODO: ------------------------------- reprendre le code de la ------------------------------------------
+	  
+	if(count(myColoredMoveCells.good as Array) > 0) good(myColoredMoveCells.good as Array<MoveCell>);
+	else if(count(myColoredMoveCells.annihilation as Array) > 0) annihilation(myColoredMoveCells.annihilation as Array<MoveCell>);
+	else if(count(myColoredMoveCells.neutral as Array) > 0) neutral(myColoredMoveCells.neutral as Array<MoveCell>);
+	else bad(myColoredMoveCells.bad as Array<MoveCell>);
+	  
+	//
+	// phase 5: pour chaque moveCell je determine les moveCells de retraite
+	//
 	  
 	//
     // phase X: pour chaque combinaison d arme, AOE, nbtarget,tp touche on determine les degat obtenu et la meilleure combi
-	  
-	//
-	// phase X : on determine les mouvement de retraite
-	//
 	
 	//
 	// phase X : on determine les chip de soin et de protection a utiliser
@@ -236,5 +270,28 @@ class BasicStrategy extends Strategy {
 	  
   }
 
+  /**
+   * good
+   **/
+  void good(Array<MoveCell> moveCellsList) {
+  }
+
+  /**
+   * neutral
+   **/
+  void neutral(Array<MoveCell> moveCellsList) {
+  }
+
+  /**
+   * annihilation
+   **/
+  void annihilation(Array<MoveCell> moveCellsList) {
+  }
+
+  /**
+   * bad
+   **/
+  void bad(Array<MoveCell> moveCellsList) {
+  }
 }
 

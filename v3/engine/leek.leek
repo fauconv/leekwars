@@ -34,15 +34,15 @@ class Leek extends Objects {
     name     = getName(id)!;
     farmer   = getFarmerName(id)!;
     
-    Array<integer> weapons = getWeapons(id)!;
-    if(weapons) for(integer weaponId in weapons) {
+    Array<integer>|null weapons = getWeapons(id);
+    if(weapons != null) for(integer weaponId in weapons!) {
       Weapon weapon = new Weapon(weaponId, this);
       categoriseTool(weapon);
       push(this.weapons, weapon);
     }
 
-    Array<integer> chips = getChips(id)!;
-    if(chips) for(integer chipId in chips) {
+    Array<integer>|null chips = getChips(id);
+    if(chips != null) for(integer chipId in chips!) {
       Chip chip = new Chip(chipId, this);
       categoriseTool(chip);
       push(this.chips, chip);

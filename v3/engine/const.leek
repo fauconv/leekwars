@@ -312,7 +312,8 @@ global Map<integer,string> TOOL_NAME_TRANSLATOR = [
   CHIP_WHIP:"chip whip",
   CHIP_WINGED_BOOTS:"chip winged_boots",
   CHIP_WIZARD_BULB:"chip wizard_bulb",
-  CHIP_WIZARDRY:"chip wizardry"
+  CHIP_WIZARDRY:"chip wizardry",
+  425: "chip exasperation"
 ]
 
 //
@@ -397,5 +398,6 @@ global Map<integer,string> EFFECT_CATEGORY = [
   EFFECT_ATTRACT:"categoryMove",
   EFFECT_INVERT:"categoryMove",
   EFFECT_PUSH:"categoryMove",
-  EFFECT_TELEPORT:"categoryMove"
+  EFFECT_TELEPORT:"categoryMove",
+  60: "categoryOther" // pour la chip exasperation
 ]

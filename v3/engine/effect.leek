@@ -102,7 +102,13 @@ class Effect extends Objects {
   constructor(Array<integer|real> effectArray, Tool owner) {
     this.owner = owner;
     type = effectArray[0] as integer;
-    category = EFFECT_CATEGORY[type]!;
+	if(EFFECT_CATEGORY[type] == null) {
+	  debugC("Effect=>constructor=>type("+type+")inconnu sur tool("+owner.id+")",COLOR_RED);
+	  category = "categoryOther";
+	  setRegister("error_Effect_category_"+type, "Effect=>constructor=>type("+type+")inconnu sur tool("+owner.id+")");
+	} else {
+	  category = EFFECT_CATEGORY[type]!;
+	}
     minEffect = round(effectArray[1] as real);
     maxEffect = round(effectArray[2] as real);
     midEffect = round((minEffect+maxEffect)/2);

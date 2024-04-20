@@ -8,7 +8,8 @@ class MoveCell extends Objects {
   Array<Simulation> simulations;
   Array<integer> MPRemainingBySimulation;
   integer maxMPRemaining;
-  Array<RelativeCell> targetCells = [];
+  Array<RelativeCell> targetCells = []; // liste de cell que l on peut viser pour atteindre l ennemie a partir de cette moveCell
+  Map<real,Map<integer,Tool>> enemyTools = [:]; // liste des tools enemy qui peuvent nous atteindre sur cette moveCell classe par AOE
   
   /**
    * constructor
