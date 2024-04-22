@@ -12,23 +12,30 @@ class InterCellInfo extends Objects {
    * constructor
    **/
   constructor(integer maxAOERange) {
-    range = maxAOERange+1;
+    range = MAX_DISTANCE;
 	isInline = false;
 	isDiag = false;
 	isInsight = false;
 	interCells = [];
   }
-  constructor(Cell cellFrom, Cell cellTo, integer range) {																						  ;
+  constructor(Cell cellFrom, Cell cellTo, integer range) {																
     this.range = range;
-	this.isInline = (cellFrom.x == cellTo.x || cellFrom.y == cellTo.y);
-	this.isDiag = (abs(cellFrom.x-cellTo.x) == abs(cellFrom.y-cellTo.y));
-    interCells = cellFrom.getTrajectory(cellTo);
-	isInsight = true;
-    for(integer cell in interCells) {
-	  if(Board.cells[cell].isWall) {
-	    isInsight = false; // lineOfSight ne marche pas car il prend les poireau comme des mur donc on doit tester nous meme
-		break;
+	if(range <= Board.maxAOERange) {
+	  this.isInline = (cellFrom.x == cellTo.x || cellFrom.y == cellTo.y);
+	  this.isDiag = (abs(cellFrom.x-cellTo.x) == abs(cellFrom.y-cellTo.y));
+      interCells = cellFrom.getTrajectory(cellTo);
+	  isInsight = true;
+      for(integer cell in interCells) {
+	    if(Board.cells[cell].isWall) {
+	      isInsight = false; // lineOfSight ne marche pas car il prend les poireau comme des mur donc on doit tester nous meme
+		  break;
+		}
 	  }
+	} else {
+	  isInline = false;
+	  isDiag = false;
+	  isInsight = false;
+	  interCells = [];
 	}
   }
 }

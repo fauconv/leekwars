@@ -54,12 +54,12 @@ end();
  * end
  *********************************************************/
 function end() => void {
+  Talk.talk();
+  GameDebug.display();
   if(gFirstRound) {
     gFirstRound = false;
     gSecondRound = true;
   } else {
     gSecondRound = false;
   }
-  Talk.talk();
-  GameDebug.display();
 }

@@ -20,6 +20,7 @@ global integer INTERCELL_OPERATIONS = 65000;   // nombre d operation max pour ca
 //
 global integer LAUNCH_TYPE_SQUARE = 4;     // a missing launch_type constant 
 global integer NB_CELLS           = 613;
+global integer MAX_DISTANCE       = 34; // 2*17
 global integer CENTER_CELL_ID     = 306;
 global integer MIN_COORD          = -17;
 global integer MAX_COORD          = 17;

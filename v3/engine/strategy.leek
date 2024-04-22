@@ -14,7 +14,7 @@ class Strategy extends Objects {
   /**
    * apply
    **/
-  void apply() {
+  boolean apply() {
     (gFirstRound) and (Talk.text = "Je n'ai pas été codé pour ce format de combat, donc je bouge pas et toc !");
   }
 }

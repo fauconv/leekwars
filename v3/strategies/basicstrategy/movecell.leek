@@ -10,7 +10,9 @@ class MoveCell extends Objects {
   integer maxMPRemaining;
   Array<RelativeCell> targetCells = []; // liste de cell que l on peut viser pour atteindre l ennemie a partir de cette moveCell
   Map<real,Map<integer,Tool>> enemyTools = [:]; // liste des tools enemy qui peuvent nous atteindre sur cette moveCell classe par AOE
-  
+  Map<integer,MoveCell> escapes = [:]; // liste des cell vers lesquels je peux fuir apres avoir agis ici
+  Map<integer,MoveCell> goodEscapes = [:]; // liste des cell vers lesquels je peux fuir apres avoir agis ici et qui me permette de pas etre touche
+	
   /**
    * constructor
    * Attention: simulations et MPRemainingBySimulation doivent etre de la meme taille

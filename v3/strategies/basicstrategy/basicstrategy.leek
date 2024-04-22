@@ -6,12 +6,13 @@ include("movecell");
  ****************************************************************************/
 class BasicStrategy extends Strategy {
   
+  static Me me;
   static Enemy enemy;          
-  static integer enemyId;
   static MeRound meRound;       // MeRound
   static EnemyRound enemyRound;    // EnemyRound
   static Round currentRound;  // Round
-  static Array<Simulation> mySoluces = []; // l id des soluce correspond a l id de l index du tableau comme si c etait une map
+  static string enemyState = "unknown"; // "escape" ou "approach" ou "unknown"
+  static string myState = "center"; // "center" ou "longrange" ou "melee" ou "shortrange"
   
   /**
    * isValide
@@ -21,33 +22,20 @@ class BasicStrategy extends Strategy {
   static boolean isValide() {
     if(count(Board.enemies) > 1) return false;
     enemy = Board.enemies[0];
-    enemyId = enemy.id;
+	me = Board.me;
     return isEmpty(enemy.categoryBulb);
   }
   
   /**
    * apply
    **/
-  void apply() {
+  boolean apply() {
     currentRound = Board.currentRound;
     meRound = currentRound.meRound;
     enemyRound = currentRound.enemiesRound[0];
     
-	GameDebug.addOperation(true,"init");
-	GameDebug.add(true,Board.maxAOERange,"maxAOERange");
-	  
-	//
-	// first round
-	//
-    if(gFirstRound) {
-      moveTowardCell(meRound.getRelativeCenter().id);
-	  if(count(meRound.weaponsRound) > 0) setWeapon(meRound.weaponsRound[0].id)
-      return;
-    }
-	  
-	//
-	// other rounds
-	//
+	GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"init");
+	GameDebug.add(BASIC_STRATEGY_DEBUG,Board.maxAOERange,"maxAOERange");
 	
 	//
 	// phase 1 : on determine les mouvements possibles de mon poireau
@@ -162,27 +150,25 @@ class BasicStrategy extends Strategy {
 	  }
 	}
 	 
-	Object myColoredMoveCells {
-	  neutral:[], // il me touche pas je le touche pas
-	  bad:[], // il me touche, je le touche pas
-	  good:[], // je le touche, il me touche pas
-	  annihilation:[] // on se touche tous les 2
-    }
+	Array<MoveCell> myMoveCellsNeutral = []; // il me touche pas je le touche pas
+	Array<MoveCell> myMoveCellsBad = []; // il me touche, je le touche pas
+	Array<MoveCell> myMoveCellsGood = []; // je le touche, il me touche pas
+	Array<MoveCell> myMoveCellsAnnihilation = []; // on se touche tous les 2
 	for(MoveCell mc in myMoveCells) {
 	  if(count(mc.targetCells) == 0) {
 	    if(mapSize(mc.enemyTools) == 0) {
-		  push(myColoredMoveCells.neutral as Array, mc);
+		  push(myMoveCellsNeutral, mc);
 		  mark(mc.id,COLOR_BLUE,1); // je ne peux pas toucher, il ne peut pas me toucher
 		} else {
-		  push(myColoredMoveCells.bad as Array, mc);
+		  push(myMoveCellsBad, mc);
 		  mark(mc.id,COLOR_RED,1); // je ne peux pas toucher, il peut me toucher
 		}
       } else {
 		if(mapSize(mc.enemyTools) == 0) {
-		  push(myColoredMoveCells.good as Array, mc);
+		  push(myMoveCellsGood, mc);
 		  mark(mc.id,COLOR_GREEN,1); // je peux le toucher, il peut pas me toucher
 		} else {
-		  push(myColoredMoveCells.annihilation as Array, mc);
+		  push(myMoveCellsAnnihilation, mc);
 		  mark(mc.id,COLOR_YELLOW,1); // on peut se toucher tous les 2
 		}
       }
@@ -195,33 +181,32 @@ class BasicStrategy extends Strategy {
 	//      - la liste des tools enemy qui peuvent me toucher sur cette moveCell et l AOE correspondant
 	// ===> les moveCells sont trier par couleur
 	
-	// TODO: ------------------------------- reprendre le code de la ------------------------------------------
-	  
-	if(count(myColoredMoveCells.good as Array) > 0) good(myColoredMoveCells.good as Array<MoveCell>);
-	else if(count(myColoredMoveCells.annihilation as Array) > 0) annihilation(myColoredMoveCells.annihilation as Array<MoveCell>);
-	else if(count(myColoredMoveCells.neutral as Array) > 0) neutral(myColoredMoveCells.neutral as Array<MoveCell>);
-	else bad(myColoredMoveCells.bad as Array<MoveCell>);
-	  
-	//
-	// phase 5: pour chaque moveCell je determine les moveCells de retraite
-	//
-	  
-	//
-    // phase X: pour chaque combinaison d arme, AOE, nbtarget,tp touche on determine les degat obtenu et la meilleure combi
-	
-	//
-	// phase X : on determine les chip de soin et de protection a utiliser
-	//
-	
-	//
-	// phase X : on choisi la meilleure soluce
-	//
+	for(MoveCell mc in myMoveCellsGood) {
+	  parcourEscape(mc, myMoveCells);
+	}
+	for(MoveCell mc in myMoveCellsAnnihilation) {
+	  parcourEscape(mc, myMoveCells);
+	  if(mapSize(mc.goodEscapes) > 0) {
+	    push(myMoveCellsGood, mc);
+	  }
+	}
+	if(count(myMoveCellsGood) > 0) return good(myMoveCellsGood);
+	if(count(myMoveCellsAnnihilation) > 0) {
+	  if(count(myMoveCellsNeutral) > 0) return annihilationNeutral(myMoveCellsAnnihilation, myMoveCellsNeutral);
+	  return annihilation(myMoveCellsAnnihilation);
+	}
+	if(count(myMoveCellsNeutral) > 0) {
+	  if(count(myMoveCellsBad) > 0) return badNeutral(myMoveCellsNeutral);
+	  else return neutral(myMoveCellsNeutral); 
+	}
+	return bad(myMoveCellsBad);
 	
   }
 
 	
   /**
    * parcour
+   * donne la liste des moveCell d un poireau c est a dire la liste des cellule ou il peut aller avec ces simulations
    * Attention: on utilise le round de la startCell comme reference pour determiner la position 
    * des poireaux
    * TODO: ajouter la gestion de la chip de saut
@@ -267,31 +252,84 @@ class BasicStrategy extends Strategy {
       }
     }
     return flatReachableCells
-	  
   }
-
+	
+  /**
+   * pour une moveCell determine la liste des moveCell qui peuvent lui servir d echapatoire (escapes et goodEscapes)
+   * en fonction des MP qui reste dans la moveCell par simulation
+   **/
+  void parcourEscape(MoveCell startCell, Map<integer, MoveCell> moveCellList) {
+    if(startCell.maxMPRemaining <= 0) return;
+	debugC("BasicStrategy=>parcourEscape=>TODOOOOOOO",COLOR_RED);
+	// TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	
+  }
+  
   /**
    * good
    **/
-  void good(Array<MoveCell> moveCellsList) {
+  boolean good(Array<MoveCell> myMoveCells) {
+	// TODO: il faut determiner si il est interessant d utiliser qu en meme les buff de MP si ca nous donne un avantage au tour suivant
+	debugC("BasicStrategy=>good=>calcul des degat et choix de la moveCell pour l attaque et penser a s echapper si c est une annihilation",COLOR_RED);  
+	return true;
   }
 
   /**
-   * neutral
+   * annihilationNeutral
    **/
-  void neutral(Array<MoveCell> moveCellsList) {
+  boolean annihilationNeutral(Array<MoveCell> myMoveCellsAnnihilation, Array<MoveCell> myMoveCellsNeutral) {
+	debugC("BasicStrategy=>annihilationNeutral=>calcul des degat et choix de la moveCell pour l attaque et penser a s echapper au moins pire",COLOR_RED); 
+	// TODO: on mets les protection, les heal et les preservatif ou on tape fort ou on s echappe ? si on a deja les protec on tape fort et on s echappe au moins pire
+	return true;
   }
-
+	
   /**
    * annihilation
    **/
-  void annihilation(Array<MoveCell> moveCellsList) {
+  boolean annihilation(Array<MoveCell> myMoveCells) {
+	debugC("BasicStrategy=>annihilation=>calcul des degat et choix de la moveCell pour l attaque et penser a s echapper au moins pire",COLOR_RED);
+    // TODO: on mets les protection, les heal et les preservatif ou on tape fort ? si on a deja les protec on tape fort
+	return true;
   }
 
   /**
+   * badNeutral
+   **/
+  boolean badNeutral(Array<MoveCell> moveCellsList) {
+    debugC("BasicStrategy=>badNeutral=>on choisi une neutral en evitant les bads",COLOR_RED);
+	// TODO: on mets les protection, les heal et les preservatif
+	return true;
+  }
+	
+  /**
    * bad
    **/
-  void bad(Array<MoveCell> moveCellsList) {
+  boolean bad(Array<MoveCell> moveCellsList) {
+    debugC("BasicStrategy=>bad=>on choisi la moins pire des bads",COLOR_RED); 
+	// TODO: on mets les protection, les heal et les preservatif
+	return true;
   }
+	
+  /**
+   * neutral
+   **/
+  boolean neutral(Array<MoveCell> moveCellsList) {
+    if(gFirstRound) {
+	  Array<integer> priorizedWeapon = WeaponsConditions(me.tools);
+	  if(count(priorizedWeapon) == 0) {
+		if(count(me.weapons) > 0) {
+		  meRound.setWeaponRound(me.weapons[0].id);
+	      debugC("BasicStrategy=>neutral=>aucune arme connu", COLOR_RED);
+		  debug(Board.me.tools);
+		} // else j ai pas d arme
+	  } else {
+		meRound.setWeaponRound(priorizedWeapon[0]);
+	  }
+	}
+	// TODO: il faut determiner si il est interessant d utiliser qu en meme les buff de MP si ca nous donne un avantage au tour suivant
+	debugC("BasicStrategy=>neutral=>choix de la moveCell",COLOR_RED);
+	return true;
+  }
+
 }
 

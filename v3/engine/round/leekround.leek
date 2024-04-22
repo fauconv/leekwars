@@ -311,13 +311,10 @@ class EnemyRound extends LeekRound {
 
 /******************************************************************************
  * MeRound
- * TODO: garder l'historique des relative center cell dans le Leek. est ce bien utile d avoir le CellRound et le Cell du relative center cell ?
  ******************************************************************************/
 class MeRound extends LeekRound {
   
-  integer relativeCenterCellId;
-  CellRound|null relativeCenterCellRound;
-  Cell|null relativeCenterCell;
+  integer relativeCenterCellId = -1;
   Array<integer>|null pathToCenter;
   
   /**
@@ -336,9 +333,9 @@ class MeRound extends LeekRound {
    *
    * @return CellRound
    **/
-  CellRound getHistoricalRelativeCenter() {
+  integer getHistoricalRelativeCenter() {
     if((leek as Me).historicalRelativeCenterCellId == -1) return getRelativeCenter();
-    roundObj.cellsRound[(leek as Me).historicalRelativeCenterCellId];
+    return (leek as Me).historicalRelativeCenterCellId;
   }
   
   /**
@@ -346,34 +343,31 @@ class MeRound extends LeekRound {
    *
    * @return CellRound
    **/
-  CellRound getRelativeCenter() {
-    if(relativeCenterCellRound != null) return relativeCenterCellRound!;
+  integer getRelativeCenter() {
+    if(relativeCenterCellId > -1) return relativeCenterCellId;
     (!Board.centerCell.isDeadEnd) and (pathToCenter = getPath(currentCellId, CENTER_CELL_ID));
     if (pathToCenter) {
       relativeCenterCellId    = CENTER_CELL_ID;
-      relativeCenterCell      = Board.cells[relativeCenterCellId];
-      relativeCenterCellRound = roundObj.cellsRound[relativeCenterCellId];
-    } else {
-      Array<integer> trajectoryToCenter = currentCell.cell.getTrajectory(Board.centerCell)
-      boolean ok = false;
-      Cell finalCell;
-      while(!isEmpty(trajectoryToCenter)) {
-        finalCell = Board.cells[pop(trajectoryToCenter) as integer];
-        if(!finalCell.isDeadEnd) {
-          if (pathToCenter = getPath(currentCellId, finalCell.id)) {
-            ok = true;
-            break;
-          }
+	  (leek as Me).historicalRelativeCenterCellId = relativeCenterCellId;
+	  return relativeCenterCellId;
+    }
+    Array<integer> trajectoryToCenter = currentCell.cell.getTrajectory(Board.centerCell)
+    boolean ok = false;
+    Cell finalCell;
+    while(!isEmpty(trajectoryToCenter)) {
+      finalCell = Board.cells[pop(trajectoryToCenter) as integer];
+      if(!finalCell.isDeadEnd) {
+        if (pathToCenter = getPath(currentCellId, finalCell.id)) {
+          ok = true;
+          break;
         }
       }
-      if(ok) {
-        relativeCenterCellId    = finalCell.id;
-        relativeCenterCell      = finalCell;
-        relativeCenterCellRound = roundObj.cellsRound[relativeCenterCellId];
-        (leek as Me).historicalRelativeCenterCellId = relativeCenterCellId;
-      } // else relativeCenterCell = null
     }
-    return relativeCenterCellRound!;
+    if(ok) {
+      relativeCenterCellId    = finalCell.id;
+      (leek as Me).historicalRelativeCenterCellId = relativeCenterCellId;
+    } // else relativeCenterCell = null
+    return relativeCenterCellId;
   }
 
   /**

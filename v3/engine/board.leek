@@ -140,7 +140,6 @@ class Board extends Objects {
         Cell cellTo = cells[y];
         if(cellTo.isWall) continue;
         integer range = getCellDistance(x, y);
-        if(range > maxAOERange) continue;
         cellFrom.interCellInfo[cellTo.id] = cellTo.interCellInfo[cellFrom.id] = new InterCellInfo(cellFrom, cellTo, range);
       }
 	  if(x > INTERCELL_TEST) {

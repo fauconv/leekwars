@@ -1,10 +1,10 @@
-
-if(getTurn() == 1) setWeapon(WEAPON_BAZOOKA)
-moveTowardCell(220);
-if(canUseWeaponOnCell(395)) {
-	debug("oui");
-	useWeaponOnCell(395);
-} else {
-	debug("non");
-}
+debug("distance:"+getCellDistance(304, 101));
+integer x1 = getCellX(304)!;
+integer y1 = getCellY(304)!;
+integer x2 = getCellX(101)!;
+integer y2 = getCellY(101)!;
+integer opt = getOperations();
+integer dist = abs(x1-x2) + abs(y1-y2);
+integer opt2 = getOperations();
+debug("dist2:"+dist+"/"+(opt2-opt));
 pause();

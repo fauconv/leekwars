@@ -1,17 +1,11 @@
 include("simulation");
 
 /**
- * ordre d utilisation des chips :
- * 1- CHIP_STRETCHING
- * 2- CHIP_MOTIVATION
- * 3- CHIP_LEATHER_BOOTS
- **/
-
-/**
  * condition d utilisation des chips lors de la phase de prediction des mouvements
  * 1- CHIP_STRETCHING
  * 2- CHIP_MOTIVATION
  * 3- CHIP_LEATHER_BOOTS
+ * TODO: chip de saut
  **/
 function MPConditions(LeekRound owner) => Array<Simulation> {
   Simulation sim2, sim3, sim = new Simulation(owner.roundObj);
@@ -49,10 +43,29 @@ function MPConditions(LeekRound owner) => Array<Simulation> {
  * MPConditionsAddSim
  * macro pour MPConditions 
  **/
-function MPConditionsAddSim(Array<Simulation> ret, Simulation sim, integer leekId, integer toolsRoundId, integer currentCellId) => Simulation {
+function MPConditionsAddSim(Array<Simulation> ret, Simulation sim, integer leekId, integer toolId, integer currentCellId) => Simulation {
   sim = new Simulation(sim);
-  sim.addToolAction(leekId, toolsRoundId, currentCellId);
+  sim.addToolAction(leekId, toolId, currentCellId);
   push(ret, sim);
   return sim;
+}
+
+/**
+ * priorite d utilisation des weapons (pour setWeapon)
+ * TODO: on peut ajouter des condition en fonction des caracteristique du poireau en face
+ * 1 - WEAPON_SHOTGUN
+ * 2 - WEAPON_NEUTRINO
+ * 3 - WEAPON_MAGNUM
+ * 4 - WEAPON_MACHINE_GUN
+ * 5 - WEAPON_PISTOL
+ **/
+function WeaponsConditions(Map<integer,Tool> weapons) => Array<integer> {
+  Array<integer> ret = [];
+  if(mapContainsKey(weapons, WEAPON_SHOTGUN)) push(ret, WEAPON_SHOTGUN);
+  if(mapContainsKey(weapons, WEAPON_NEUTRINO)) push(ret, WEAPON_NEUTRINO);
+  if(mapContainsKey(weapons, WEAPON_MAGNUM)) push(ret, WEAPON_MAGNUM);
+  if(mapContainsKey(weapons, WEAPON_MACHINE_GUN)) push(ret, WEAPON_MACHINE_GUN);
+  if(mapContainsKey(weapons, WEAPON_PISTOL)) push(ret, WEAPON_PISTOL);
+  return ret;
 }
 
