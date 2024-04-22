@@ -10,7 +10,6 @@ class Board extends Objects {
   static Round currentRound;
   static Round previousRound;
   static Cell centerCell;
-  static integer oldX = 1; // pour le cas ou on doit repprendre l initialisation au tour 2 si elle est trop longue
   
   static Array<Enemy> enemies = []; 
   static Array<Allie> allies  = [];
@@ -97,14 +96,25 @@ class Board extends Objects {
         }
       }
 	} // First Round
-	  
-    if(!interCellCompute()) return false;
+	
+	//
+	// interCell computation
+	//
+    for(integer x = 0; x < NB_CELLS; x++) {
+      Cell cellFrom = cells[x];
+      if(cellFrom.isWall) continue;
+      for(integer y = 0; y < x; y++) {
+        Cell cellTo = cells[y];
+        if(cellTo.isWall) continue;
+        integer range = getCellDistance(x, y);
+        cellFrom.interCellInfo[cellTo.id] = cellTo.interCellInfo[cellFrom.id] = new InterCellInfo(cellFrom, cellTo, range);
+      }
+    }
   
     //
     // first round
     //
-    currentRound = new Round();
-	previousRound = currentRound;
+    previousRound = currentRound = new Round();
 	
 	return true;
   }
@@ -127,32 +137,6 @@ class Board extends Objects {
 	previousRound = currentRound;
     currentRound = new Round();
   
-  }
-	
-  /**
-   * interCellCompute
-   * define los, distance, diag and line
-   **/
-  static boolean interCellCompute() {
-	integer limit = getMaxOperations() - INTERCELL_OPERATIONS;
-	integer m = 0;
-    for(integer x = Board.oldX; x < NB_CELLS; x++) {
-      Cell cellFrom = cells[x];
-      if(cellFrom.isWall) continue;
-      for(integer y = 0; y < x; y++) {
-        Cell cellTo = cells[y];
-        if(cellTo.isWall) continue;
-        integer range = getCellDistance(x, y);
-        cellFrom.interCellInfo[cellTo.id] = cellTo.interCellInfo[cellFrom.id] = new InterCellInfo(cellFrom, cellTo, range);
-      }
-	  if(x > INTERCELL_TEST) {
-	    if(getOperations() > limit) {
-		  oldX = x+1;
-		  return false
-		}
-	  }
-    }
-	return true;
   }
   
 }

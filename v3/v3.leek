@@ -54,6 +54,7 @@ end();
  * end
  *********************************************************/
 function end() => void {
+	debug("first:"+gFirstRound);
   Talk.talk();
   GameDebug.display();
   if(gFirstRound) {

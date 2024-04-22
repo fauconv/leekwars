@@ -359,7 +359,7 @@ class MeRound extends LeekRound {
   /**
    * getHistoricalRelativeCenter
    *
-   * @return CellRound
+   * @return cellId
    **/
   integer getHistoricalRelativeCenter() {
     if((leek as Me).historicalRelativeCenterCellId == -1) return getRelativeCenter();
@@ -369,7 +369,7 @@ class MeRound extends LeekRound {
   /**
    * getRelativeCenter
    *
-   * @return CellRound
+   * @return cellId
    **/
   integer getRelativeCenter() {
     if(relativeCenterCellId > -1) return relativeCenterCellId;
@@ -418,8 +418,8 @@ class MeRound extends LeekRound {
     if(moveTowardCell(cellId)) {
 	  minMP = maxMP = midMP = getMP(id)!;
 	  currentCell.leekOnCell = null;
-	  currentCellId = cellId;
-	  currentCell = roundObj.cellsRound[cellId];
+	  currentCellId = getCell(id)!;
+	  currentCell = roundObj.cellsRound[currentCellId];
 	  currentCell.leekOnCell = this;
 	}
 	return false;

@@ -4,13 +4,15 @@
 class MoveCell extends Objects {
   
   integer ownerId;
-  Array<Object> simulations; // Array({simulation:Simulation,remainingMP:integer})
+  Array<Object> simulations; // Array<{simulation:Simulation,remainingMP:integer}>
   integer maxRemainingMP;
   Array<RelativeCell> targetCells = []; // liste de cell que l on peut viser pour atteindre l ennemie a partir de cette moveCell
   Map<real,Map<integer,Tool>> enemyTools = [:]; // liste des tools enemy qui peuvent nous atteindre sur cette moveCell classe par AOE
-  Array<MoveCell> escapes = []; // liste des cell vers lesquels je peux fuir apres avoir agis ici mais qui sont pas good
-  Array<MoveCell> goodEscapes = []; // liste des cell vers lesquels je peux fuir apres avoir agis ici et qui me permette de pas etre touche
-  Map<integer,Array<integer>> remainingMPBySimulationByEscape = [:];
+  Array<Object> escapes = []; // Array<{moveCell:MoveCell,simulations:Array<{simulation:Simulation,remainingMP:integer}>}>
+	                          //liste des cell vers lesquels je peux fuir apres avoir agis ici mais qui sont pas good
+  Array<Object> goodEscapes = []; // liste des cell vers lesquels je peux fuir apres avoir agis ici 
+	                              // et qui me permette de pas etre touche
+	                           // Array<{moveCell:MoveCell,simulations:Array<{simulation:Simulation,remainingMP:integer}>}>
 	
   /**
    * constructor

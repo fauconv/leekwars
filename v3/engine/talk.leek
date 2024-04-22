@@ -67,7 +67,7 @@ class Talk extends Objects {
       if(text == "") {
         (getAliveEnemiesCount() == 0) and (context = CONT_END);
         if(!context) {
-          if(gSecondRound) context = CONT_START;
+          if(gFirstRound) context = CONT_START;
           else context = CONT_NORMAL;
         }
         integer type = contextType[context] as integer;

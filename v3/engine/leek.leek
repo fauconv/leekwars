@@ -9,6 +9,7 @@ class Leek extends Objects {
   boolean isAllie;
   boolean isEnemy;
   boolean isSummon;
+  boolean needLos = true;
   integer maxAOERange;
   
   Array<Weapon> weapons = [];
@@ -39,6 +40,7 @@ class Leek extends Objects {
       Weapon weapon = new Weapon(weaponId, this);
       categoriseTool(weapon);
       push(this.weapons, weapon);
+	  needLos = weapon.needLos && needLos;
     }
 
     Array<integer>|null chips = getChips(id);
@@ -46,6 +48,7 @@ class Leek extends Objects {
       Chip chip = new Chip(chipId, this);
       categoriseTool(chip);
       push(this.chips, chip);
+	  needLos = chip.needLos && needLos;
     }
     
   }
