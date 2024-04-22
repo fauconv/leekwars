@@ -279,6 +279,34 @@ class LeekRound extends Objects {
     this.weapon = toolsRound[weaponId];
   }
   
+  /**
+   * parcour
+   * parcour tous les chemins possible en partant de startCell avec remainingMP sans se regarder lui meme.
+   * @return Array[cellId] = remainingMP
+   **/
+  Map<integer,integer> parcour(Cell startCell, integer remainingMP) {
+	Cell voisin;
+	Array<CellRound> referenceBoard = roundObj.cellsRound;
+    Map<integer,Array<Cell>> reachableCells = [remainingMP:[startCell]] //reachableCells[remainingMP][] = cell
+    Map<integer,integer> flatReachableCells = [startCell.id:remainingMP];
+    for(integer i = remainingMP; i > 0; i--) {
+      integer futurMP = i-1
+      reachableCells[futurMP] = [];
+      for(Cell cell in reachableCells[i]!) {
+        for(string direction in LINE_DIRECTION) {
+          if(!(voisin = cell[direction] as Cell) || voisin.isWall) continue
+          integer voisinId = voisin.id;
+          LeekRound|null leekvoisin = referenceBoard[voisinId].leekOnCell;
+          if(!mapContainsKey(flatReachableCells, voisinId) && (!leekvoisin || leekvoisin!.id == id)) { // dans le cas d un deuxieme appel a parcour il se peut qu on retombe sur la position initial du poireau concerne
+            push(reachableCells[futurMP]!, voisin);
+            flatReachableCells[voisinId] = futurMP;
+		  }
+        }
+      }
+    }
+    return flatReachableCells
+  }
+  
 }
 
 /******************************************************************************

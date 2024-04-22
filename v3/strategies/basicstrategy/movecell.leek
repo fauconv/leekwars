@@ -4,25 +4,23 @@
 class MoveCell extends Objects {
   
   integer ownerId;
-  Cell cell;
-  Array<Simulation> simulations;
-  Array<integer> MPRemainingBySimulation;
-  integer maxMPRemaining;
+  Array<Object> simulations; // Array({simulation:Simulation,remainingMP:integer})
+  integer maxRemainingMP;
   Array<RelativeCell> targetCells = []; // liste de cell que l on peut viser pour atteindre l ennemie a partir de cette moveCell
   Map<real,Map<integer,Tool>> enemyTools = [:]; // liste des tools enemy qui peuvent nous atteindre sur cette moveCell classe par AOE
-  Map<integer,MoveCell> escapes = [:]; // liste des cell vers lesquels je peux fuir apres avoir agis ici
-  Map<integer,MoveCell> goodEscapes = [:]; // liste des cell vers lesquels je peux fuir apres avoir agis ici et qui me permette de pas etre touche
+  Array<MoveCell> escapes = []; // liste des cell vers lesquels je peux fuir apres avoir agis ici mais qui sont pas good
+  Array<MoveCell> goodEscapes = []; // liste des cell vers lesquels je peux fuir apres avoir agis ici et qui me permette de pas etre touche
+  Map<integer,Array<integer>> remainingMPBySimulationByEscape = [:];
 	
   /**
    * constructor
-   * Attention: simulations et MPRemainingBySimulation doivent etre de la meme taille
+   * @param simulation: Array({simulation:Simulation,remainingMP:integer})
    **/
-  constructor(Cell cell, integer ownerId, Array<Simulation> simulations, Array<integer> MPRemainingBySimulation, integer maxMPRemaining) {
-    id = cell.id;
-    this.cell = cell;
+  constructor(integer cell, integer ownerId, Array<Object> simulations, integer maxRemainingMP) {
+    id = cell;
     this.ownerId = ownerId;
 	this.simulations = simulations;
-	this.MPRemainingBySimulation = MPRemainingBySimulation;
+	this.maxRemainingMP = maxRemainingMP;
   }  
 	
 }

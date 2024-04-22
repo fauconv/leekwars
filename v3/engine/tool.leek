@@ -93,6 +93,16 @@ class Tool extends Objects {
     }
     
   }
+  
+  /**
+   * canUseTool
+   **/
+  boolean canUseTool(integer range, boolean isInsight, boolean isInLine, boolean isDiag) {
+    return (range <= maxRange && range >= minRange && (!needLos || isInsight) && 
+            (launchType != LAUNCH_TYPE_LINE || isInLine) && (launchType != LAUNCH_TYPE_DIAGONAL || isDiag) && 
+            (launchType != LAUNCH_TYPE_STAR || isDiag || isInLine) && 
+			(launchType != LAUNCH_TYPE_STAR_INVERTED || isDiag && isInLine));
+  }
     
   /**
    * toString

@@ -8,6 +8,7 @@ class Board extends Objects {
   static integer maxAOERange;
   static Me me;       
   static Round currentRound;
+  static Round previousRound;
   static Cell centerCell;
   static integer oldX = 1; // pour le cas ou on doit repprendre l initialisation au tour 2 si elle est trop longue
   
@@ -103,6 +104,7 @@ class Board extends Objects {
     // first round
     //
     currentRound = new Round();
+	previousRound = currentRound;
 	
 	return true;
   }
@@ -122,6 +124,7 @@ class Board extends Objects {
         else (leek.isAllie) and (removeElement(allies,leek));
       }
     }
+	previousRound = currentRound;
     currentRound = new Round();
   
   }

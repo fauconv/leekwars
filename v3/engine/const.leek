@@ -10,9 +10,9 @@ global boolean gSecondRound = false;       // deuxieme tour
 global Strategy gAvailableStrategie;       // selected strategy
 
 global boolean gBoardInit   = false;       // true quand le board est initialise completement
-global integer INTERCELL_TEST = 550;       // entre 1 et 612. plus il est haut plus l init est rapide, 
+global integer INTERCELL_TEST = 500;       // entre 1 et 612. plus il est haut plus l init est rapide, 
                                            // plus il est bas moins il y a risque de depasser le nombre max  d operation a l initialisation
-global integer INTERCELL_OPERATIONS = 65000;   // nombre d operation max pour calculer un intercell 
+global integer INTERCELL_OPERATIONS = 100000;   // nombre d operation max pour calculer un intercell 
                                                // (INTERCELL_OPERATIONS > nombre max d operation pour initialiser le round)
 
 //

@@ -52,6 +52,7 @@ class UnitTest extends Strategy {
    * board
    **/
   boolean board() {
+    debug("Board.maxAOERange:"+Board.maxAOERange);
     debug("Legend: deadend = brown");
     GameDebug.addBackground(true, Board.deadEnds,COLOR_BROWN); // marron
     if(Board.cells[306].right.id == 324 && Board.cells[10].rightTop.id == 11) debugC("Board OK",COLOR_GREEN);
@@ -71,7 +72,6 @@ class UnitTest extends Strategy {
       if(!inter.isDiag) debugC("Cell KO: 300-306 not is diag", COLOR_RED);
       if(!inter.isInline) debugC("Cell KO: 300-306 is inline", COLOR_RED);
     }
-	debugC("300 and 306 are " + ((inter.isInsight)?"":"NOT") + " inSight",COLOR_BLUE);
     debug("Legend: 300 and 306 = blue");
     GameDebug.addBackground(true, 306, COLOR_BLUE);
     GameDebug.addBackground(true, 300, COLOR_BLUE);
