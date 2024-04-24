@@ -35,6 +35,7 @@ global integer COLOR_ORANGE = 16545280;
 global integer COLOR_PINK = 16515255;
 global integer COLOR_PURPLE = 13762812;
 global integer COLOR_CYAN = 62716;
+global integer COLOR_LIGHT_GREEN = 10550272;
 
 //
 // DIRECTIONS

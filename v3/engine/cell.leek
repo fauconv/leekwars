@@ -69,7 +69,18 @@ class Cell extends Objects {
     return ret;
   }
   
-  
+  /**
+   * getTowardCellId
+   * donne le CellId de la prochaine position du leek en utilisant maxMP, 
+   * si il s approche de target en partant de this
+   **/
+  integer getTowardCellId(integer targetCellId, integer maxMP) {
+    Array<integer> path = getPath(id, targetCellId)!;
+	integer c = count(path);
+	if(c > maxMP-1) return path[maxMP-1];
+	return path[c-1];
+  }
+	
   /**
    * getRelativeCells
    * determine les cellules que l on peut viser pour atteindre this grace a l AOE des tools
@@ -79,8 +90,8 @@ class Cell extends Objects {
     Map<integer,RelativeCell> ret = [:];
 	Cell|null reachableCell = this;
 	for(Tool tool in tools) {
-      if(ret[id]) push(ret[id]!.toolsList,tool);
-	  else ret[id] = new RelativeCell(id, 1.0, id, [tool]);		
+      if(ret[id]) ret[id]!.toolsList[tool.id] = tool;
+	  else ret[id] = new RelativeCell(id, 1.0, id, [tool.id:tool]);		
       if(tool.isAOE) {
         if(tool.AOELaunchType == LAUNCH_TYPE_CIRCLE) { //  ------------ LAUNCH_TYPE_CIRCLE
           for(string direction in HEIGHT_DIRECTION) {
@@ -172,8 +183,8 @@ class Cell extends Objects {
     if(reachableCell[direction]) {
 	  reachableCell = reachableCell[direction] as Cell;
 	  if(!reachableCell.isWall) {
-      	if(ret[reachableCell.id]) push(ret[reachableCell.id]!.toolsList,tool)
-	  	else ret[reachableCell.id] = new RelativeCell(reachableCell.id, pourcent, targetCellId, [tool]);
+      	if(ret[reachableCell.id]) ret[reachableCell.id]!.toolsList[tool.id] = tool;
+	  	else ret[reachableCell.id] = new RelativeCell(reachableCell.id, pourcent, targetCellId, [tool.id:tool]);
 	  }
 	  return reachableCell;
 	}

@@ -1,5 +1,7 @@
+include("action");
 include("simulation");
 include("movecell");
+include("basicstrategytools");
 
 /****************************************************************************
  * BasicStrategy
@@ -15,13 +17,16 @@ class BasicStrategy extends Strategy {
   static integer myCurrentCellId;
   static integer enemyCurrentCellId;
   static Enemy enemy;          
-  static integer enemyState = 0;
-  static integer myState = 3;
-  static integer STATE_UNKNOWN = 0
-  static integer STATE_ESCAPE = 1
-  static integer STATE_APPROACH = 2
-  static integer STATE_CENTER = 3
-  static string myStrategy = "unknown"
+  static integer myMaxMP;
+  static integer enemyMaxMP;
+  static boolean lowLife = false;
+  static string myState = "center";
+  static string STATE_UNKNOWN = "unknown";
+  static string STATE_ESCAPE = "escape";
+  static string STATE_APPROACH = "approach";
+  static string STATE_ATTACK = "attack";
+  static string STATE_CENTER = "center";
+  static string myStrategy = "unknown";
   static string STRATEGY_UNKNOWN = "unknown";
   static string STRATEGY_HIDDEN = "hidden";
   static string STRATEGY_LONG_RANGE = "long_range";
@@ -56,21 +61,29 @@ class BasicStrategy extends Strategy {
     
 	GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"init");
 	GameDebug.add(BASIC_STRATEGY_DEBUG,Board.maxAOERange,"maxAOERange");
-	
-	if(gFirstRound) setStrategy();
-	
+	  
+	if(gFirstRound) setStart();
+	else lowLife = ((meRound.maxLife/meRound.maxTotalLife) < (enemyRound.maxLife/enemyRound.maxTotalLife));
+	  
 	GameDebug.add(BASIC_STRATEGY_DEBUG,myStrategy,"myStrategy");
+	GameDebug.add(BASIC_STRATEGY_DEBUG,enemyRound.state,"enemyState");
+	  
 	//
 	// phase 1 : on determine les mouvements possibles de mon poireau et du poireau adverse
 	//
 	Array<Simulation> MPToolList = MPConditions(meRound);
-	Map<integer,MoveCell> myMoveCells = parcour(meRound, "minMP", MPToolList);
+	myMaxMP = 0;
+	for(Simulation sim in MPToolList) myMaxMP = max(myMaxMP, sim.roundObj.leeksRound[myId]!.minMP);
+	Map<integer,MoveCell> myMoveCells = BasicStrategyTools.parcour(meRound, "minMP", MPToolList, myMaxMP);
 	MPToolList = MPConditions(enemyRound);
-	Map<integer,MoveCell> enemyMoveCells = parcour(enemyRound, "maxMP", MPToolList); 
+	enemyMaxMP = 0;
+	for(Simulation sim in MPToolList) enemyMaxMP = max(enemyMaxMP, sim.roundObj.leeksRound[enemyId]!.maxMP);
+	Map<integer,MoveCell> enemyMoveCells = BasicStrategyTools.parcour(enemyRound, "maxMP", MPToolList, enemyMaxMP);
+	  
 	if(BASIC_STRATEGY_DEBUG) {
 	  GameDebug.add(true, "avalaible simulations:");
-	  for(integer index : Object sim in myMoveCells[myCurrentCellId]!.simulations)
-	    GameDebug.add(true, (sim.simulation as Simulation).actions,"sim #"+ index);
+	  for(integer index : Simulation sim in myMoveCells[myCurrentCellId]!.simulations)
+	    GameDebug.add(true, sim.actions,"sim #"+ index);
 	}
 	  
 	//
@@ -80,110 +93,71 @@ class BasicStrategy extends Strategy {
 	Array<Tool> tools = [];
 	for(ToolRound toolR in meRound.categoryDamage) push(tools,toolR.tool);
 	Map<integer, RelativeCell> enemyRelativeCells = enemyRound.currentCell.cell.getRelativeCells(tools);
+	  
 	if(BASIC_STRATEGY_DEBUG) {
 	  for(RelativeCell mc in enemyRelativeCells) {
 	    mark(mc.id,COLOR_PINK,1);
-		markText(mc.id,count(mc.toolsList),0,1);
+		markText(mc.id,mapSize(mc.toolsList),0,1);
 	  }
     }
 	
 	//
 	// phase 2.2: pour chaque movecell on regarde si on peut atteindre une relativecell 
-	// pour chaque arme de la relativecell
-	// canUseWeaponOnCell ne convient pas car il ne prend pas en compte les moveCell
 	//
-    Map<integer,Map<string,Map<integer,RelativeCell>>> enemyRelativeCellsCache = [:] // [relativeCellId][hashToolList][targetCell] = RelativeCell
-	                                                                            // en visant relativeCellId avec cette liste d arme hashToolList 
-	                                                                            // on peut atteindre la/les targetCell ayant chacune son AOE
-	for(MoveCell myMoveCell in myMoveCells) {
-	  for(RelativeCell enemyRelativeCell in enemyRelativeCells) {
-		InterCellInfo interCellInfo = Board.cells[myMoveCell.id].interCellInfo[enemyRelativeCell.id];
-        integer range = interCellInfo.range;
-		if(range > Board.maxAOERange) continue;
-        boolean isInsight = lineOfSight(myMoveCell.id, enemyRelativeCell.id)!;
-        boolean isDiag = interCellInfo.isDiag;
-        boolean isInLine = interCellInfo.isInline;		
-		Array<Tool> toolsList = [];
-	    for(Tool tool in enemyRelativeCell.toolsList) {
-	      if(tool.canUseTool(range, isInsight, isInLine, isDiag)) push(toolsList,tool);
-		}
-        string hash = "";
-		for(Tool tool in toolsList) {
-		  hash += tool.id+".";
-		}
-		integer id = enemyRelativeCell.id;
-		integer targetCell = enemyRelativeCell.targetCell;
-		if(!mapContainsKey(enemyRelativeCellsCache, id)) {
-		   enemyRelativeCellsCache[id] = [hash:[targetCell:new RelativeCell(id, enemyRelativeCell.AOE,targetCell,toolsList)]];
-		} else if(!mapContainsKey(enemyRelativeCellsCache[id]!, hash)) {
-		   enemyRelativeCellsCache[id]![hash] = [targetCell:new RelativeCell(id, enemyRelativeCell.AOE,targetCell,toolsList)];
-		} else if(!mapContainsKey(enemyRelativeCellsCache[id]![hash]!, targetCell)) {
-		   enemyRelativeCellsCache[id]![hash]![targetCell] = new RelativeCell(id, enemyRelativeCell.AOE,targetCell,toolsList);
-		}  
-		push(myMoveCell.targetCells,enemyRelativeCellsCache[id]![hash]![targetCell]!);
-	  }
-	}
+	for(MoveCell myMoveCell in myMoveCells) myMoveCell.canIUseWeapons(enemyRelativeCells);
 
 	//
 	// phase 3: on determine les tires que l ennemi pourra faire
-	// pour chaqu une de mes moveCell je regarde si il peut me tirer dessus depuis au moins une de ces moveCell
-	// je dois calculer les relativecell de chaqu une de mes moveCells 
-	// comment je determine quel est sa meilleure moveCell pour ma movecell ? je cumule ses armes dans ma moveCell ?
 	//
 	tools = [];
 	for(ToolRound toolR in enemyRound.categoryDamage) push(tools,toolR.tool);
-	for(MoveCell myMoveCell in myMoveCells) {
-	  Map<integer, RelativeCell> myRelativeCells = Board.cells[myMoveCell.id].getRelativeCells(tools);
-	  Map<real,Map<integer,Tool>> enemyTools = myMoveCell.enemyTools; // TODO: il manque un cache ici
-	  for(MoveCell enemyMoveCell in enemyMoveCells) {
-	    for(RelativeCell myRelativeCell in myRelativeCells) {
-	      InterCellInfo interCellInfo = Board.cells[enemyMoveCell.id].interCellInfo[myRelativeCell.id];
-          integer range = interCellInfo.range;
-		  if(range > Board.maxAOERange) continue;
-          boolean isInsight = lineOfSight(enemyMoveCell.id, myRelativeCell.id)!;
-          boolean isDiag = interCellInfo.isDiag;
-          boolean isInLine = interCellInfo.isInline;		
-	      for(Tool tool in myRelativeCell.toolsList) {
-            if(tool.canUseTool(range, isInsight, isInLine, isDiag)) {
-		      if(!mapContainsKey(enemyTools, myRelativeCell.AOE)) enemyTools[myRelativeCell.AOE] = [tool.id:tool];
-			  else enemyTools[myRelativeCell.AOE]![tool.id] = tool; // si il existe deja on l ecrase c est pas grave
-			}
-		  }
-		}
+	for(MoveCell myMoveCell in myMoveCells) myMoveCell.canEnemyUseWeapons(enemyRound, enemyMoveCells, tools);
+	
+	//
+	// phase 4: on decompose en different cas (couleur) et on calcul les degat
+	//
+	Map<integer,MoveCell> myMoveCellsNeutral = [:]; // il me touche pas je le touche pas
+	Map<integer,MoveCell> myMoveCellsNeutralExtend = [:]; // il me touche pas je le touche pas
+	Map<integer,MoveCell> myMoveCellsBad = [:]; // il me touche, je le touche pas
+	Map<integer,MoveCell> myMoveCellsGood = [:]; // je le touche, il me touche pas
+	Map<integer,MoveCell> myMoveCellsGoodExtend = [:]; // je le touche, il me touche pas
+	Map<integer,MoveCell> myMoveCellsAnnihilation = [:]; // on se touche tous les 2
+	Map<integer,MoveCell> myMoveCellsAnnihilationExtend = [:]; // on se touche tous les 2
+	BasicStrategyTools.colorize(myMoveCells, myMoveCellsNeutral, myMoveCellsNeutralExtend, myMoveCellsBad,
+				         myMoveCellsGood, myMoveCellsGoodExtend, myMoveCellsAnnihilation, myMoveCellsAnnihilationExtend);
+	GameDebug.add(BASIC_STRATEGY_DEBUG,myState,"myState");
+	  
+	if(BASIC_STRATEGY_DEBUG) {
+	  for(MoveCell mc in myMoveCellsNeutral) {
+	    mark(mc.id,COLOR_BLUE,1);
+		markText(mc.id,count(mc.simulations));
 	  }
-	}
-	
-	//
-	// phase 4: on decompose en different cas (couleur)
-	//
-	Array<MoveCell> myMoveCellsNeutral = []; // il me touche pas je le touche pas
-	Array<MoveCell> myMoveCellsBad = []; // il me touche, je le touche pas
-	Array<MoveCell> myMoveCellsGood = []; // je le touche, il me touche pas
-	Array<MoveCell> myMoveCellsAnnihilation = []; // on se touche tous les 2
-	for(MoveCell mc in myMoveCells) {
-	  if(count(mc.targetCells) == 0) {
-	    if(mapSize(mc.enemyTools) == 0) {
-		  push(myMoveCellsNeutral, mc);
-		  mark(mc.id,COLOR_BLUE,1); // je ne peux pas toucher, il ne peut pas me toucher
-		  markText(mc.id,count(mc.simulations));
-		} else {
-		  push(myMoveCellsBad, mc);
-		  mark(mc.id,COLOR_RED,1); // je ne peux pas toucher, il peut me toucher
-		  markText(mc.id,count(mc.simulations));
-		}
-      } else {
-		if(mapSize(mc.enemyTools) == 0) {
-		  push(myMoveCellsGood, mc);
-		  mark(mc.id,COLOR_GREEN,1); // je peux le toucher, il peut pas me toucher
-		  markText(mc.id,count(mc.simulations));
-		} else {
-		  push(myMoveCellsAnnihilation, mc);
-		  mark(mc.id,COLOR_YELLOW,1); // on peut se toucher tous les 2
-		  markText(mc.id,count(mc.simulations));
-		}
-      }
-	}
-	
+	  for(MoveCell mc in myMoveCellsNeutralExtend) {
+	    mark(mc.id,COLOR_CYAN,1);
+		markText(mc.id,count(mc.simulations));
+	  }
+	  for(MoveCell mc in myMoveCellsBad) {
+	    mark(mc.id,COLOR_RED,1);
+		markText(mc.id,count(mc.simulations));
+	  }
+	  for(MoveCell mc in myMoveCellsGood) {
+	    mark(mc.id,COLOR_GREEN,1);
+		markText(mc.id,count(mc.simulations));
+	  }
+	  for(MoveCell mc in myMoveCellsGoodExtend) {
+	    mark(mc.id,COLOR_LIGHT_GREEN,1);
+		markText(mc.id,count(mc.simulations));
+	  }
+	  for(MoveCell mc in myMoveCellsAnnihilation) {
+	    mark(mc.id,COLOR_YELLOW,1);
+		markText(mc.id,count(mc.simulations));
+	  }
+	  for(MoveCell mc in myMoveCellsAnnihilationExtend) {
+	    mark(mc.id,COLOR_ORANGE,1);
+		markText(mc.id,count(mc.simulations));
+	  }
+    }
+	  
 	// ===> a ce point j ai des movecell pour chaque case vers laquelle je peux aller, contenant : 
 	// - LES simulationS de chip de MP qui doivent etre utiliser pour y aller 
 	//   (y compris la simulation vide quand elle est utilisable)
@@ -191,226 +165,206 @@ class BasicStrategy extends Strategy {
 	//   le poireau que je touche (pas de gestion multi target), et l AOE
 	// - la liste des tools enemy qui peuvent me toucher sur cette moveCell et l AOE correspondant
 	// ===> les moveCells sont trier par couleur
-	  
-	for(MoveCell mc in myMoveCellsGood) {
-	  parcourEscape(mc, myMoveCells,currentRound);
-	}
-	for(MoveCell mc in myMoveCellsAnnihilation) {
-	  parcourEscape(mc, myMoveCells,currentRound);
-	  if(count(mc.goodEscapes) > 0) {
-	    push(myMoveCellsGood, mc);
-	  }
-	}
-	if(count(myMoveCellsGood) > 0) return good(myMoveCellsGood);
-	if(count(myMoveCellsAnnihilation) > 0) {
-	  if(count(myMoveCellsNeutral) > 0) return annihilationNeutral(myMoveCellsAnnihilation, myMoveCellsNeutral);
-	  return annihilation(myMoveCellsAnnihilation);
-	}
-	if(count(myMoveCellsNeutral) > 0) {
-	  if(count(myMoveCellsBad) > 0) return badNeutral(myMoveCellsNeutral);
-	  else return neutral(myMoveCellsNeutral); 
-	}
+	 
+	//
+	// phase 5: je repartie vers la bonne strategie
+	//
+    if(mapSize(myMoveCellsGood) > 0 || mapSize(myMoveCellsGoodExtend) > 0) 
+		return good(myMoveCellsGood, myMoveCellsGoodExtend, myMoveCellsAnnihilation, myMoveCellsAnnihilationExtend);
+	if(mapSize(myMoveCellsNeutral) > 0 || mapSize(myMoveCellsNeutralExtend) > 0) 
+		return neutral(myMoveCellsNeutral, myMoveCellsNeutralExtend, myMoveCellsAnnihilation,
+					   myMoveCellsAnnihilationExtend);
+	if(mapSize(myMoveCellsAnnihilation) > 0 || mapSize(myMoveCellsAnnihilationExtend) > 0) 
+		return good(myMoveCellsGood, myMoveCellsGoodExtend, myMoveCellsAnnihilation, myMoveCellsAnnihilationExtend);
 	return bad(myMoveCellsBad);
 	
   }
 
-  /**
-   * parcour
-   * encapsulation de leekRound.parcour
-   **/
-  static Map<integer,MoveCell> parcour(LeekRound leekRound, string minMax, Array<Simulation> MPToolList) {
-	integer leekId = leekRound.id;
-	integer maxRemainingMP = 0;
-	for(Simulation sim in MPToolList) 
-	  maxRemainingMP = max(maxRemainingMP, sim.roundObj.leeksRound[leekId]![minMax] as integer);
-	Map<integer,integer> cellList = leekRound.parcour(leekRound.currentCell.cell, maxRemainingMP);
-    Array<Array<Object>> simulations = []; // equivalent a une map<remainingMP,Object>
-	for(integer i = 0; i <= maxRemainingMP; i++) {
-	  push(simulations, []);
-	  for(Simulation sim in MPToolList) {
-		integer MP = sim.roundObj.leeksRound[leekId]![minMax] as integer;
-	    if(MP >= i) push(simulations[i],{simulation:sim,remainingMP:MP-i});
-	  }
-	}
-	Map<integer,MoveCell> moveCells = [:];
-	for(integer cellId : integer remainingMP in cellList) 
-	  moveCells[cellId] = new MoveCell(cellId, leekId, simulations[maxRemainingMP-remainingMP], remainingMP);
-	return moveCells;
-  }
-
-  /**
-   * pour une moveCell determine la liste des moveCell qui peuvent lui servir d echapatoire (escapes et goodEscapes)
-   * en fonction des MP qui reste dans la moveCell par simulation
-   **/
-  static void parcourEscape(MoveCell startCell, Map<integer, MoveCell> moveCellList, Round round) {
-	Map<integer,integer> cellList = round.leeksRound[startCell.ownerId]!.parcour(Board.cells[startCell.id],
-																				 startCell.maxRemainingMP); 
-	                                                                             // Array[cellId] = remainingMP
-    Array<Array<Object>> simulations = []; // equivalent a une map<remainingMP,Object>
-	for(integer i = 0; i <= startCell.maxRemainingMP; i++) {
-	  push(simulations, []);
-	  for(Object sim in startCell.simulations) {
-		integer MP = sim.remainingMP as integer;
-	    if(MP >= i) push(simulations[i],{simulation:sim.simulation,remainingMP:MP-i});
-	  }
-	}
-	integer maxRemainingMP = startCell.maxRemainingMP;
-	for(integer cellId : integer remainingMP in cellList) {
-	  MoveCell mc = moveCellList[cellId]!;
-	  if(mapSize(mc.enemyTools) == 0) push(startCell.goodEscapes, {moveCell:mc, simulations: simulations[maxRemainingMP-remainingMP]});
-	  else push(startCell.escapes, {moveCell:mc, simulations: simulations[maxRemainingMP-remainingMP]});
-	  // TODO: ajouter les info sur les remainingSim
-	}
-  }
-
-  /**
-   * MPConditionsAddSim
-   * macro pour MPConditions 
-   **/
-  static Simulation MPConditionsAddSim(Array<Simulation> ret, Simulation sim, integer leekId, integer toolId, integer currentCellId) {
-    sim = new Simulation(sim);
-    sim.addToolAction(leekId, toolId, currentCellId);
-    push(ret, sim);
-    return sim;
-  }
-
 // ----------------------------------------------- strategy ----------------------------------------------------
 
+  /**
+   * heal
+   * TODO: remplacer les constantes
+   **/
+  static void heal() {
+    if(meRound.minTotalLife - meRound.maxLife > 46) { // 46 = max CHIP_CURE
+      useChip(CHIP_STRETCHING) // 3
+	  useChip(CHIP_CURE); // 4
+	  meRound.update();  
+	}
+	if(meRound.minTotalLife - meRound.maxLife > 28) { // 28 = max CHIP_BANDAGE
+      useChip(CHIP_STRETCHING) // 3
+	  useChip(CHIP_BANDAGE); // 2
+	  meRound.update();  
+	}
+  }
+  
  /**
   * setStrategy
+  * choix de l arme a degainer au depart et de la strategie global
+  * 1 - WEAPON_SHOTGUN
+  * 2 - WEAPON_NEUTRINO
+  * 3 - WEAPON_MAGNUM
+  * 4 - WEAPON_MACHINE_GUN
+  * 5 - WEAPON_PISTOL
   **/
-  static void setStrategy() {
+  static void setStart() {
     if(me.maxAOERange > enemy.maxAOERange) myStrategy = STRATEGY_LONG_RANGE;
 	else if(!me.needLos && enemy.needLos) myStrategy = STRATEGY_HIDDEN;
 	else myStrategy = STRATEGY_SHORT_RANGE;
-	Array<integer> priorizedWeapon = WeaponsConditions(me.tools);
-    if(count(priorizedWeapon) == 0) {
+	Map<integer,Tool> weapons = me.tools;
+    if(mapContainsKey(weapons, WEAPON_SHOTGUN)) meRound.setWeaponRound(WEAPON_SHOTGUN);
+    else if(mapContainsKey(weapons, WEAPON_NEUTRINO)) meRound.setWeaponRound(WEAPON_NEUTRINO);
+    else if(mapContainsKey(weapons, WEAPON_MAGNUM)) meRound.setWeaponRound(WEAPON_MAGNUM);
+    else if(mapContainsKey(weapons, WEAPON_MACHINE_GUN)) meRound.setWeaponRound(WEAPON_MACHINE_GUN);
+    else if(mapContainsKey(weapons, WEAPON_PISTOL)) meRound.setWeaponRound(WEAPON_PISTOL);
+    else {
 	  if(count(me.weapons) > 0) {
 	    meRound.setWeaponRound(me.weapons[0].id);
 	    debugC("BasicStrategy=>neutral=>aucune arme connu", COLOR_RED);
-	    debug(Board.me.tools);
+	    debugC(Board.me.tools, COLOR_RED);
 	  } // else j ai pas d arme
-    } else {
-	  meRound.setWeaponRound(priorizedWeapon[0]);
     }
   }
 
   /**
    * good
    **/
-  static boolean good(Array<MoveCell> myMoveCells) {
+  static boolean good(Map<integer,MoveCell> myGoods, Map<integer,MoveCell> myGoodsExtend,
+					  Map<integer,MoveCell> myAnnihilations, Map<integer,MoveCell> myAnnihilationExtend) {
 	// TODO: il faut determiner si il est interessant d utiliser qu en meme les buff de MP si ca nous donne un avantage au tour suivant
 	debugC("BasicStrategy=>good=>calcul des degat et choix de la moveCell pour l attaque et penser a s echapper si c est une annihilation",COLOR_RED);  
 	return true;
   }
 
   /**
-   * annihilationNeutral
+   * neutral
    **/
-  static boolean annihilationNeutral(Array<MoveCell> myMoveCellsAnnihilation, Array<MoveCell> myMoveCellsNeutral) {
-	debugC("BasicStrategy=>annihilationNeutral=>calcul des degat et choix de la moveCell pour l attaque et penser a s echapper au moins pire",COLOR_RED); 
-	// TODO: on mets les protection, les heal et les preservatif ou on tape fort ou on s echappe ? si on a deja les protec on tape fort et on s echappe au moins pire
-	return true;
-  }
-	
-  /**
-   * annihilation
-   **/
-  static boolean annihilation(Array<MoveCell> myMoveCells) {
-	debugC("BasicStrategy=>annihilation=>calcul des degat et choix de la moveCell pour l attaque et penser a s echapper au moins pire",COLOR_RED);
-    // TODO: on mets les protection, les heal et les preservatif ou on tape fort ? si on a deja les protec on tape fort
-	return true;
-  }
-
-  /**
-   * badNeutral
-   **/
-  static boolean badNeutral(Array<MoveCell> moveCellsList) {
-    debugC("BasicStrategy=>badNeutral=>on choisi une neutral en evitant les bads",COLOR_RED);
-	// TODO: on mets les protection, les heal et les preservatif
+  static boolean neutral(Map<integer,MoveCell> myMoveCellsNeutral, Map<integer,MoveCell> myMoveCellsNeutralExtend,
+						 Map<integer,MoveCell> myMoveCellsAnnihilation, 
+						 Map<integer,MoveCell> myMoveCellsAnnihilationExtend) {
+	// je suis blaisse
+	// il s eloigne
+	boolean jaiUneAnnihilationInteressante = BasicStrategyTools.getScore(myMoveCellsAnnihilation,
+																		 myMoveCellsAnnihilationExtend) > 0;
+	boolean jeSuisLoin = (mapSize(myMoveCellsBad) == 0 && mapSize(myMoveCellsAnnihilation) == 0 &&
+	  meRound.currentCell.cell.interCellInfo[enemyRound.currentCell.cell.getTowardCellId(myCurrentCellId, enemyMaxMP)].range > Board.maxAOERange)  
+	if(myState == STATE_CENTER) {
+	  integer centerId = meRound.getRelativeCenter();
+	  integer oldCellId = BasicStrategy.myCurrentCellId;
+	  myCurrentCellId = BasicStrategyTools.moveToCellPassBy(centerId, myMoveCellsNeutral, myMoveCellsNeutralExtend);
+	  if(myCurrentCellId == centerId || oldCellId == myCurrentCellId) myState = STATE_APPROACH; // je suis arrive au centre ou je ne peux pas avancer plus
+	} else if(myState == STATE_ESCAPE) {
+	  myCurrentCellId = BasicStrategyTools.moveAwayFromCellPassBy(enemyCurrentCellId, myMoveCellsNeutral, myMoveCellsNeutralExtend);
+	  heal();
+	  myState = STATE_CENTER;
+	  return true;
+    } else { // STATE_APPROACH
+	  integer oldCellId = BasicStrategy.myCurrentCellId;
+	  myCurrentCellId = BasicStrategyTools.moveToCellPassBy(enemyCurrentCellId, myMoveCellsNeutral);
+	  if(oldCellId == myCurrentCellId) {
+	    myState = STATE_ATTACK; // je ne peux pas avancer plus
+		neutral(myMoveCellsNeutral, myMoveCellsNeutralExtend, myMoveCellsBad, 
+				myMoveCellsAnnihilation, myMoveCellsAnnihilationExtend);
+	  }
+	}
+	if(mapSize(myMoveCellsAnnihilation) > 0) {
+	  integer maxScore = -100000;
+	  Array<MoveCell> bestMc = [];
+	  for(MoveCell mc in myMoveCellsAnnihilation) {
+		integer s = mc.computeScore();
+		if(s > maxScore) {
+		  bestMc = [mc];
+		  maxScore = s;
+		} else if(s == maxScore) {
+		  push(bestMc, mc);
+		} 
+	  }
+	  if(maxScore > 0) {
+	    debugC("BasicStrategy=>neutral=>trouver la meilleure soluce de la liste en fonction de la strategy long/short...",COLOR_BLUE);
+		bestMc[0].execute();
+	  }
+	}
+    if(mapSize(myMoveCellsBad) > 0 || mapSize(myMoveCellsAnnihilation) > 0 ||
+	  meRound.currentCell.cell.interCellInfo[enemyRound.currentCell.cell.getTowardCellId(myCurrentCellId, enemyMaxMP)].range < Board.maxAOERange) {
+	  if(myStrategy == STRATEGY_LONG_RANGE) {
+		useChip(CHIP_STRETCHING) // 3
+	    useChip(CHIP_PROTEIN); // 3
+		useChip(CHIP_MOTIVATION) // 4
+		useChip(CHIP_HELMET); // 3
+		useChip(CHIP_WALL); // 3
+	  } else if(myStrategy == STRATEGY_SHORT_RANGE) {
+		useChip(CHIP_STRETCHING) // 3
+		useChip(CHIP_MOTIVATION) // 4
+		useChip(CHIP_HELMET); // 3
+		useChip(CHIP_WALL); // 3
+		useChip(CHIP_PROTEIN); // 3
+	  } else if(myStrategy == STRATEGY_HIDDEN) {
+		useChip(CHIP_STRETCHING) // 3
+		useChip(CHIP_LEATHER_BOOTS) // 3
+		useChip(CHIP_HELMET); // 3
+		useChip(CHIP_WALL); // 3
+		moveTowardCell(enemyCurrentCellId);
+	  } else { // STRATEGY_MELEE
+	  }
+	}
 	return true;
   }
 	
   /**
    * bad
    **/
-  static boolean bad(Array<MoveCell> moveCellsList) {
+  static boolean bad(Map<integer,MoveCell> moveCellsList) {
     debugC("BasicStrategy=>bad=>on choisi la moins pire des bads",COLOR_RED); 
 	// TODO: on mets les protection, les heal et les preservatif
 	return true;
   }
 	
   /**
-   * neutral
-   **/
-  static boolean neutral(Array<MoveCell> moveCellsList) {
-	if(myState == STATE_CENTER) {
-	  meRound.moveToCellRound(meRound.getRelativeCenter());
-	  myCurrentCellId = meRound.currentCellId;
-	  if(myCurrentCellId == meRound.getRelativeCenter()) myState = STATE_APPROACH;
-	} else {
-	  meRound.moveToCellRound(enemyCurrentCellId);
-	  myCurrentCellId = meRound.currentCellId;
-	}
-	return true;
-  }
-	
-  /**
    * condition d utilisation des chips lors de la phase de prediction des mouvements
-   * 1- CHIP_STRETCHING
-   * 2- CHIP_MOTIVATION
-   * 3- CHIP_LEATHER_BOOTS
+   * une simuation par combinaison de chip
+   * 0- pas de chip
+   * 1- CHIP_LEATHER_BOOTS
    * TODO: chip de saut
    **/
   static Array<Simulation> MPConditions(LeekRound owner) {
-    Simulation sim2, sim3, sim = new Simulation(owner.roundObj);
-    integer leekId = owner.id;
-    integer currentCellId = owner.currentCellId;
-    Map<integer,ToolRound> toolsRound = owner.toolsRound;
-	  
-    Array<Simulation> ret = [sim]; // cas ou on ne fait rien
-    if(mapContainsKey(toolsRound, CHIP_STRETCHING)) { 
-	  sim2 = MPConditionsAddSim(ret, sim, leekId, CHIP_STRETCHING, currentCellId); // cas CHIP_STRETCHING
-	  if(mapContainsKey(toolsRound, CHIP_MOTIVATION)) { 
-	    sim3 = MPConditionsAddSim(ret, sim2, leekId, CHIP_MOTIVATION, currentCellId); // cas CHIP_STRETCHING + CHIP_MOTIVATION
-	    if(mapContainsKey(toolsRound, CHIP_LEATHER_BOOTS)) { 
-	      MPConditionsAddSim(ret, sim3, leekId, CHIP_LEATHER_BOOTS, currentCellId); // cas CHIP_STRETCHING + CHIP_MOTIVATION + CHIP_LEATHER_BOOTS
-	    }
-      };
-      if(mapContainsKey(toolsRound, CHIP_LEATHER_BOOTS)) { 
-	    MPConditionsAddSim(ret, sim2, leekId, CHIP_LEATHER_BOOTS, currentCellId); // cas CHIP_STRETCHING + CHIP_LEATHER_BOOTS
-	  }
-    }
-    if(mapContainsKey(toolsRound, CHIP_MOTIVATION)) { 
-	  sim2 = MPConditionsAddSim(ret, sim, leekId, CHIP_MOTIVATION, currentCellId); // CHIP_MOTIVATION
-	  if(mapContainsKey(toolsRound, CHIP_LEATHER_BOOTS)) { 
-	    MPConditionsAddSim(ret, sim2, leekId, CHIP_LEATHER_BOOTS, currentCellId); // CHIP_MOTIVATION + CHIP_LEATHER_BOOTS
-	  }
-    }
-    if(mapContainsKey(toolsRound, CHIP_LEATHER_BOOTS)) { 
-	  MPConditionsAddSim(ret, sim, leekId, CHIP_LEATHER_BOOTS, currentCellId); // cas CHIP_LEATHER_BOOTS
-    }
+    Simulation sim = new Simulation(owner);
+    Array<Simulation> ret = [sim]; // cas sans chip
+	
+    if(mapContainsKey(owner.toolsRound, CHIP_LEATHER_BOOTS))
+	  BasicStrategyTools.MPConditionsAddSim(ret, sim, owner, CHIP_LEATHER_BOOTS); // CHIP_LEATHER_BOOTS
 	  
     return ret;
   }
 
   /**
-   * priorite d utilisation des weapons (pour setWeapon)
-   * TODO: on peut ajouter des condition en fonction des caracteristique du poireau en face
-   * 1 - WEAPON_SHOTGUN
-   * 2 - WEAPON_NEUTRINO
-   * 3 - WEAPON_MAGNUM
-   * 4 - WEAPON_MACHINE_GUN
-   * 5 - WEAPON_PISTOL
+   * computeAttack
+   * 1- WEAPON_SHOTGUN
+   * 2- WEAPON_NEUTRINO
+   * 3- CHIP_ROCK
+   * 4- CHIP_FLASH
+   * 5- WEAPON_MAGNUM
+   * 5.1- WEAPON_MACHINE_GUN
+   * 6- CHIP_ICE
+   * 6.1- WEAPON_PISTOL
+   * 7- CHIP_PEBBLE
+   * 8- CHIP_SPARK
+   * 9- CHIP_SHOCK
+   * TODO: enlever les constante
    **/
-  static Array<integer> WeaponsConditions(Map<integer,Tool> weapons) {
-    Array<integer> ret = [];
-    if(mapContainsKey(weapons, WEAPON_SHOTGUN)) push(ret, WEAPON_SHOTGUN);
-    if(mapContainsKey(weapons, WEAPON_NEUTRINO)) push(ret, WEAPON_NEUTRINO);
-    if(mapContainsKey(weapons, WEAPON_MAGNUM)) push(ret, WEAPON_MAGNUM);
-    if(mapContainsKey(weapons, WEAPON_MACHINE_GUN)) push(ret, WEAPON_MACHINE_GUN);
-    if(mapContainsKey(weapons, WEAPON_PISTOL)) push(ret, WEAPON_PISTOL);
-    return ret;
+  static integer computeAttack(Simulation sim, RelativeCell rel, integer ownerId) {
+	Map<integer, Tool> toolsList = rel.toolsList;
+	integer targetCell = rel.id;
+	LeekRound shooter = sim.roundObj.leeksRound[ownerId]!;
+	integer minTP = shooter.minTP;
+	integer|null currentWeapon = shooter.weaponId;
+	Map<integer,Tool> toolsInfo = Board.leeks[ownerId]!.tools;
+	Object result = {minEffect:0,maxEffect:0,midEffect:0};
+	// TODO: add une action SetWeapon 
+	// TODO: --------------------------------------- ici --------------------------------------------
+	minTP = BasicStrategyTools.addWeapon(WEAPON_SHOTGUN, toolsInfo, toolsList, targetCell, minTP, result, sim, shooter);
+	
   }
+
 }
 

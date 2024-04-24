@@ -136,7 +136,7 @@ class Board extends Objects {
     }
 	previousRound = currentRound;
     currentRound = new Round();
-  
+    currentRound.updateState(previousRound);
   }
   
 }

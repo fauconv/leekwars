@@ -6,13 +6,14 @@
 class RelativeCell extends Objects {
   real AOE;
   integer targetCell; // cell where is the target leek
-  Array<Tool> toolsList;
+  Map<integer, Tool> toolsList;
+  Object|null data = null;
 
   /**
    * constructor
    * @param tools : Attention: le tableau n est pas copie
    **/
-  constructor(integer id, real AOE, integer targetCell, Array<Tool> tools) {
+  constructor(integer id, real AOE, integer targetCell, Map<integer, Tool> tools) {
     this.id = id;
 	this.AOE = AOE;
 	this.targetCell = targetCell;

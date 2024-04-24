@@ -39,7 +39,7 @@ class UnitTest extends Strategy {
       leekRound();
       tool();
 	  oldRound = currentRound;
-	  meRound.moveToCellRound(meRound.getRelativeCenter());
+	  meRound.moveToCell(meRound.getRelativeCenter());
       return true;
     }
 	roundTest();
@@ -170,7 +170,7 @@ class UnitTest extends Strategy {
    * toolRound
    **/
   boolean toolRound() {
-	meRound.moveToCellRound(enemyRound.currentCellId);
+	meRound.moveToCell(enemyRound.currentCellId);
 	if(canUseWeaponOnCell(enemyRound.currentCellId)) {
 	  Round simulation = new Round(currentRound);
 	  Round oldRound = new Round(currentRound);

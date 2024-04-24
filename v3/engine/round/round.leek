@@ -115,4 +115,11 @@ class Round extends Objects {
     }
   }
 
+  /**
+   * updateState
+   **/
+  updateState(Round previousRound) {
+	Array<InterCellInfo> myInter = meRound.currentCell.cell.interCellInfo;
+    for(EnemyRound enemy in enemiesRound) enemy.updateState(previousRound.leeksRound[enemy.id] as EnemyRound, myInter);
+  }
 }

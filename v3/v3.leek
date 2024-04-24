@@ -2,6 +2,7 @@
  * debug
  **************************************************************************/
 global boolean EFFECT_DEBUG = false;
+global boolean LEEKROUND_DEBUG = true;
 global boolean BASIC_STRATEGY_DEBUG = true;
 global boolean UNIT_TEST_DEBUG = false;
 include("../utils/gamedebug");
@@ -54,7 +55,6 @@ end();
  * end
  *********************************************************/
 function end() => void {
-	debug("first:"+gFirstRound);
   Talk.talk();
   GameDebug.display();
   if(gFirstRound) {

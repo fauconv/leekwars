@@ -28,16 +28,9 @@ class ToolRound extends Objects {
   
   /**
    * simulateUseOnCell
-   * TODO: TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-   * Pour le moment ne fonctionne qu en tire direct sur un target
-   * calcul de l AOE via parcour pour determiner la liste des target atteinte 
-   * on peut peut etre utiliser getWeaponTargets et getChipTarget et calculer l AOE de chaque target apres ?
-   * Attention: le cellRound doit etre du meme round que le toolround
+   * abstract
    **/
   Object simulateUseOnCell(integer cellId) {
-	debugC("ToolRound=>simulateUseOnCell=> TODOOOOOOOOOOOOOOOOOOOOOO",COLOR_RED);
-	if(roundObj.cellsRound[cellId].leekOnCell != null) return simulateUse([roundObj.cellsRound[cellId].leekOnCell!.id]);
-	else return {minEffect:0,maxEffect:0,midEffect:0};
   }
 
   /**
@@ -50,6 +43,7 @@ class ToolRound extends Objects {
     owner.minTP -= cost;
     owner.maxTP -= cost;
     owner.midTP -= cost;
+	if(owner.minTP < 0) debugC("ToolRound=>simulateUse=>ERREUR !!!!",COLOR_RED);
     cooldown = tool.cooldown;
     Object delta = {minEffect:0,maxEffect:0,midEffect:0};
     real midCriticalLuck = owner.midAgility/1000.0;
@@ -79,6 +73,13 @@ class ToolRound extends Objects {
   }
   
   /**
+   * UseOnCell
+   * abstract
+   **/
+  void useOnCell(integer cellId) {
+  }
+
+  /**
    * toString
    *
    * @return string
@@ -103,6 +104,29 @@ class WeaponRound extends ToolRound {
     super(tool, owner);
   }
   
+  /**
+   * useOnCell
+   * attention il ne degaine pas
+   * Attention il faut faire un update du round apres
+   **/
+  void useOnCell(integer cellId) {
+    useWeaponOnCell(cellId);
+  }
+
+  /**
+   * simulateUseOnCell
+   **/
+  Object simulateUseOnCell(integer cellId) {
+	Array<integer> entities = getWeaponTargets(id, cellId)!;
+	integer nbTarget = count(entities);
+	Array<real> AOEs = [];
+	for(integer entity in entities) {
+	  push(AOEs, max(0.0,1.0-roundObj.leeksRound[entity]!.currentCell.cell.interCellInfo[cellId].range*0.2));
+      
+	}
+	return simulateUse(entities, AOEs);
+  }
+	
 }
 
 /******************************************************************************
@@ -119,4 +143,27 @@ class ChipRound extends ToolRound {
     super(tool, owner);
   }
   
+  /**
+   * useOnCell
+   * Attention il faut faire un update du round apres
+   **/
+  void useOnCell(integer cellId) {
+    useChipOnCell(id, cellId);
+  }
+  
+  /**
+   * simulateUseOnCell
+   * abstract
+   **/
+  Object simulateUseOnCell(integer cellId) {
+	Array<integer> entities = getChipTargets(id, cellId)!;
+	integer nbTarget = count(entities);
+	Array<real> AOEs = [];
+	for(integer entity in entities) {
+	  push(AOEs, max(0.0,1.0-roundObj.leeksRound[entity]!.currentCell.cell.interCellInfo[cellId].range*0.2));
+      
+	}
+	return simulateUse(entities, AOEs);
+  }
+	
 }

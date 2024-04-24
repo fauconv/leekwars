@@ -1,5 +1,3 @@
-include("action");
-
 /******************************************************************************
  * Simulation
  * stock l historique des actions qui ont ete faite dans le round associer
@@ -8,42 +6,58 @@ class Simulation extends Objects {
 
   Array<Action> actions;
   Round roundObj;
+  integer ownerId;
+  integer|null remainingMP; // null quand on cree la simulation, il prend une valeur quand on cree la moveCell associer
 
   /**
    * constructor
    * @param roundObj_simulation : le round ou la simulation sont clone
    **/
-  constructor(Round|Simulation roundObj_simulation) {
-	if(roundObj_simulation instanceof Simulation) {
-	  // clonage
-	  roundObj = new Round((roundObj_simulation as Simulation).roundObj);
-	  // Attention: je copie le tableau d action mais pas les actions, a voir par la suite
-	  actions = clone((roundObj_simulation as Simulation).actions,1) as Array<Action>;
-	} else {
-      // cas normal
+  constructor(LeekRound|Simulation leekRound) {
+	roundObj = new Round(leekRound.roundObj);
+	if(leekRound instanceof LeekRound) {
       actions = [];
-	  roundObj = new Round(roundObj_simulation as Round);
+	  ownerId = leekRound.id;
+	  remainingMP = null;
+	} else {
+	  actions = clone((leekRound as Simulation).actions,1) as Array<Action>;
+	  ownerId = (leekRound as Simulation).ownerId;
+	  remainingMP = (leekRound as Simulation).remainingMP;
 	}
+  }
+  constructor(Simulation simulation, integer newRemaingMP, integer usedMP, integer cellId) {
+	roundObj = new Round(simulation.roundObj);
+	actions = clone(simulation.actions,1) as Array<Action>;
+	ownerId = simulation.ownerId;
+	remainingMP = newRemaingMP;
+	addMoveAction(cellId, usedMP);
   }
   
   /**
    * ajoute une action de type ToolAction et l execute dans le round mais ne fait pas le update du round
    **/
-  Object addToolAction(integer ownerId, integer toolId, integer targetCell) {
-	ToolAction t = new ToolAction(roundObj.leeksRound[ownerId]!.toolsRound[toolId]!, roundObj.cellsRound[targetCell])
+  Object addToolAction(integer toolId, integer targetCell) {
+	ToolAction t = new ToolAction(ownerId,toolId, targetCell)
     push(actions, t);
-	return t.simulate();
+	return t.simulate(roundObj);
   }
-  
+	
   /**
-   * ajoute une action de type MoveAction mais ne fait pas le update du round
+   * addMoveAction
    **/
-  Object addMoveAction(integer ownerId, integer cellId) {
-    MoveAction t = new MoveAction(roundObj.leeksRound[ownerId]!, roundObj.cellsRound[cellId]);
+  void addMoveAction(integer CellId, integer usedMP) {
+    MoveAction t = new MoveAction(CellId, ownerId, usedMP);
 	push(actions, t);
-    return t.simulate();
+	t.simulate(roundObj);
   }
 
+  /**
+   * execute
+   **/
+  void execute() {
+    for(Action a in actions) a.execute();
+  }
+	
   /**
    * string
    **/
@@ -54,4 +68,5 @@ class Simulation extends Objects {
 	}
 	return ret+"}";
   }
+ 
 }

@@ -1,8 +1,20 @@
 /******************************************************************************
- * Action
+ * Action (Abstract)
  ******************************************************************************/
 class Action extends Objects {
-
+  
+  /**
+   * simulateUse
+   **/
+  Object simulate(Round roundObj) {
+    return {minEffect:0,maxEffect:0,midEffect:0};
+  }
+	
+  /**
+   * execute
+   **/
+  void execute() {
+  }
 }
 
 /******************************************************************************
@@ -10,61 +22,33 @@ class Action extends Objects {
  ******************************************************************************/
 class MoveAction extends Action {
 
-  LeekRound owner;
-  CellRound cellRound;
-
-  /**
-   * constructor
-   * Attention: le owner et le cellRound doivent appartenir au meme round
-   **/
-  constructor(LeekRound owner, CellRound cellRound) {
-	this.owner = owner;
-	this.cellRound = cellRound;
-  }
-
-  /**
-   * simulateUse
-   * TODO: TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-   **/
-  Object simulate() {
-	debugC("MoveAction=>simulate=> TODOOOOOOOOOOOOOOOOOOOOOO",COLOR_RED);
-    return {};
-  }
-
-  /**
-   * string
-   **/
-  string string() {
-    return shortString();
-  }
-  string shortString() {
-    return this.class.name+": "+owner.leek.name+"+ move to "+cellRound.id;
-  }
-}
-
-/******************************************************************************
- * ToolAction
- ******************************************************************************/
-class ToolAction extends Action {
-
-  ToolRound toolRound;
-  CellRound targetCell;
+  integer cellId;
+  integer ownerId;
+  integer usedMP;
 
   /**
    * constructor
    * Attention: le toolRound et le targetCell doivent appartenir au meme round
    **/
-  constructor(ToolRound toolRound, CellRound targetCell) {
-    this.id = id;
-	this.toolRound = toolRound;
-	this.targetCell = targetCell;
+  constructor(integer cellId, integer ownerId, integer usedMP) {
+	this.cellId = cellId;
+	this.ownerId = ownerId;
+	this.usedMP = usedMP;
   }
 
   /**
    * simulateUse
    **/
-  Object simulate() {
-    return toolRound.simulateUseOnCell(targetCell.id);
+  Object simulate(Round roundObj) {
+    roundObj.leeksRound[ownerId]!.simulateMoveToCell(cellId, usedMP)
+    return {minEffect:0,maxEffect:0,midEffect:0};
+  }
+
+  /**
+   * execute
+   **/
+  void execute() {
+	Board.currentRound.meRound.moveToCell(cellId);
   }
 	
   /**
@@ -74,7 +58,49 @@ class ToolAction extends Action {
     return shortString();
   }
   string shortString() {
-    return this.class.name+": "+toolRound.owner.leek.name+" use "+TOOL_NAME_TRANSLATOR[toolRound.id]!+" on "+targetCell.id;
+    return this.class.name+": "+Board.leeks[ownerId]!.name+" go to "+cellId;
+  }
+
+}
+
+/******************************************************************************
+ * ToolAction
+ ******************************************************************************/
+class ToolAction extends Action {
+
+  integer toolId;
+  integer targetCell;
+  integer ownerId;
+
+  /**
+   * constructor
+   * Attention: le toolRound et le targetCell doivent appartenir au meme round
+   **/
+  constructor(integer ownerId, integer toolId, integer targetCell) {
+	this.toolId = toolId;
+	this.targetCell = targetCell;
+	this.ownerId = ownerId;
+  }
+
+  /**
+   * simulateUse
+   **/
+  Object simulate(Round roundObj) {
+    return roundObj.leeksRound[ownerId]!.toolsRound[toolId]!.simulateUseOnCell(targetCell);
+  }
+
+  void execute() {
+    Board.currentRound.meRound.toolsRound[toolId]!.useOnCell(targetCell);
+  }
+	
+  /**
+   * string
+   **/
+  string string() {
+    return shortString();
+  }
+  string shortString() {
+    return this.class.name+": "+Board.leeks[ownerId]!.name+" use "+TOOL_NAME_TRANSLATOR[toolId]!+" on "+targetCell;
   }
 
 }

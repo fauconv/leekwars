@@ -2,7 +2,11 @@
  * LeekRound
  ******************************************************************************/
 class LeekRound extends Objects {
-  
+
+  static string STATE_APPROACH = "Approaching";
+  static string STATE_UNKNOWN  = "Unknown";
+  static string STATE_ESCAPE   = "Escaping";
+	
   Leek leek;
   CellRound currentCell;
   integer currentCellId;
@@ -275,8 +279,26 @@ class LeekRound extends Objects {
     minTP--;
     maxTP--;
     midTP--;
+	if(minTP < 0) debugC("LeekRound=>simulateSetWeapon=>ERREUR !!!!",COLOR_RED);
     this.weaponId = weaponId;
     this.weapon = toolsRound[weaponId];
+  }
+
+  /**
+   * simulateMoveToCell
+   * s approche de cellId, on ne verifie pas qu on a assez de MP
+   * @return new currentCellId
+   **/
+  integer simulateMoveToCell(integer cellId, integer usingMP) {
+	minMP -= usingMP;
+	maxMP -= usingMP;
+	midMP -= usingMP;
+	if(minMP < 0) debugC("LeekRound=>simulateMoveToCell=>ERREUR !!!!",COLOR_RED);
+	currentCell.leekOnCell = null;
+	currentCellId = cellId;
+	currentCell = roundObj.cellsRound[cellId];
+	currentCell.leekOnCell = this;
+	return currentCellId;
   }
   
   /**
@@ -327,7 +349,9 @@ class AllieRound extends LeekRound {
  * EnemyRound
  ******************************************************************************/
 class EnemyRound extends LeekRound {
-  
+
+  string state = LeekRound.STATE_UNKNOWN;
+	
   /**
    * constructor
    **/
@@ -335,6 +359,20 @@ class EnemyRound extends LeekRound {
     super(leek, roundObj);
   }
  
+  /**
+   * updateState
+   **/
+  void updateState(EnemyRound previousEnemyRound, Array<InterCellInfo> myInter) {
+	  integer d1 = myInter[currentCellId].range;
+	  integer d2 = myInter[previousEnemyRound.currentCellId].range;
+	  if(d1 > d2) {
+	    state = LeekRound.STATE_ESCAPE;
+	  } else if(d1 < d2) {
+		state = LeekRound.STATE_APPROACH;
+	  } else {
+		state = LeekRound.STATE_UNKNOWN;
+	  }
+  }
 }
 
 /******************************************************************************
@@ -412,17 +450,21 @@ class MeRound extends LeekRound {
   }
 
   /**
-   * moveToCellRound
+   * moveToCell
+   * s approche de cellId
+   * @return new currentCellId
    **/
-  boolean moveToCellRound(integer cellId) {
+  integer moveToCell(integer cellId) {
+	GameDebug.add(LEEKROUND_DEBUG,cellId,"je veux aller a");
     if(moveTowardCell(cellId)) {
 	  minMP = maxMP = midMP = getMP(id)!;
 	  currentCell.leekOnCell = null;
 	  currentCellId = getCell(id)!;
 	  currentCell = roundObj.cellsRound[currentCellId];
 	  currentCell.leekOnCell = this;
+	  return currentCellId;
 	}
-	return false;
+	return currentCellId;
   }
-  
+
 }
