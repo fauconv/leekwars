@@ -16,10 +16,10 @@ class Objects {
    *
    * @return string
    **/
-  string string() {
+  string string(string space = "") {
     return this.class.name+":(#"+id+")";
   }
-  string shortString() {
+  string shortString(string space = "") {
     return this.class.name+":(#"+id+")";
   }
 }

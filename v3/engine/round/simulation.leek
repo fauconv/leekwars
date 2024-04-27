@@ -1,0 +1,72 @@
+/******************************************************************************
+ * Simulation
+ * stock l historique des actions qui ont ete faite dans le round associer
+ ******************************************************************************/
+class Simulation extends Objects {
+
+  Array<Action> actions;
+  Round roundObj;
+  LeekRound owner;
+
+  /**
+   * constructor
+   * @param roundObj_simulation : le round ou la simulation sont clone
+   **/
+  constructor(LeekRound|Simulation leekRound) {
+    roundObj = new Round(leekRound.roundObj);
+    if(leekRound instanceof LeekRound) {
+      actions = [];
+      owner = leekRound as LeekRound;
+    } else {
+      actions = clone((leekRound as Simulation).actions,1) as Array<Action>;
+      owner = roundObj.leeksRound[(leekRound as Simulation).owner.id]!;
+    }
+  }
+  
+  /**
+   * ajoute une action de type ToolAction et l execute dans le round mais ne fait pas le update du round
+   **/
+  EffectResult addToolAction(integer toolId, integer targetCell, boolean notUseInSim = false) {
+    ToolAction t = new ToolAction(owner.id,toolId, targetCell, notUseInSim)
+    push(actions, t);
+    return t.simulate(roundObj);
+  }
+    
+  /**
+   * addMoveAction
+   **/
+  void addMoveAction(integer cellId, integer usedMP) {
+    MoveAction t = new MoveAction(cellId, owner.id, usedMP);
+    push(actions, t);
+    t.simulate(roundObj);
+  }
+
+  /**
+   * addSetWeaponAction
+   **/
+  void addSetWeaponAction(integer toolId) {
+    SetWeaponAction t = new SetWeaponAction(owner.id, toolId);
+    push(actions, t);
+    t.simulate(roundObj);
+  }
+
+  /**
+   * execute
+   * Attention: ne fait pas l update du round dans le cas de ToolActions
+   **/
+  void execute() {
+    for(Action a in actions) a.execute();
+  }
+    
+  /**
+   * string
+   **/
+  string string(string space = "") {
+    string ret = "Simulation {\n";
+    for(Action a in actions) {
+      ret += space+"  "+a.string()+"\n";
+    }
+    return ret+space+"}";
+  }
+ 
+}

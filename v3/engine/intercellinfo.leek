@@ -11,17 +11,17 @@ class InterCellInfo extends Objects {
    **/
   constructor(integer maxAOERange) {
     range = MAX_DISTANCE;
-	isInline = false;
-	isDiag = false;
+    isInline = false;
+    isDiag = false;
   }
-  constructor(Cell cellFrom, Cell cellTo, integer range) {																
+  constructor(Cell cellFrom, Cell cellTo, integer range) {                                                                
     this.range = range;
-	if(range <= Board.maxAOERange) {
-	  this.isInline = (cellFrom.x == cellTo.x || cellFrom.y == cellTo.y);
-	  this.isDiag = (abs(cellFrom.x-cellTo.x) == abs(cellFrom.y-cellTo.y));
-	} else {
-	  isInline = false;
-	  isDiag = false;
-	}
+    if(range <= Board.maxAOERange) {
+      this.isInline = (cellFrom.x == cellTo.x || cellFrom.y == cellTo.y);
+      this.isDiag = (abs(cellFrom.x-cellTo.x) == abs(cellFrom.y-cellTo.y));
+    } else {
+      isInline = false;
+      isDiag = false;
+    }
   }
 }

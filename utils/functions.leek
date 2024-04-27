@@ -26,8 +26,8 @@ function objectSize(Object obj) => integer {
  * O(count(tab2))
  **/
 function arrayConcatOpti(Array<any> tab1, Array<any> tab2) => void {
-	for(any value in tab2) {
-		push(tab1, value);
+    for(any value in tab2) {
+        push(tab1, value);
     }
 }
 

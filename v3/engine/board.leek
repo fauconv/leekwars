@@ -22,8 +22,8 @@ class Board extends Objects {
    **/
   static boolean init() {
     
-	if(gFirstRound) {
-	
+    if(gFirstRound) {
+    
       //
       // add me
       //
@@ -59,7 +59,7 @@ class Board extends Objects {
       //
       // cells creations
       //
-	  InterCellInfo interCellNull = new InterCellInfo(maxAOERange);
+      InterCellInfo interCellNull = new InterCellInfo(maxAOERange);
       for(integer i = 0;i < NB_CELLS; i++) {
         push(cells, (getCellContent(i) == CELL_OBSTACLE)?new Wall(i, interCellNull):new FreeCell(i, interCellNull));
       }
@@ -95,11 +95,11 @@ class Board extends Objects {
           }
         }
       }
-	} // First Round
-	
-	//
-	// interCell computation
-	//
+    } // First Round
+    
+    //
+    // interCell computation
+    //
     for(integer x = 0; x < NB_CELLS; x++) {
       Cell cellFrom = cells[x];
       if(cellFrom.isWall) continue;
@@ -115,10 +115,10 @@ class Board extends Objects {
     // first round
     //
     previousRound = currentRound = new Round();
-	
-	return true;
+    
+    return true;
   }
-	
+    
   /**
    * update
    **/
@@ -134,7 +134,7 @@ class Board extends Objects {
         else (leek.isAllie) and (removeElement(allies,leek));
       }
     }
-	previousRound = currentRound;
+    previousRound = currentRound;
     currentRound = new Round();
     currentRound.updateState(previousRound);
   }

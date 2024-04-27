@@ -71,7 +71,7 @@ class Talk extends Objects {
           else context = CONT_NORMAL;
         }
         integer type = contextType[context] as integer;
-		((type & MIX) && randInt(0,2)) and (context = CONT_NORMAL);
+        ((type & MIX) && randInt(0,2)) and (context = CONT_NORMAL);
         Array<string> talkable = sentences[context] as Array<string>;
         integer sentencesCount = count(talkable);
         if(sentencesCount > 0) {
@@ -82,8 +82,8 @@ class Talk extends Objects {
             (iter < sentencesCount) and (text = talkable[iter]);
             ((type & INC) || (type & INC_REP) && iter < (sentencesCount-1)) and (iteration[context]++);
           }
-		}
-		(type & UNI || context == CONT_START) and (context = CONT_NORMAL);
+        }
+        (type & UNI || context == CONT_START) and (context = CONT_NORMAL);
       }
       (text != "") and (say(text));
     }

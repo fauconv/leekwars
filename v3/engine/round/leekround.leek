@@ -6,7 +6,7 @@ class LeekRound extends Objects {
   static string STATE_APPROACH = "Approaching";
   static string STATE_UNKNOWN  = "Unknown";
   static string STATE_ESCAPE   = "Escaping";
-	
+    
   Leek leek;
   CellRound currentCell;
   integer currentCellId;
@@ -84,12 +84,12 @@ class LeekRound extends Objects {
    **/
   constructor(Leek|LeekRound leek, Round roundObj) {
   
-	id = leek.id;
+    id = leek.id;
     this.roundObj = roundObj;
-	
+    
     if(leek.class.super.name == "LeekRound") {
-	  
-	  //
+      
+      //
       // clonage
       //
       this.leek = (leek as LeekRound).leek;
@@ -158,13 +158,13 @@ class LeekRound extends Objects {
           categoriseTool(new WeaponRound(toolRound, this));
         }
       }
-	  if(weaponId) weapon = toolsRound[weaponId!];
-		
-	} else {
-	  
-	  //
-	  // cas normal
-	  //
+      if(weaponId) weapon = toolsRound[weaponId!];
+        
+    } else {
+      
+      //
+      // cas normal
+      //
       this.leek = leek as Leek;
 
       minTP = maxTP = midTP = getTP(id)!;
@@ -212,7 +212,7 @@ class LeekRound extends Objects {
           this.effects[effect[0] as integer] = [effect];
         }
       }
-	}
+    }
     
   }
 
@@ -221,8 +221,8 @@ class LeekRound extends Objects {
    * @param full : voir Round
    **/
   update(boolean full = true) {
-	  
-	if(full) {
+      
+    if(full) {
       minTP = maxTP = midTP = getTP(id)!;
       maxTotalLife = minTotalLife = midTotalLife = getTotalLife(id)!;
       maxLife = midLife = minLife = getLife(id)!;
@@ -239,9 +239,9 @@ class LeekRound extends Objects {
       minPower = maxPower = midPower = getPower(id)!;
 
       maxInjury = midInjury = minInjury = 0;
-	  
-	  Array<Array<integer | boolean>> effects = getEffects(id)!;
-	  this.effects = [:];
+      
+      Array<Array<integer | boolean>> effects = getEffects(id)!;
+      this.effects = [:];
       for(Array<integer | boolean> effect in effects) {
         if (mapContainsKey(this.effects,effect[0])) {
           push(this.effects[effect[0] as integer]!, effect);
@@ -249,18 +249,18 @@ class LeekRound extends Objects {
           this.effects[effect[0] as integer] = [effect];
         }
       }
-	}
-		
-	Array<ChipRound|null> tmp = chipsRound;
-	for(integer index : ChipRound|null chipRound in tmp) {
-	  if(chipRound != null && getCooldown(chipRound!.id) == 0) {
+    }
+        
+    Array<ChipRound|null> tmp = chipsRound;
+    for(integer index : ChipRound|null chipRound in tmp) {
+      if(chipRound != null && getCooldown(chipRound!.id) == 0) {
         chipsRound[index] = null;
-		mapRemove(toolsRound, chipRound!.id);
-	  }
-	}
+        mapRemove(toolsRound, chipRound!.id);
+      }
+    }
 
   }
-	
+    
    /**
    * categoriseTool
    **/
@@ -276,10 +276,10 @@ class LeekRound extends Objects {
    * simulateSetWeapon
    **/
   void simulateSetWeapon(integer weaponId) {
-    minTP--;
-    maxTP--;
-    midTP--;
-	if(minTP < 0) debugC("LeekRound=>simulateSetWeapon=>ERREUR !!!!",COLOR_RED);
+    minTP -= SET_WEAPON_COST;
+    maxTP -= SET_WEAPON_COST;
+    midTP -= SET_WEAPON_COST;
+    if(minTP < 0) debugC("LeekRound=>simulateSetWeapon=>ERREUR !!!!",COLOR_RED);
     this.weaponId = weaponId;
     this.weapon = toolsRound[weaponId];
   }
@@ -290,15 +290,15 @@ class LeekRound extends Objects {
    * @return new currentCellId
    **/
   integer simulateMoveToCell(integer cellId, integer usingMP) {
-	minMP -= usingMP;
-	maxMP -= usingMP;
-	midMP -= usingMP;
-	if(minMP < 0) debugC("LeekRound=>simulateMoveToCell=>ERREUR !!!!",COLOR_RED);
-	currentCell.leekOnCell = null;
-	currentCellId = cellId;
-	currentCell = roundObj.cellsRound[cellId];
-	currentCell.leekOnCell = this;
-	return currentCellId;
+    minMP -= usingMP;
+    maxMP -= usingMP;
+    midMP -= usingMP;
+    if(minMP < 0) debugC("LeekRound=>simulateMoveToCell=>ERREUR !!!!",COLOR_RED);
+    currentCell.leekOnCell = null;
+    currentCellId = cellId;
+    currentCell = roundObj.cellsRound[cellId];
+    currentCell.leekOnCell = this;
+    return currentCellId;
   }
   
   /**
@@ -307,8 +307,8 @@ class LeekRound extends Objects {
    * @return Array[cellId] = remainingMP
    **/
   Map<integer,integer> parcour(Cell startCell, integer remainingMP) {
-	Cell voisin;
-	Array<CellRound> referenceBoard = roundObj.cellsRound;
+    Cell voisin;
+    Array<CellRound> referenceBoard = roundObj.cellsRound;
     Map<integer,Array<Cell>> reachableCells = [remainingMP:[startCell]] //reachableCells[remainingMP][] = cell
     Map<integer,integer> flatReachableCells = [startCell.id:remainingMP];
     for(integer i = remainingMP; i > 0; i--) {
@@ -319,10 +319,10 @@ class LeekRound extends Objects {
           if(!(voisin = cell[direction] as Cell) || voisin.isWall) continue
           integer voisinId = voisin.id;
           LeekRound|null leekvoisin = referenceBoard[voisinId].leekOnCell;
-          if(!mapContainsKey(flatReachableCells, voisinId) && (!leekvoisin || leekvoisin!.id == id)) { // dans le cas d un deuxieme appel a parcour il se peut qu on retombe sur la position initial du poireau concerne
+          if(!mapContainsKey(flatReachableCells, voisinId) && (!leekvoisin)) { 
             push(reachableCells[futurMP]!, voisin);
             flatReachableCells[voisinId] = futurMP;
-		  }
+          }
         }
       }
     }
@@ -351,7 +351,7 @@ class AllieRound extends LeekRound {
 class EnemyRound extends LeekRound {
 
   string state = LeekRound.STATE_UNKNOWN;
-	
+    
   /**
    * constructor
    **/
@@ -363,15 +363,15 @@ class EnemyRound extends LeekRound {
    * updateState
    **/
   void updateState(EnemyRound previousEnemyRound, Array<InterCellInfo> myInter) {
-	  integer d1 = myInter[currentCellId].range;
-	  integer d2 = myInter[previousEnemyRound.currentCellId].range;
-	  if(d1 > d2) {
-	    state = LeekRound.STATE_ESCAPE;
-	  } else if(d1 < d2) {
-		state = LeekRound.STATE_APPROACH;
-	  } else {
-		state = LeekRound.STATE_UNKNOWN;
-	  }
+      integer d1 = myInter[currentCellId].range;
+      integer d2 = myInter[previousEnemyRound.currentCellId].range;
+      if(d1 > d2) {
+        state = LeekRound.STATE_ESCAPE;
+      } else if(d1 < d2) {
+        state = LeekRound.STATE_APPROACH;
+      } else {
+        state = LeekRound.STATE_UNKNOWN;
+      }
   }
 }
 
@@ -414,8 +414,8 @@ class MeRound extends LeekRound {
     (!Board.centerCell.isDeadEnd) and (pathToCenter = getPath(currentCellId, CENTER_CELL_ID));
     if (pathToCenter) {
       relativeCenterCellId    = CENTER_CELL_ID;
-	  (leek as Me).historicalRelativeCenterCellId = relativeCenterCellId;
-	  return relativeCenterCellId;
+      (leek as Me).historicalRelativeCenterCellId = relativeCenterCellId;
+      return relativeCenterCellId;
     }
     Array<integer> trajectoryToCenter = currentCell.cell.getTrajectory(Board.centerCell)
     boolean ok = false;
@@ -455,16 +455,16 @@ class MeRound extends LeekRound {
    * @return new currentCellId
    **/
   integer moveToCell(integer cellId) {
-	GameDebug.add(LEEKROUND_DEBUG,cellId,"je veux aller a");
+    GameDebug.add(LEEKROUND_DEBUG,cellId,"je veux aller a");
     if(moveTowardCell(cellId)) {
-	  minMP = maxMP = midMP = getMP(id)!;
-	  currentCell.leekOnCell = null;
-	  currentCellId = getCell(id)!;
-	  currentCell = roundObj.cellsRound[currentCellId];
-	  currentCell.leekOnCell = this;
-	  return currentCellId;
-	}
-	return currentCellId;
+      minMP = maxMP = midMP = getMP(id)!;
+      currentCell.leekOnCell = null;
+      currentCellId = getCell(id)!;
+      currentCell = roundObj.cellsRound[currentCellId];
+      currentCell.leekOnCell = this;
+      return currentCellId;
+    }
+    return currentCellId;
   }
 
 }

@@ -7,7 +7,6 @@ class RelativeCell extends Objects {
   real AOE;
   integer targetCell; // cell where is the target leek
   Map<integer, Tool> toolsList;
-  Object|null data = null;
 
   /**
    * constructor
@@ -15,9 +14,9 @@ class RelativeCell extends Objects {
    **/
   constructor(integer id, real AOE, integer targetCell, Map<integer, Tool> tools) {
     this.id = id;
-	this.AOE = AOE;
-	this.targetCell = targetCell;
-	toolsList = tools;
+    this.AOE = AOE;
+    this.targetCell = targetCell;
+    toolsList = tools;
   }
-	
+    
 }

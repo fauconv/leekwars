@@ -1,0 +1,158 @@
+/******************************************************************************
+ * Action (Abstract)
+ ******************************************************************************/
+class Action extends Objects {
+  
+  /**
+   * simulateUse
+   **/
+  EffectResult simulate(Round roundObj) {
+    return new EffectResult();
+  }
+    
+  /**
+   * execute
+   **/
+  void execute() {
+  }
+}
+
+/******************************************************************************
+ * SetWeaponAction
+ ******************************************************************************/
+class SetWeaponAction extends Objects {
+  
+  integer toolId;
+  integer ownerId;
+
+  /**
+   * constructor
+   **/
+  constructor(integer ownerId, integer toolId) {
+    this.toolId = toolId;
+    this.ownerId = ownerId;
+  }
+
+  /**
+   * simulateUse
+   **/
+  EffectResult simulate(Round roundObj) {
+    roundObj.leeksRound[ownerId]!.simulateSetWeapon(toolId);
+    return new EffectResult();
+  }
+
+  /**
+   * execute
+   **/
+  void execute() {
+    Board.currentRound.meRound.setWeaponRound(toolId);
+  }
+    
+  /**
+   * string
+   **/
+  string string(string space = "") {
+    return shortString();
+  }
+  string shortString(string space = "") {
+    return this.class.name+": "+Board.leeks[ownerId]!.name+" set "+TOOL_NAME_TRANSLATOR[toolId]!;
+  }
+
+}
+
+/******************************************************************************
+ * MoveAction
+ ******************************************************************************/
+class MoveAction extends Action {
+
+  integer cellId;
+  integer ownerId;
+  integer usedMP;
+
+  /**
+   * constructor
+   **/
+  constructor(integer cellId, integer ownerId, integer usedMP) {
+    this.cellId = cellId;
+    this.ownerId = ownerId;
+    this.usedMP = usedMP;
+  }
+
+  /**
+   * simulateUse
+   **/
+  EffectResult simulate(Round roundObj) {
+    roundObj.leeksRound[ownerId]!.simulateMoveToCell(cellId, usedMP)
+    return new EffectResult();
+  }
+
+  /**
+   * execute
+   **/
+  void execute() {
+    Board.currentRound.meRound.moveToCell(cellId);
+  }
+    
+  /**
+   * string
+   **/
+  string string(string space = "") {
+    return shortString();
+  }
+  string shortString(string space = "") {
+    return this.class.name+": "+Board.leeks[ownerId]!.name+" go to "+cellId;
+  }
+
+}
+
+/******************************************************************************
+ * ToolAction
+ ******************************************************************************/
+class ToolAction extends Action {
+
+  integer toolId;
+  integer targetCell;
+  integer ownerId;
+  boolean notUseInSim;
+
+  /**
+   * constructor
+   **/
+  constructor(integer ownerId, integer toolId, integer targetCell, boolean notUseInSim = false) {
+    this.toolId = toolId;
+    this.targetCell = targetCell;
+    this.ownerId = ownerId;
+    this.notUseInSim = notUseInSim;
+  }
+
+  /**
+   * simulateUse
+   **/
+  EffectResult simulate(Round roundObj) {
+    if(!notUseInSim) return roundObj.leeksRound[ownerId]!.toolsRound[toolId]!.simulateUseOnCell(targetCell);
+    return new EffectResult();
+  }
+
+  /**
+   * execute
+   * Attention: ne fait pas l update du round
+   **/
+  void execute() {
+    Board.currentRound.meRound.toolsRound[toolId]!.useOnCell(targetCell);
+    if( Board.me.tools[toolId]!.cooldown == 0) {
+      integer cost = Board.me.tools[toolId]!.cost;
+      while(getTP() > cost) Board.currentRound.meRound.toolsRound[toolId]!.useOnCell(targetCell);
+    }
+  }
+    
+  /**
+   * string
+   **/
+  string string(string space = "") {
+    return shortString();
+  }
+  string shortString(string space = "") {
+    return this.class.name+": "+Board.leeks[ownerId]!.name+" use "+TOOL_NAME_TRANSLATOR[toolId]!+" on "+targetCell;
+  }
+
+}

@@ -1,0 +1,47 @@
+/******************************************************************************
+ * EffectResult
+ ******************************************************************************/
+class EffectResult extends Objects {
+  integer minEffect;
+  integer maxEffect;
+  integer midEffect;
+  
+  /**
+   * constructor
+   **/
+  constructor(integer minEffect = 0, integer maxEffect = 0, integer midEffect = 0) {
+    this.minEffect = minEffect;
+    this.maxEffect = maxEffect;
+    this.midEffect = midEffect;
+  }
+
+  /**
+   * add
+   **/
+  EffectResult add(EffectResult er) {
+    minEffect += er.minEffect;
+    maxEffect += er.maxEffect;
+    midEffect += er.midEffect;
+    return this;
+  }
+    
+  /**
+   * subtract
+   **/
+  EffectResult subtract(EffectResult er) {
+    minEffect -= er.minEffect;
+    maxEffect -= er.maxEffect;
+    midEffect -= er.midEffect;
+    return this;
+  }
+
+  /**
+   * string
+   **/
+  string string(string space = "") {
+    return "{minEffect:"+minEffect+", maxEffect:"+maxEffect+", midEffect:"+midEffect+"}";
+  }
+  string shortString(string space = "") {
+    return string(); 
+  }
+}

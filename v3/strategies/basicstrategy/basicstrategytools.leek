@@ -7,9 +7,9 @@ class BasicStrategyTools extends Objects {
    * MPConditionsAddSim
    * macro pour MPConditions 
    **/
-  static Simulation MPConditionsAddSim(Array<Simulation> ret, Simulation sim, LeekRound owner, integer toolId) {
+  static Simulation MPConditionsAddSim(Array<Simulation> ret, Simulation sim, integer currentCellId, integer toolId) {
     sim = new Simulation(sim);
-    sim.addToolAction(toolId, owner.currentCellId);
+    sim.addToolAction(toolId, currentCellId);
     push(ret, sim);
     return sim;
   }
@@ -18,140 +18,164 @@ class BasicStrategyTools extends Objects {
    * parcour
    * encapsulation de leekRound.parcour
    **/
-  static Map<integer,MoveCell> parcour(LeekRound leekRound, string minMax, Array<Simulation> MPToolList, integer maxRemainingMP) {
-	integer leekId = leekRound.id;
-	Map<integer,integer> cellList = leekRound.parcour(leekRound.currentCell.cell, maxRemainingMP);
-    Array<Array<Simulation>> simulations = []; // equivalent a une map<remainingMP,Object>
-	Map<integer,MoveCell> moveCells = [:];
-	for(integer cellId : integer remainingMP in cellList) 
-	  moveCells[cellId] = new MoveCell(cellId, leekRound, MPToolList, remainingMP, maxRemainingMP-remainingMP);
-	return moveCells;
+  static Map<integer,MoveCell> parcour(LeekRound leekRound, string minMax, Array<Simulation> MPToolList, 
+										integer maxRemainingMP) {
+    integer leekId = leekRound.id;
+    Map<integer,integer> cellList = leekRound.parcour(leekRound.currentCell.cell, maxRemainingMP);
+    Map<integer,MoveCell> moveCells = [:];
+	Array<Array<Simulation>> sortedSim = [];
+	for(integer usedMP = 0; usedMP <= maxRemainingMP; usedMP++) push(sortedSim, []);
+	for(Simulation sim in MPToolList) {
+	  integer mp = sim.roundObj.leeksRound[leekId]![minMax] as integer;
+	  for(integer usedMP = 0; usedMP <= maxRemainingMP; usedMP++) {
+	    if(mp >= usedMP) push(sortedSim[usedMP], sim);
+	  }
+	}
+    for(integer cellId : integer remainingMP in cellList) {
+	  integer usedMP = maxRemainingMP-remainingMP;
+      moveCells[cellId] = new MoveCell(cellId, sortedSim[usedMP], usedMP, remainingMP, minMax);
+	}
+    return moveCells;
   }
-	
+
   /**
    * colorize
    * on decompose en different cas (couleur) et on calcul les degat
    **/
   static void colorize(Map<integer,MoveCell> myMoveCells, Map<integer,MoveCell> myMoveCellsNeutral,
-				       Map<integer,MoveCell> myMoveCellsNeutralExtend, Map<integer,MoveCell> myMoveCellsBad,
-				       Map<integer,MoveCell> myMoveCellsGood, Map<integer,MoveCell> myMoveCellsGoodExtend, 
-				       Map<integer,MoveCell> myMoveCellsAnnihilation, 
-					   Map<integer,MoveCell> myMoveCellsAnnihilationExtend) {
-	  
-	for(MoveCell mc in myMoveCells) {
-	  if(count(mc.targetCells) == 0) {
-	    if(mapSize(mc.enemyTools) == 0) {
-	      if(count(mc.simulations[0].actions) > 0) myMoveCellsNeutralExtend[mc.id] = mc; 
-		  else myMoveCellsNeutral[mc.id] = mc;
-		} else {
-		  myMoveCellsBad[mc.id] = mc;
-		}
+                       Map<integer,MoveCell> myMoveCellsBad, Map<integer,MoveCell> myMoveCellsGood, 
+                       Map<integer,MoveCell> myMoveCellsAnnihilation, integer enemyRound) { 
+    for(MoveCell mc in myMoveCells) {
+      if(count(mc.targetCells) == 0) {
+        if(mapSize(mc.enemyTools) == 0) {
+          myMoveCellsNeutral[mc.id] = mc;
+        } else {
+          myMoveCellsBad[mc.id] = mc;
+		  mc.computeDefence(enemyRound);
+        }
       } else {
-		if(mapSize(mc.enemyTools) == 0) {
-		  if(count(mc.simulations[0].actions) > 0) myMoveCellsGoodExtend[mc.id] = mc; 
-		  else myMoveCellsGood[mc.id] = mc;
-		  mc.computeEscape(myMoveCells);
-	      mc.computeScore();
-		} else {
-		  mc.computeEscape(myMoveCells);
-	      mc.computeScore();
-		  if(count(mc.goodEscapes) > 0) {
-	        if(count(((mc.goodEscapes[0].simulations as Array<Object>)[0].simulation as Simulation).actions) > 0) myMoveCellsGoodExtend[mc.id] = mc; 
-		    else myMoveCellsGood[mc.id] = mc;
-	      } else {
-			if(count(mc.simulations[0].actions) > 0) 
-			  myMoveCellsAnnihilationExtend[mc.id] = mc; 
-		    else myMoveCellsAnnihilation[mc.id] = mc;
+		mc.computeEscape(myMoveCells);
+        mc.computeAttack();
+        if(mapSize(mc.enemyTools) == 0) {
+          myMoveCellsGood[mc.id] = mc;     
+        } else {
+		  mc.computeDefence(enemyRound);
+		  boolean found = false;
+		  for(Array<MoveCell> escapeList in mc.goodEscapes) {
+			if(count(escapeList) > 0) {
+		      myMoveCellsGood[mc.id] = mc;
+			  found = true;
+			  break;
+			}
 		  }
-		}
+          if(!found) {
+            myMoveCellsAnnihilation[mc.id] = mc;
+          }
+        }
       }
-	}
-	if(mapSize(myMoveCellsNeutralExtend) == 0 && mapSize(myMoveCellsNeutral) == 0 &&
-	   mapSize(myMoveCellsGoodExtend) == 0 && mapSize(myMoveCellsGood) == 0 &&
-	   mapSize(myMoveCellsAnnihilationExtend) == 0 && mapSize(myMoveCellsAnnihilation) == 0) {
-      for(MoveCell mc in myMoveCellsBad) mc.computeScore();
-	}
-	  
+    }
   }
-  	
+      
   /**
    * moveToCellPassBy
    * s approche de cellId en s arretant uniquement sur une des cases de cellList
-   * ou au pire sur cellList2
    * @return new currentCellId
    **/
-  static integer moveToCellPassBy(integer cellId, Map<integer,MoveCell> cellList, Map<integer,MoveCell> cellList2) {
-	if(mapContainsKey(cellList, cellId)) return cellList[cellId]!.moveToCell();
-	Array<integer> path = getPath(cellId,Board.currentRound.meRound.currentCellId)!;
-	for(integer cell in path) {
-	  if(mapContainsKey(cellList, cell)) return cellList[cell]!.moveToCell();
+  static void moveToCellPassBy(integer cellId, Map<integer,MoveCell> cellList) {
+    if(mapContainsKey(cellList, cellId)) {
+	  cellList[cellId]!.moveSim[0].execute();
+	  return;
 	}
-	for(integer cell in path) {
-	  if(mapContainsKey(cellList2, cell)) return cellList2[cell]!.moveToCell();
-	}
+    Array<integer> path = getPath(cellId,Board.currentRound.meRound.currentCellId)!;
+    for(integer cell in path) {
+      if(mapContainsKey(cellList, cell)) {
+	    cellList[cell]!.moveSim[0].execute();
+		return;
+	  }
+    }
   }
 
   /**
    * moveAwayFromCellPassBy
    * s eloigne de cellId en s arretant uniquement sur une des cases de cellList ou au pire de cellList2
    **/
-  static integer moveAwayFromCellPassBy(integer cellId, Map<any,MoveCell>cellList, Map<any,MoveCell>cellList2 = [:]){
+  static void moveAwayFromCellPassBy(integer cellId, Map<any,MoveCell>cellList){
     integer distance = 0;
-	MoveCell|null ret = null;
+    MoveCell|null ret = null;
     for(MoveCell cell in cellList) {
-	  integer dist = cell.cell.interCellInfo[cellId].range;
+      integer dist = cell.cell.interCellInfo[cellId].range;
       if(dist > distance) {
-	    distance = dist;
-		ret = cell;
-	  }
-	}
-	if(ret == null) {
-	  for(MoveCell cell in cellList2) {
-	    integer dist = cell.cell.interCellInfo[cellId].range;
-        if(dist > distance) {
-	      distance = dist;
-		  ret = cell;
-	    }
-	  }
-	}
-    if(ret != null) return ret!.moveToCell();
-	return Board.currentRound.meRound.currentCellId;
-  }
-  
-  /**
-   * addWeapon
-   **/
-  static integer addWeapon(integer weaponId, Map<integer,Tool> toolsInfo, Map<integer, any> toolsList, 
-						   integer targetCell, integer minTP, Object result, Simulation sim, 
-						   LeekRound shooter) {
-    if(mapContainsKey(toolsList, weaponId)) {
-	  while(minTP >= toolsInfo[weaponId]!.cost) {
-	  	Object ret = sim.addToolAction(weaponId, targetCell);
-		result.minEffect += ret.minEffect;
-        result.maxEffect += ret.maxEffect;
-        result.midEffect += ret.midEffect;
-		minTP = shooter.minTP;
-	  }
-	}
-	return minTP;
+        distance = dist;
+        ret = cell;
+      }
+    }
+    if(ret != null) ret!.moveSim[0].execute();
   }
 
   /**
-   * addChip
+   * addTool
    **/
-  static integer addChip(integer weaponId, Map<integer,Tool> toolsInfo, Map<integer, any> toolsList, 
-						   integer targetCell, integer minTP, Object result, Simulation sim, 
-						   LeekRound shooter) {
+  static integer addTool(integer weaponId, Map<integer,Tool> toolsInfo, Map<integer, any> toolsList, 
+                           integer targetCell, integer minTP, EffectResult result, Simulation sim, 
+                           LeekRound shooter, boolean keepWeapon = true) {
     if(mapContainsKey(toolsList, weaponId)) {
-	  while(minTP >= toolsInfo[weaponId]!.cost && toolsInfo[weaponId]!.cooldown == 0) {
-	  	Object ret = sim.addToolAction(weaponId, targetCell);
-		result.minEffect += ret.minEffect;
-        result.maxEffect += ret.maxEffect;
-        result.midEffect += ret.midEffect;
-		minTP = shooter.minTP;
+      if(!toolsInfo[weaponId]!.isChip && shooter.weaponId != weaponId) { // si il faut faire un setWeapon
+        if(keepWeapon) return minTP;
+        if(minTP >= (toolsInfo[weaponId]!.cost + SET_WEAPON_COST)) {
+          sim.addSetWeaponAction(weaponId);
+        } else return minTP;
+      }
+      if(minTP >= toolsInfo[weaponId]!.cost) {
+        do {
+          EffectResult ret = sim.addToolAction(weaponId, targetCell, toolsInfo[weaponId]!.cooldown == 0);
+          result.add(ret);
+          minTP = shooter.minTP;
+        } while(minTP >= toolsInfo[weaponId]!.cost && toolsInfo[weaponId]!.cooldown == 0);
+      } else {
+        sim.addToolAction(weaponId, targetCell, true);
+      }
+    }
+    return minTP;
+  }
+   
+  /**
+   * addEnemyTool
+   **/
+  static integer addEnemyTool(integer weaponId, Map<integer,Tool> toolsInfo, Map<integer, any> toolsList,
+							  integer minTP, EffectResult result, Round roundObj, 
+                              LeekRound shooter, Array<integer> targetId, Array<real> AOE, boolean keepWeapon = true) {
+    if(mapContainsKey(toolsList, weaponId)) {
+      if(!toolsInfo[weaponId]!.isChip && shooter.weaponId != weaponId) { // si il faut faire un setWeapon
+        if(keepWeapon) return minTP;
+        if(minTP >= (toolsInfo[weaponId]!.cost + SET_WEAPON_COST)) {
+		  shooter.simulateSetWeapon(weaponId);
+        } else return minTP;
+      }
+      if(minTP >= toolsInfo[weaponId]!.cost) {
+        do {
+          EffectResult ret = shooter.toolsRound[weaponId]!.simulateUse(targetId, AOE);
+          result.add(ret);
+          minTP = shooter.minTP;
+        } while(minTP >= toolsInfo[weaponId]!.cost && toolsInfo[weaponId]!.cooldown == 0);
+      }
+    }
+    return minTP;  
+  }
+	
+  /**
+   * instaKill
+   * je regarde si il y a des insta kill
+   **/
+  static boolean instaKill(Map<integer,MoveCell> myAnnihilations) {
+	for(MoveCell mc in myAnnihilations) {
+	  for(integer index : integer score in mc.attackScores) {
+	    if(score >= MoveCell.INSTA_KILL) {
+		  mc.moveSim[index].execute();
+		  mc.attackSim[index]!.execute();
+		  return true;
+		}
 	  }
 	}
-	return minTP;
   }
 	
 }

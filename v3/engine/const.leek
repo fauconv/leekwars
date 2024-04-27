@@ -25,6 +25,7 @@ global real POISON_EROSION      = 0.1;
 global real CRITICAL_EROSION    = 0.1;
 global real AOE_DEC_LINE_FACTOR = 0.2;
 global real AOE_DEC_DIAG_FACTOR = 0.4;
+global integer SET_WEAPON_COST = 1;
 
 //
 // colors
@@ -169,7 +170,7 @@ global Map<integer,string> TOOL_LAUNCHTYPE_TRANSLATOR = [
   LAUNCH_TYPE_STAR:"star",
   LAUNCH_TYPE_SQUARE:"square",
   LAUNCH_TYPE_CIRCLE:"circle",
-  LAUNCH_TYPE_DIAGONAL_INVERTED:"diag_onv",
+  LAUNCH_TYPE_DIAGONAL_INVERTED:"diag_inv",
   LAUNCH_TYPE_LINE_INVERTED:"line_inv",
   LAUNCH_TYPE_STAR_INVERTED:"star_inv"
 ]

@@ -9,35 +9,35 @@ getTrajectory(118,306, COLOR_BLUE);
 
 function getTrajectory(startCell,endCell, color) {
 
-	var x1 = getCellX(startCell)
-	var y1 = getCellY(startCell)
-	var x2 = getCellX(endCell)
-	var y2 = getCellY(endCell)
-	
-	//
-	//  y = ax + b
-	//  
-	//  si x1 == x2 et y1 == y2 alors x = x1 et y = y1
-	//  si x1 == x2 et y1 != y2 alors x = x1 et 
-	//      si y1 < y2 alors y1 <= y <= y2
-	//      sinon y2 <= y <= y1
-	// si x1 != x2 alors
-	//      si dx >= dy alors y = ((y2-y1)/(x2-x1))*(x-x1) + y1
-	//      si dx < dy aloes x = (y-y1)*(x2-x1)/(y2-y1) + x1
-	//
-	if(abs(x2-x1) >= abs(y2-y1)) { // dx >= dy
-		if(x1 == x2) { // x1 = x2 et y1 = y2
-			mark(getCellFromXY(x1, y1), color,1);
-			return;
-		}
-		var rap = (y2-y1)/(x2-x1);
-		if(x1 < x2) for(var x = x1; x <= x2; x++) mark(getCellFromXY(x, round(rap*(x-x1)+y1)), color,1);
-		else for(var x = x1; x >= x2; x--) mark(getCellFromXY(x, round(rap*(x-x1)+y1)), color,1);
-	} else {
-		var rap = (x2-x1)/(y2-y1);
-		if(y1 < y2) for(var y = y1; y <= y2; y++) mark(getCellFromXY(round(rap*(y-y1)+x1), y), color,1);
-		else for(var y = y1; y >= y2; y--) mark(getCellFromXY(round(rap*(y-y1)+x1), y), color,1);
-	}
-	return;
+    var x1 = getCellX(startCell)
+    var y1 = getCellY(startCell)
+    var x2 = getCellX(endCell)
+    var y2 = getCellY(endCell)
+    
+    //
+    //  y = ax + b
+    //  
+    //  si x1 == x2 et y1 == y2 alors x = x1 et y = y1
+    //  si x1 == x2 et y1 != y2 alors x = x1 et 
+    //      si y1 < y2 alors y1 <= y <= y2
+    //      sinon y2 <= y <= y1
+    // si x1 != x2 alors
+    //      si dx >= dy alors y = ((y2-y1)/(x2-x1))*(x-x1) + y1
+    //      si dx < dy aloes x = (y-y1)*(x2-x1)/(y2-y1) + x1
+    //
+    if(abs(x2-x1) >= abs(y2-y1)) { // dx >= dy
+        if(x1 == x2) { // x1 = x2 et y1 = y2
+            mark(getCellFromXY(x1, y1), color,1);
+            return;
+        }
+        var rap = (y2-y1)/(x2-x1);
+        if(x1 < x2) for(var x = x1; x <= x2; x++) mark(getCellFromXY(x, round(rap*(x-x1)+y1)), color,1);
+        else for(var x = x1; x >= x2; x--) mark(getCellFromXY(x, round(rap*(x-x1)+y1)), color,1);
+    } else {
+        var rap = (x2-x1)/(y2-y1);
+        if(y1 < y2) for(var y = y1; y <= y2; y++) mark(getCellFromXY(round(rap*(y-y1)+x1), y), color,1);
+        else for(var y = y1; y >= y2; y--) mark(getCellFromXY(round(rap*(y-y1)+x1), y), color,1);
+    }
+    return;
 }
 pause();

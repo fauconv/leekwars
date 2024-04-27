@@ -22,13 +22,13 @@ class Cell extends Objects {
    * constructor
    **/
   constructor(integer idCell, InterCellInfo interCellNull) {
-	  
+      
     id = idCell;
     x = getCellX(idCell) as integer;
     y = getCellY(idCell) as integer;
-	
-	fill(interCellInfo, interCellNull, NB_CELLS);
-	  
+    
+    fill(interCellInfo, interCellNull, NB_CELLS);
+      
   }
   
   /**
@@ -76,11 +76,11 @@ class Cell extends Objects {
    **/
   integer getTowardCellId(integer targetCellId, integer maxMP) {
     Array<integer> path = getPath(id, targetCellId)!;
-	integer c = count(path);
-	if(c > maxMP-1) return path[maxMP-1];
-	return path[c-1];
+    integer c = count(path);
+    if(c > maxMP-1) return path[maxMP-1];
+    return path[c-1];
   }
-	
+    
   /**
    * getRelativeCells
    * determine les cellules que l on peut viser pour atteindre this grace a l AOE des tools
@@ -88,35 +88,35 @@ class Cell extends Objects {
    **/
   Map<integer,RelativeCell> getRelativeCells(Array<Tool> tools) {
     Map<integer,RelativeCell> ret = [:];
-	Cell|null reachableCell = this;
-	for(Tool tool in tools) {
+    Cell|null reachableCell = this;
+    for(Tool tool in tools) {
       if(ret[id]) ret[id]!.toolsList[tool.id] = tool;
-	  else ret[id] = new RelativeCell(id, 1.0, id, [tool.id:tool]);		
+      else ret[id] = new RelativeCell(id, 1.0, id, [tool.id:tool]);        
       if(tool.isAOE) {
         if(tool.AOELaunchType == LAUNCH_TYPE_CIRCLE) { //  ------------ LAUNCH_TYPE_CIRCLE
           for(string direction in HEIGHT_DIRECTION) {
-			reachableCell = this;
+            reachableCell = this;
             real pourcent = 1.0;
             for(integer i = tool.AOERange; i > 0; i--) {
-			  pourcent -= AOE_DEC_LINE_FACTOR;
-			  reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent,id);
-			  if(reachableCell == null) break;
+              pourcent -= AOE_DEC_LINE_FACTOR;
+              reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent,id);
+              if(reachableCell == null) break;
             }
           }
           for(string direction in WIDTH_DIRECTION) {
             reachableCell = this;
             real pourcent = 1.0;
             for(integer i = tool.AOERange; i > 0; i--) {
-			  pourcent -= AOE_DEC_LINE_FACTOR;
-			  reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent,id);
-			  if(reachableCell == null) break;
+              pourcent -= AOE_DEC_LINE_FACTOR;
+              reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent,id);
+              if(reachableCell == null) break;
               for(string direction2 in HEIGHT_DIRECTION) {
                 Cell|null reachableCell2 = reachableCell;
                 var pourcent2 = pourcent;
                 for(var i2 = (i-1); i2 > 0; i2--) {
                   pourcent2 -= AOE_DEC_LINE_FACTOR;
-			      reachableCell2 = addRelativeCell(ret,reachableCell2!,direction2,tool,pourcent2,id);
-				  if(reachableCell2 == null) break;
+                  reachableCell2 = addRelativeCell(ret,reachableCell2!,direction2,tool,pourcent2,id);
+                  if(reachableCell2 == null) break;
                 }
               }
             }
@@ -126,9 +126,9 @@ class Cell extends Objects {
             reachableCell = this;
             real pourcent = 1.0;
             for(integer i = tool.AOERange; i > 0; i--) {
-			  pourcent -= AOE_DEC_LINE_FACTOR;
-			  reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent,id);
-			  if(reachableCell == null) break;
+              pourcent -= AOE_DEC_LINE_FACTOR;
+              reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent,id);
+              if(reachableCell == null) break;
             }
           }
           for(string direction in WIDTH_DIRECTION) {
@@ -137,14 +137,14 @@ class Cell extends Objects {
             for(var i = tool.AOERange; i > 0; i--) {
               pourcent -= AOE_DEC_LINE_FACTOR;
               reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent,id);
-			  if(reachableCell == null) break;
+              if(reachableCell == null) break;
               for(var direction2 in HEIGHT_DIRECTION) {
                 Cell|null reachableCell2 = reachableCell;
                 var pourcent2 = pourcent;
                 for(var i2 = tool.AOERange; i2 > 0; i2--) {
                   pourcent2 -= AOE_DEC_LINE_FACTOR;
-			      reachableCell2 = addRelativeCell(ret,reachableCell2!,direction2,tool,pourcent2,id);
-				  if(reachableCell2 == null) break;
+                  reachableCell2 = addRelativeCell(ret,reachableCell2!,direction2,tool,pourcent2,id);
+                  if(reachableCell2 == null) break;
                 }
               }
             }
@@ -156,7 +156,7 @@ class Cell extends Objects {
             for(var i = tool.AOERange; i > 0; i--) {
               pourcent -= AOE_DEC_DIAG_FACTOR;
               reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent,id);
-			  if(reachableCell == null) break;
+              if(reachableCell == null) break;
             }
           }
         } else  { // ------       LAUNCH_TYPE_LINE
@@ -165,14 +165,14 @@ class Cell extends Objects {
             real pourcent = 1.0;
             for(var i = tool.AOERange; i > 0; i--) {
               pourcent -= AOE_DEC_LINE_FACTOR;
-			  reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent,id);
-			  if(reachableCell == null) break;
+              reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent,id);
+              if(reachableCell == null) break;
             }
           }
         }
       }
-	}
-	return ret;
+    }
+    return ret;
   }
 
   /**
@@ -181,22 +181,22 @@ class Cell extends Objects {
    **/
   private Cell|null addRelativeCell(Map<integer,RelativeCell> ret, Cell reachableCell, string direction, Tool tool, real pourcent, integer targetCellId) {
     if(reachableCell[direction]) {
-	  reachableCell = reachableCell[direction] as Cell;
-	  if(!reachableCell.isWall) {
-      	if(ret[reachableCell.id]) ret[reachableCell.id]!.toolsList[tool.id] = tool;
-	  	else ret[reachableCell.id] = new RelativeCell(reachableCell.id, pourcent, targetCellId, [tool.id:tool]);
-	  }
-	  return reachableCell;
-	}
-	return null;
+      reachableCell = reachableCell[direction] as Cell;
+      if(!reachableCell.isWall) {
+          if(ret[reachableCell.id]) ret[reachableCell.id]!.toolsList[tool.id] = tool;
+          else ret[reachableCell.id] = new RelativeCell(reachableCell.id, pourcent, targetCellId, [tool.id:tool]);
+      }
+      return reachableCell;
+    }
+    return null;
   }
-	
+    
   /**
    * toString
    *
    * @return string
    **/
-  string string() {
+  string string(string space = "") {
     return this.class.name+":{ id:"+id+"\n  x:"+x+" y:"+y+" isWall:"+isWall+"}\n";
   }
 }

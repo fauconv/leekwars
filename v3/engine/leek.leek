@@ -40,7 +40,7 @@ class Leek extends Objects {
       Weapon weapon = new Weapon(weaponId, this);
       categoriseTool(weapon);
       push(this.weapons, weapon);
-	  needLos = weapon.needLos && needLos;
+      needLos = weapon.needLos && needLos;
     }
 
     Array<integer>|null chips = getChips(id);
@@ -48,7 +48,7 @@ class Leek extends Objects {
       Chip chip = new Chip(chipId, this);
       categoriseTool(chip);
       push(this.chips, chip);
-	  needLos = chip.needLos && needLos;
+      needLos = chip.needLos && needLos;
     }
     
   }
@@ -61,48 +61,48 @@ class Leek extends Objects {
     for(string category in tool.categories) push(this[category] as Array<Tool>, tool);
     ((tool.categories["categoryDamage"]) && (tool.maxAOERange > maxAOERange)) and (maxAOERange = tool.maxAOERange);
   }
-	
+    
   /**
    * toString
    *
    * @return string
    **/
-  string shortString() {
+  string shortString(string space = "") {
     return this.class.name+"("+name+")";
   }
-  string string() {
+  string string(string space = "") {
     string ret = this.class.name+"("+name+") maxAOE:"+maxAOERange+"\n";
-    ret += "damage:\n"
+    ret += space+"damage:\n"
     for(Tool tool in categoryDamage) {
-      ret += tool.shortString() + "\n";
+      ret += space+tool.shortString() + "\n";
     }
-    ret += "protection:\n"
+    ret += space+"protection:\n"
     for(Tool tool in categoryProtection) {
-      ret += tool.shortString() + "\n";
+      ret += space+tool.shortString() + "\n";
     }
-    ret += "heal:\n"
+    ret += space+"heal:\n"
     for(Tool tool in categoryHeal) {
-      ret += tool.shortString() + "\n";
+      ret += space+tool.shortString() + "\n";
     }
-    ret += "MPBuff:\n"
+    ret += space+"MPBuff:\n"
     for(Tool tool in categoryMPBuff) {
-      ret += tool.shortString() + "\n";
+      ret += space+tool.shortString() + "\n";
     }
-    ret += "Buff:\n"
+    ret += space+"Buff:\n"
     for(Tool tool in categoryBuff) {
-      ret += tool.shortString() + "\n";
+      ret += space+tool.shortString() + "\n";
     }
-     ret += "DeBuff:\n"
+     ret += space+"DeBuff:\n"
     for(Tool tool in categoryDeBuff) {
-      ret += tool.shortString() + "\n";
+      ret += space+tool.shortString() + "\n";
     }
-    ret += "other:\n"
+    ret += space+"other:\n"
     for(Tool tool in categoryOther) {
-      ret += tool.shortString() + "\n";
+      ret += space+tool.shortString() + "\n";
     }
-    ret += "Move:\n"
+    ret += space+"Move:\n"
     for(Tool tool in categoryMove) {
-      ret += tool.shortString() + "\n";
+      ret += space+tool.shortString() + "\n";
     }
     return ret;  
   }

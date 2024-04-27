@@ -36,16 +36,16 @@ class GameDebug extends Objects {
     if(count(limit) > 0) lim = shift(limit) as integer;
     if(count(start) > 0) star = shift(start) as integer;
     if(count(revers) > 0) rev = shift(revers) as boolean;
-	integer type = typeOf(array);
+    integer type = typeOf(array);
     if(type == TYPE_ARRAY) {
       cpt = count(array as Array<any>);
       if(rev) reverse(tab as Array<any>);
     } else if(type == TYPE_MAP) {
       cpt = mapSize(array as Map<any,any>);
     } else {
-	  cpt = setSize(array as Set);
+      cpt = setSize(array as Set);
     }
-	str+= array.class.name+"("+star+"-"+lim+"/"+cpt+") [";
+    str+= array.class.name+"("+star+"-"+lim+"/"+cpt+") [";
     if(cpt != 0 && depth > 0) {
       str += "\n"
       string space2 = space + "  ";
@@ -82,8 +82,8 @@ class GameDebug extends Objects {
         return;
       }
       if(obj instanceof Objects) {
-        if(debugFunction == "shortString") str += (obj as Objects).shortString();
-          else str += (obj as Objects).string();
+        if(debugFunction == "shortString") str += (obj as Objects).shortString(space);
+          else str += (obj as Objects).string(space);
         return;
       }
       str += obj.class.name + ": not herite from Objects";
@@ -140,10 +140,10 @@ class GameDebug extends Objects {
     if(!condition) return;
     integer type = typeOf(cellsOrCellId);
     if(type == TYPE_NUMBER) {
-	  mark(cellsOrCellId as integer, color,1);
+      mark(cellsOrCellId as integer, color,1);
     } else if(type == TYPE_OBJECT) {
       mark((cellsOrCellId as Objects).id, color, 1);
-	} else { // array ou map
+    } else { // array ou map
       for(any cell in cellsOrCellId as Array<integer|Objects>|Map<any,integer|Objects>) {
         type = typeOf(cell);
         break;
@@ -165,12 +165,12 @@ class GameDebug extends Objects {
    * calcul les opt et la ram depuis le dernier addOperation et l affiche
    **/
   static void addOperation(boolean condition, string txt = "", integer relativeOpt = opt, integer relativeRam = ram) {
-	integer opt2 = getOperations()-relativeOpt;
+    integer opt2 = getOperations()-relativeOpt;
     if(!condition) return;
     integer ram2 = getUsedRAM()-relativeRam;
-	if(str != "") str += txt+" : "+opt2+"("+(opt2*100.0/getMaxOperations())+"%Ops) / "+ram2+"("+(ram2*100.0/getMaxRAM())+"%RAM)\n";
+    if(str != "") str += txt+" : "+opt2+"("+(opt2*100.0/getMaxOperations())+"%Ops) / "+ram2+"("+(ram2*100.0/getMaxRAM())+"%RAM)\n";
     ram = getUsedRAM();
-	opt = getOperations();
+    opt = getOperations();
   }
   
 }

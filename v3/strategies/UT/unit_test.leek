@@ -38,14 +38,14 @@ class UnitTest extends Strategy {
       leek();
       leekRound();
       tool();
-	  oldRound = currentRound;
-	  meRound.moveToCell(meRound.getRelativeCenter());
+      oldRound = currentRound;
+      meRound.moveToCell(meRound.getRelativeCenter());
       return true;
     }
-	roundTest();
-	toolRound();
+    roundTest();
+    toolRound();
     oldRound = currentRound;
-	return true;
+    return true;
   }
   
   /**
@@ -76,9 +76,9 @@ class UnitTest extends Strategy {
     GameDebug.addBackground(true, 306, COLOR_BLUE);
     GameDebug.addBackground(true, 300, COLOR_BLUE);
     debug("Legend: trajectory 306-> 241, 288->163, 305->531 = green");
-	GameDebug.addOperation(true);
-	Array<integer> listCells = Board.cells[306].getTrajectory(Board.cells[241]);
-	GameDebug.addOperation(true,"getTrajectory");
+    GameDebug.addOperation(true);
+    Array<integer> listCells = Board.cells[306].getTrajectory(Board.cells[241]);
+    GameDebug.addOperation(true,"getTrajectory");
     GameDebug.addBackground(true, listCells, COLOR_GREEN);
     GameDebug.addBackground(true, Board.cells[288].getTrajectory(Board.cells[163]), COLOR_GREEN);
     GameDebug.addBackground(true, Board.cells[305].getTrajectory(Board.cells[531]), COLOR_GREEN);
@@ -151,11 +151,11 @@ class UnitTest extends Strategy {
    * roundTest
    **/
   boolean roundTest() {
-	GameDebug.addOperation(true, "avant clonage");
-	Round newRound = new Round(currentRound);
-	GameDebug.addOperation(true,"cout clonage");
-	newRound.update();
-	GameDebug.addOperation(true,"cout update");
+    GameDebug.addOperation(true, "avant clonage");
+    Round newRound = new Round(currentRound);
+    GameDebug.addOperation(true,"cout clonage");
+    newRound.update();
+    GameDebug.addOperation(true,"cout update");
     return true;
   }
   
@@ -170,26 +170,26 @@ class UnitTest extends Strategy {
    * toolRound
    **/
   boolean toolRound() {
-	meRound.moveToCell(enemyRound.currentCellId);
-	if(canUseWeaponOnCell(enemyRound.currentCellId)) {
-	  Round simulation = new Round(currentRound);
-	  Round oldRound = new Round(currentRound);
-	  MeRound meSim = simulation.meRound;
-	  if(meSim.toolsRound[CHIP_PROTEIN]) meSim.toolsRound[CHIP_PROTEIN]!.simulateUse();
-	  Object simValues = meSim.weapon!.simulateUse([enemyRound.id],[1.0]);
-	  GameDebug.add(true,simValues,"simulation des degats du tir");
-	  Object simErosion = { 
-	    maxErosion: (oldRound.enemiesRound[0].minTotalLife-simulation.enemiesRound[0].minTotalLife),
-		minErosion: (oldRound.enemiesRound[0].maxTotalLife-simulation.enemiesRound[0].maxTotalLife),
-		midErosion: (oldRound.enemiesRound[0].midTotalLife-simulation.enemiesRound[0].midTotalLife)
-	  }
-	  GameDebug.add(true, simErosion, "simulation de l erosion")
-	  if(meRound.toolsRound[CHIP_PROTEIN]) useChip(CHIP_PROTEIN);
-	  useWeaponOnCell(enemyRound.currentCellId);
-	  currentRound.update();
-	  GameDebug.add(true, oldRound.enemiesRound[0].minLife+"-"+enemyRound.minLife+"="+(oldRound.enemiesRound[0].minLife-enemyRound.minLife), "degat reel par comparaison des rounds")
-	  GameDebug.add(true, oldRound.enemiesRound[0].minTotalLife+"-"+enemyRound.minTotalLife+"="+(oldRound.enemiesRound[0].minTotalLife-enemyRound.minTotalLife), "erosion reel par comparaison des rounds")
-	}
+    meRound.moveToCell(enemyRound.currentCellId);
+    if(canUseWeaponOnCell(enemyRound.currentCellId)) {
+      Round simulation = new Round(currentRound);
+      Round oldRound = new Round(currentRound);
+      MeRound meSim = simulation.meRound;
+      if(meSim.toolsRound[CHIP_PROTEIN]) meSim.toolsRound[CHIP_PROTEIN]!.simulateUse();
+      EffectResult simValues = meSim.weapon!.simulateUse([enemyRound.id],[1.0]);
+      GameDebug.add(true,simValues,"simulation des degats du tir");
+      Object simErosion = { 
+        maxErosion: (oldRound.enemiesRound[0].minTotalLife-simulation.enemiesRound[0].minTotalLife),
+        minErosion: (oldRound.enemiesRound[0].maxTotalLife-simulation.enemiesRound[0].maxTotalLife),
+        midErosion: (oldRound.enemiesRound[0].midTotalLife-simulation.enemiesRound[0].midTotalLife)
+      }
+      GameDebug.add(true, simErosion, "simulation de l erosion")
+      if(meRound.toolsRound[CHIP_PROTEIN]) useChip(CHIP_PROTEIN);
+      useWeaponOnCell(enemyRound.currentCellId);
+      currentRound.update();
+      GameDebug.add(true, oldRound.enemiesRound[0].minLife+"-"+enemyRound.minLife+"="+(oldRound.enemiesRound[0].minLife-enemyRound.minLife), "degat reel par comparaison des rounds")
+      GameDebug.add(true, oldRound.enemiesRound[0].minTotalLife+"-"+enemyRound.minTotalLife+"="+(oldRound.enemiesRound[0].minTotalLife-enemyRound.minTotalLife), "erosion reel par comparaison des rounds")
+    }
     return true;
   }
   

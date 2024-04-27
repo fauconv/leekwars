@@ -16,16 +16,16 @@ class Round extends Objects {
    * constructor
    **/
   constructor() {
-	  
+      
     //
     // cells creations
     //
     for(integer i = 0;i < NB_CELLS; i++) {
       push(cellsRound, new CellRound(Board.cells[i],this));
     }
-	 
-	id = getTurn();
-	 
+     
+    id = getTurn();
+     
     //
     // add me
     //
@@ -56,7 +56,7 @@ class Round extends Objects {
    * @param clone : le round a cloner
    **/
   constructor(Round clone) {
-	  
+      
     //
     // cells creations
     //
@@ -64,8 +64,8 @@ class Round extends Objects {
       push(cellsRound, new CellRound(Board.cells[i],this));
     }
     
-	id = clone.id;
-	  
+    id = clone.id;
+      
     //
     // add me
     //
@@ -104,14 +104,14 @@ class Round extends Objects {
    *               - false s utilise quand on simule des actions car les caracteristiques des poireau son calcule par simulation
    **/
   update(boolean full = true) {
-	for(integer id : LeekRound leek in leeksRound) {
+    for(integer id : LeekRound leek in leeksRound) {
       if(!isAlive(id)) {
         mapRemove(leeksRound,id);
         if(leek.leek.isEnemy) removeElement(enemiesRound,leek);
         else if(leek.leek.isAllie) removeElement(alliesRound,leek);
       } else {
-	    leek.update(full);
-	  }  
+        leek.update(full);
+      }  
     }
   }
 
@@ -119,7 +119,7 @@ class Round extends Objects {
    * updateState
    **/
   updateState(Round previousRound) {
-	Array<InterCellInfo> myInter = meRound.currentCell.cell.interCellInfo;
+    Array<InterCellInfo> myInter = meRound.currentCell.cell.interCellInfo;
     for(EnemyRound enemy in enemiesRound) enemy.updateState(previousRound.leeksRound[enemy.id] as EnemyRound, myInter);
   }
 }

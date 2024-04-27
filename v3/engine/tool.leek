@@ -55,7 +55,7 @@ class Tool extends Objects {
         isLaser = true;
         AOELaunchType = LAUNCH_TYPE_LINE;
       }
-	} else {
+    } else {
       isAOE = true;
       if(areaType == AREA_X_3) {
         AOERange = 6;
@@ -88,7 +88,7 @@ class Tool extends Objects {
         AOERange = 1;
         AOELaunchType = LAUNCH_TYPE_LINE;
       }
-	  maxAOERange = maxRange+AOERange;
+      maxAOERange = maxRange+AOERange;
       minAOERange = max(minRange-AOERange,1);
     }
     
@@ -101,7 +101,7 @@ class Tool extends Objects {
     return (range <= maxRange && range >= minRange && (!needLos || isInsight) && 
             (launchType != LAUNCH_TYPE_LINE || isInLine) && (launchType != LAUNCH_TYPE_DIAGONAL || isDiag) && 
             (launchType != LAUNCH_TYPE_STAR || isDiag || isInLine) && 
-			(launchType != LAUNCH_TYPE_STAR_INVERTED || isDiag && isInLine));
+            (launchType != LAUNCH_TYPE_STAR_INVERTED || isDiag && isInLine));
   }
     
   /**
@@ -109,11 +109,17 @@ class Tool extends Objects {
    *
    * @return string
    **/
-  string string() {
-    return this.class.name+"("+TOOL_NAME_TRANSLATOR[id]+"):\n  areaType:"+areaType+"\n  needLos:"+needLos+"\n  cost:"+cost+
-          "\n  launchType:"+TOOL_LAUNCHTYPE_TRANSLATOR[launchType]+"\n  minRange:"+minRange+"\n  maxRange:"+maxRange+"\n  cooldown:"+cooldown;
+  string string(string space = "") {
+    return this.class.name+"("+TOOL_NAME_TRANSLATOR[id]+"):\n"+
+		                       space+"  areaType:"+areaType+"\n"+
+		                       space+"  needLos:"+needLos+"\n"+
+		                       space+"  cost:"+cost+"\n"+
+		                       space+"  launchType:"+TOOL_LAUNCHTYPE_TRANSLATOR[launchType]+"\n"+
+		                       space+"  minRange:"+minRange+"\n"+
+		                       space+"  maxRange:"+maxRange+"\n"+
+		                       space+"  cooldown:"+cooldown;
   }
-  string shortString() {
+  string shortString(string space = "") {
     return this.class.name+"("+TOOL_NAME_TRANSLATOR[id]!+")";
   }
   
