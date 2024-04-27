@@ -126,19 +126,19 @@ class BasicStrategy extends Strategy {
     if(BASIC_STRATEGY_DEBUG) {
       for(MoveCell mc in myMoveCellsNeutral) {
         mark(mc.id,COLOR_BLUE,1);
-        markText(mc.id,count(mc.moveSim));
+        markText(mc.id,mapSize(mc.moveSim));
       }
       for(MoveCell mc in myMoveCellsBad) {
         mark(mc.id,COLOR_RED,1);
-        markText(mc.id,count(mc.moveSim));
+        markText(mc.id,mapSize(mc.moveSim));
       }
       for(MoveCell mc in myMoveCellsGood) {
         mark(mc.id,COLOR_GREEN,1);
-        markText(mc.id,count(mc.moveSim));
+        markText(mc.id,mapSize(mc.moveSim));
       }
       for(MoveCell mc in myMoveCellsAnnihilation) {
         mark(mc.id,COLOR_YELLOW,1);
-        markText(mc.id,count(mc.moveSim));
+        markText(mc.id,mapSize(mc.moveSim));
       }
     }
       
@@ -248,7 +248,7 @@ class BasicStrategy extends Strategy {
 	// je recupere les meilleurs good
 	for(MoveCell mc in myGoods) {
 	  for(integer index : integer score in mc.attackScores) {
-		if(mc.defenceScore == 0 || count(mc.goodEscapes[index]) > 0) {
+		if(mc.defenceScore == 0 || count(mc.goodEscapes[index]!) > 0) {
 	      if(score == bestScore) {
 		    push(bestMc, {moveCell:mc, index:index});
 		  } else if(score > bestScore) {
@@ -260,11 +260,14 @@ class BasicStrategy extends Strategy {
 	}
 	// je recupere le meilleur good et son escape en fonction de la strategie 
 	// TODO: ici je prend la premiere au lieu de la meilleure on fera mieux apres
+	debugC("BasicStrategy=>good=>recuperer le meilleur good",COLOR_RED);
 	MoveCell finale = bestMc[0].moveCell as MoveCell;
-	finale.moveSim[bestMc[0].index as integer].execute();
+	finale.moveSim[bestMc[0].index as integer]!.execute();
+	meRound.moveToCell((bestMc[0].moveCell as MoveCell).id);
     finale.attackSim[bestMc[0].index as integer]!.execute();
-	if(finale.defenceScore != 0) moveTowardCell(finale.goodEscapes[bestMc[0].index as integer][0].id);
+	if(finale.defenceScore != 0) moveTowardCell(finale.goodEscapes[bestMc[0].index as integer]![0].id);
 	// TODO: ici je ne bouge pas si je suis sur un vert on verra plus tard
+	debugC("BasicStrategy=>good=>recuperer le meilleur escape",COLOR_RED);
 	myState = STATE_ATTACK;
 	conclude();
 	heal();
@@ -340,8 +343,9 @@ class BasicStrategy extends Strategy {
 	}
 	// je recupere le meilleur good et son escape en fonction de la strategie 
 	// TODO: ici je prend la premiere au lieu de la meilleure on fera mieux apres
-	MoveCell finale = bestMc[0].moveCell as MoveCell;
-	finale.moveSim[bestMc[0].index as integer].execute();
+	debugC("BasicStrategy=>bad=>recuperer le meilleur bad",COLOR_RED);
+	(bestMc[0].moveCell as MoveCell).moveSim[bestMc[0].index as integer]!.execute();
+	meRound.moveToCell((bestMc[0].moveCell as MoveCell).id);
 	protect();
 	heal();
 	conclude();

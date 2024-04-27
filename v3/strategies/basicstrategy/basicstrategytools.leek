@@ -8,7 +8,7 @@ class BasicStrategyTools extends Objects {
    * macro pour MPConditions 
    **/
   static Simulation MPConditionsAddSim(Array<Simulation> ret, Simulation sim, integer currentCellId, integer toolId) {
-    sim = new Simulation(sim);
+    sim = new Simulation(sim, true, sim.id+1);
     sim.addToolAction(toolId, currentCellId);
     push(ret, sim);
     return sim;
@@ -23,12 +23,12 @@ class BasicStrategyTools extends Objects {
     integer leekId = leekRound.id;
     Map<integer,integer> cellList = leekRound.parcour(leekRound.currentCell.cell, maxRemainingMP);
     Map<integer,MoveCell> moveCells = [:];
-	Array<Array<Simulation>> sortedSim = [];
-	for(integer usedMP = 0; usedMP <= maxRemainingMP; usedMP++) push(sortedSim, []);
+	Array<Map<integer,Simulation>> sortedSim = [];
+	for(integer usedMP = 0; usedMP <= maxRemainingMP; usedMP++) push(sortedSim, [:]);
 	for(Simulation sim in MPToolList) {
 	  integer mp = sim.roundObj.leeksRound[leekId]![minMax] as integer;
 	  for(integer usedMP = 0; usedMP <= maxRemainingMP; usedMP++) {
-	    if(mp >= usedMP) push(sortedSim[usedMP], sim);
+	    if(mp >= usedMP) sortedSim[usedMP][sim.id] = sim;
 	  }
 	}
     for(integer cellId : integer remainingMP in cellList) {
@@ -79,37 +79,86 @@ class BasicStrategyTools extends Objects {
   /**
    * moveToCellPassBy
    * s approche de cellId en s arretant uniquement sur une des cases de cellList
-   * @return new currentCellId
+   * @param extended : si true cherche aussi les MoveCell qui on des sim extended si il n a pas trouve dans les normals
+   * @param forceExtended : cherche la meilleure qu elle soit extended ou pas
+   * @return {cellId:<integer>, simId:<integer>} used sim et destination cell
    **/
-  static void moveToCellPassBy(integer cellId, Map<integer,MoveCell> cellList) {
+  static Object moveToCellPassBy(integer cellId, Map<integer,MoveCell> cellList, boolean extended = false, 
+								  boolean forceExtended = false) {
     if(mapContainsKey(cellList, cellId)) {
-	  cellList[cellId]!.moveSim[0].execute();
-	  return;
+	  for(integer index : Simulation sim in cellList[cellId]!.moveSim) {
+	    if(!sim.extended || forceExtended) return moveToCellPassByMacro(sim, cellId, index);
+	  }
 	}
     Array<integer> path = getPath(cellId,Board.currentRound.meRound.currentCellId)!;
     for(integer cell in path) {
-      if(mapContainsKey(cellList, cell)) {
-	    cellList[cell]!.moveSim[0].execute();
-		return;
+      for(integer index : Simulation sim in cellList[cell]!.moveSim) {
+	    if(!sim.extended || forceExtended) return moveToCellPassByMacro(sim, cell, index);
 	  }
     }
+	if(extended && !forceExtended) {
+	  if(mapContainsKey(cellList, cellId)) {
+	    for(integer index : Simulation sim in cellList[cellId]!.moveSim) {
+	      if(sim.extended) return moveToCellPassByMacro(sim, cellId, index);
+	    }
+	  }
+      for(integer cell in path) {
+        for(integer index : Simulation sim in cellList[cell]!.moveSim) {
+	      if(sim.extended) return moveToCellPassByMacro(sim, cell, index);
+	    }
+      }
+	}
+	return {cellId:Board.currentRound.meRound.currentCellId, simId:0};
   }
 
   /**
-   * moveAwayFromCellPassBy
-   * s eloigne de cellId en s arretant uniquement sur une des cases de cellList ou au pire de cellList2
+   * moveToCellPassByMacro
    **/
-  static void moveAwayFromCellPassBy(integer cellId, Map<any,MoveCell>cellList){
+  private static Object moveToCellPassByMacro(Simulation sim, integer cellId, integer index) {
+    sim.execute();
+    if(sim.roundObj.meRound.moveToCell(cellId) != cellId) 
+	  debugC("BasicStrategyTools=>moveToCellPassBy=>pas la bonne destination", COLOR_RED);
+	return {cellId:cellId, simId:index};
+  }
+	
+  /**
+   * moveAwayFromCellPassBy
+   * s eloigne de cellId en s arretant uniquement sur une des cases de cellList
+   * @param extended : si true cherche aussi les MoveCell qui on des sim extended
+   * @param forceExtended : cherche la meilleure qu elle soit extended ou pas
+   * @return {cellId:<integer>, simId:<integer>} used sim et destination cell
+   **/
+  static Object moveAwayFromCellPassBy(integer cellId, Map<any,MoveCell>cellList, boolean extended = false, 
+								       boolean forceExtended = false){
     integer distance = 0;
-    MoveCell|null ret = null;
+	integer distanceExtended = 0;
+    Integer|null cell2 = null;
+	Integer|null cell2Extended = null;
+	Simulation|null sim2 = null;
+	Simulation|null sim2Extended = null;
     for(MoveCell cell in cellList) {
-      integer dist = cell.cell.interCellInfo[cellId].range;
-      if(dist > distance) {
-        distance = dist;
-        ret = cell;
-      }
+	  integer dist = cell.cell.interCellInfo[cellId].range;
+	  for(integer index : Simulation sim in cell.moveSim) {
+	    if(sim.extended) {
+		  if(dist > distanceExtended) {
+			distanceExtended = dist;
+			cell2Extended = cell.id;
+			sim2Extended = sim;
+		  }
+		} else {
+		  if(dist > distance) {
+			distance = dist;
+			cell2 = cell.id;
+			sim2 = sim;
+		  }
+		}
+	  }
     }
-    if(ret != null) ret!.moveSim[0].execute();
+	if(forceExtended && distance < distanceExtended) 
+      return moveToCellPassByMacro(sim2Extended!, cell2Extended!, sim2Extended!.id);
+	if(distance > 0) return moveToCellPassByMacro(sim2!, cell2!, sim2!.id);
+	if(extended && distanceExtended > 0) return moveToCellPassByMacro(sim2Extended!, cell2Extended!, sim2Extended!.id);
+    return {cellId:Board.currentRound.meRound.currentCellId, simId:0};
   }
 
   /**
@@ -170,7 +219,7 @@ class BasicStrategyTools extends Objects {
 	for(MoveCell mc in myAnnihilations) {
 	  for(integer index : integer score in mc.attackScores) {
 	    if(score >= MoveCell.INSTA_KILL) {
-		  mc.moveSim[index].execute();
+		  mc.moveSim[index]!.execute();
 		  mc.attackSim[index]!.execute();
 		  return true;
 		}

@@ -5,43 +5,40 @@ class MoveCell extends Objects {
 
   static integer BAD_SCORE = -100000;
   static integer INSTA_KILL = 100000;
+  static Map<integer,Map<string,RelativeCell>> relativeCellsCache = [:];
 	
   Cell cell;
-  Array<Simulation> moveSim = []; // liste des simulation qui aboutisse a cette moveCell
-	                              // Les simulations son classe de celle qui demande le moins de TP a celle qui en 
-                                  // demande le plus
-                                  // l index correspond au numero de la sim
+  Map<integer,Simulation> moveSim = [:]; // liste des simulation qui aboutisse a cette moveCell
+	                                     // Les simulations son classe de celle qui demande le moins de TP a celle qui en 
+                                         // demande le plus
+                                         // l index correspond au numero de la sim
   integer maxRemainingMP; // = max(moveSim[x].roundObj.leeksRound[ownerId].min/maxMP)
-  Array<Simulation|null> attackSim = [];   // on repart des rounds de chaque moveSim et on simule les attack 
-                                           // l index correspond au numero de la sim
+  Map<integer,Simulation> attackSim = [:]; // pour chaque sim je determine la meilleure relativeCell
+	                                       // et la simulation correspondante
+  Map<integer,integer> attackScores = [:]; // score de chaque attackSim
   Array<RelativeCell> targetCells = []; // liste de cell que l on peut viser pour atteindre l ennemie a partir de 
                                         // cette moveCell
   Map<real,Map<integer,Tool>> enemyTools = [:]; // liste des tools enemy qui peuvent nous atteindre sur cette 
                                                 // moveCell classe par AOE
-  Array<Array<MoveCell>> escapes = []; // pour chaque sim on calcul les moveCell vers ou on peut aller
-	                                   // et qui sont pas good
-	                                   // l index correspond au numero de la sim
-  Array<Array<MoveCell>> goodEscapes = [];  // pour chaque sim on calcul les moveCell vers ou on peut aller
-                                            // et qui me permette de pas etre touche
-	                                        // l index correspond au numero de la sim
-  Array<integer> attackScores = []; //  score de chaque attackSim
+  Map<integer,Array<MoveCell>> escapes = [:]; // pour chaque sim on calcul les moveCell vers ou on peut aller
+	                                          // et qui sont pas good
+	                                          // l index correspond au numero de la sim
+  Map<integer,Array<MoveCell>> goodEscapes = [:];  // pour chaque sim on calcul les moveCell vers ou on peut aller
+                                                   // et qui me permette de pas etre touche
+	                                               // l index correspond au numero de la sim
   integer defenceScore = 0;  // degat infliger lorsque le poireau enemy m attack sur cette moveCell
   string minMaxMP;
     
   /**
    * constructor
    **/
-  constructor(integer cell, Array<Simulation> simulations, integer usedMP, integer maxRemainingMP, string minMaxMP) {
+  constructor(integer cell, Map<integer,Simulation> simulations, integer usedMP, integer maxRemainingMP,string minMaxMP){
     id = cell;
     this.cell = Board.cells[id];
-    for(Simulation sim in simulations) {
-	  Simulation sim2 = new Simulation(sim);
-	  sim2.addMoveAction(id, usedMP);
-      push(this.moveSim, sim2);
-	  push(this.escapes, []);
-	  push(this.goodEscapes, []);
-	  push(this.attackScores, MoveCell.BAD_SCORE);
-	  push(this.attackSim, null);
+	moveSim = simulations;
+    for(integer id : Simulation sim in simulations) {
+	  this.escapes[id] = [];
+	  this.goodEscapes[id] = [];
     }
 	this.maxRemainingMP = maxRemainingMP;
 	this.minMaxMP = minMaxMP;
@@ -52,14 +49,14 @@ class MoveCell extends Objects {
    **/
   void computeEscape(Map<integer, MoveCell> moveCellList) {
 	// on prend le leekround de la premiere simulation vu que toute les sim on la meme position 
-    Map<integer,integer> cellList = moveSim[0].owner.parcour(cell, maxRemainingMP);
+    Map<integer,integer> cellList = moveSim[0]!.owner.parcour(cell, maxRemainingMP);
 	for(integer index : Simulation sim in moveSim) {
 	  for(integer cellId : integer remainingMP in cellList) {
 	    integer usedMP = maxRemainingMP-remainingMP;
 		if(usedMP <= sim.owner[minMaxMP]) {
 		  MoveCell mc = moveCellList[cellId]!;
-		  if(mapSize(mc.enemyTools) == 0) push(goodEscapes[index], mc);
-          else push(escapes[index], mc);
+		  if(mapSize(mc.enemyTools) == 0) push(goodEscapes[index]!, mc);
+          else push(escapes[index]!, mc);
 		}
 	  }
 	}
@@ -79,12 +76,24 @@ class MoveCell extends Objects {
       boolean isDiag = interCellInfo.isDiag;
       boolean isInLine = interCellInfo.isInline;        
       Map<integer,Tool> toolsList = [:];
+	  string hash = "";
       for(Tool tool in enemyRelativeCell.toolsList) {
-        if(tool.canUseTool(range, isInsight, isInLine, isDiag)) toolsList[tool.id] = tool;
+        if(tool.canUseTool(range, isInsight, isInLine, isDiag)) {
+		  toolsList[tool.id] = tool;
+		  hash += tool.id+".";
+		}
       }
-      integer id = enemyRelativeCell.id;
-      integer targetCell = enemyRelativeCell.targetCell;
-      push(targetCells,new RelativeCell(enemyRelativeCell.id,enemyRelativeCell.AOE,targetCell,toolsList));
+	  if(hash != "") {
+        integer id = enemyRelativeCell.id;
+	    if(!mapContainsKey(relativeCellsCache, id)) {
+	      relativeCellsCache[id] = 
+			  [hash:new RelativeCell(enemyRelativeCell.id,enemyRelativeCell.AOE,enemyRelativeCell.targetCell,toolsList)]
+	    } else if(!mapContainsKey(relativeCellsCache[id]!, hash)) {
+			relativeCellsCache[id]![hash] = 
+				new RelativeCell(enemyRelativeCell.id,enemyRelativeCell.AOE,enemyRelativeCell.targetCell,toolsList)
+		}
+        push(targetCells,relativeCellsCache[id]![hash]);
+      }
     }
   }
   
@@ -123,11 +132,13 @@ class MoveCell extends Objects {
       integer minTP = sim.roundObj.meRound.minTP;
       integer ret = MoveCell.BAD_SCORE;
       for(RelativeCell rel in targetCells) {
-        Simulation relativeSim = new Simulation(sim.owner);
-        integer score = BasicStrategy.computeAttack(relativeSim, rel);
-        if(score > ret) {
-		  attackSim[index] = relativeSim;
-          ret = score
+		if(!mapContainsKey(rel.simulations, index)) {
+          rel.simulations[index] = new Simulation(sim.owner, sim.extended, sim.id);
+          rel.data[index] = BasicStrategy.computeAttack(rel.simulations[index]!, rel);
+		}
+        if(rel.data[index] > ret) {
+		  attackSim[index] = rel.simulations[index];
+          ret = rel.data[index] as integer;
         }
       }
 	  attackScores[index] = ret;
