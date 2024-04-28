@@ -13,18 +13,18 @@ class Simulation extends Objects {
    * constructor
    * @param roundObj_simulation : le round ou la simulation sont clone
    **/
-  constructor(LeekRound|Simulation leekRound, boolean extended = false, integer id = 0) {
+  constructor(LeekRound|Simulation leekRound, integer id) {
     roundObj = new Round(leekRound.roundObj);
     if(leekRound instanceof LeekRound) {
       actions = [];
       owner = leekRound as LeekRound;
 	  this.id = id;
-	  this.extended = extended;
+	  this.extended = (id > 0);
     } else {
       actions = clone((leekRound as Simulation).actions,1) as Array<Action>;
       owner = roundObj.leeksRound[(leekRound as Simulation).owner.id]!;
-	  this.id = (leekRound as Simulation).id
-	  this.extended = (leekRound as Simulation).extended;
+	  this.id = id
+	  this.extended = (id > 0);
     }
   }
   

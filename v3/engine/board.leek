@@ -40,9 +40,8 @@ class Board extends Objects {
         Enemy leek = new Enemy(en); 
         leeks[en] = leek;
         push(enemies, leek);
-        if(leek.maxAOERange > maxAOERange) { 
+        if(leek.maxAOERange > maxAOERange)
           maxAOERange = leek.maxAOERange;
-        }
       }
     
       //
@@ -103,7 +102,7 @@ class Board extends Objects {
     for(integer x = 0; x < NB_CELLS; x++) {
       Cell cellFrom = cells[x];
       if(cellFrom.isWall) continue;
-      for(integer y = 0; y < x; y++) {
+      for(integer y = 0; y <= x; y++) { // je dois gerer la range 0
         Cell cellTo = cells[y];
         if(cellTo.isWall) continue;
         integer range = getCellDistance(x, y);

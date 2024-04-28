@@ -8,7 +8,7 @@ class BasicStrategyTools extends Objects {
    * macro pour MPConditions 
    **/
   static Simulation MPConditionsAddSim(Array<Simulation> ret, Simulation sim, integer currentCellId, integer toolId) {
-    sim = new Simulation(sim, true, sim.id+1);
+    sim = new Simulation(sim, sim.id+1);
     sim.addToolAction(toolId, currentCellId);
     push(ret, sim);
     return sim;
@@ -92,8 +92,10 @@ class BasicStrategyTools extends Objects {
 	}
     Array<integer> path = getPath(cellId,Board.currentRound.meRound.currentCellId)!;
     for(integer cell in path) {
-      for(integer index : Simulation sim in cellList[cell]!.moveSim) {
-	    if(!sim.extended || forceExtended) return moveToCellPassByMacro(sim, cell, index);
+	  if(mapContainsKey(cellList, cell)) {
+        for(integer index : Simulation sim in cellList[cell]!.moveSim) {
+	      if(!sim.extended || forceExtended) return moveToCellPassByMacro(sim, cell, index);
+	    }
 	  }
     }
 	if(extended && !forceExtended) {
@@ -103,9 +105,11 @@ class BasicStrategyTools extends Objects {
 	    }
 	  }
       for(integer cell in path) {
-        for(integer index : Simulation sim in cellList[cell]!.moveSim) {
-	      if(sim.extended) return moveToCellPassByMacro(sim, cell, index);
-	    }
+		if(mapContainsKey(cellList, cellId)) {
+          for(integer index : Simulation sim in cellList[cell]!.moveSim) {
+	        if(sim.extended) return moveToCellPassByMacro(sim, cell, index);
+	      }
+		}
       }
 	}
 	return {cellId:Board.currentRound.meRound.currentCellId, simId:0};

@@ -34,7 +34,7 @@ class SetWeaponAction extends Objects {
   }
 
   /**
-   * simulateUse
+   * simulate
    **/
   EffectResult simulate(Round roundObj) {
     roundObj.leeksRound[ownerId]!.simulateSetWeapon(toolId);
@@ -79,7 +79,7 @@ class MoveAction extends Action {
   }
 
   /**
-   * simulateUse
+   * simulate
    **/
   EffectResult simulate(Round roundObj) {
     roundObj.leeksRound[ownerId]!.simulateMoveToCell(cellId, usedMP)
@@ -126,7 +126,7 @@ class ToolAction extends Action {
   }
 
   /**
-   * simulateUse
+   * simulate
    **/
   EffectResult simulate(Round roundObj) {
     if(!notUseInSim) return roundObj.leeksRound[ownerId]!.toolsRound[toolId]!.simulateUseOnCell(targetCell);

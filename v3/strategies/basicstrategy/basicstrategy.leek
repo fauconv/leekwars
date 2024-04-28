@@ -60,11 +60,12 @@ class BasicStrategy extends Strategy {
     GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"init");
     GameDebug.add(BASIC_STRATEGY_DEBUG,Board.maxAOERange,"maxAOERange");
       
-    if(gFirstRound) setStart();
-    else lowLife = ((meRound.maxLife/meRound.maxTotalLife) < (enemyRound.maxLife/enemyRound.maxTotalLife));
+    if(gFirstRound) init();
+    else update();
       
     GameDebug.add(BASIC_STRATEGY_DEBUG,myStrategy,"myStrategy");
     GameDebug.add(BASIC_STRATEGY_DEBUG,enemyRound.state,"enemyState");
+	GameDebug.add(BASIC_STRATEGY_DEBUG,myState,"myState");
       
     //
     // phase 1 : on determine les mouvements possibles de mon poireau et du poireau adverse
@@ -80,8 +81,13 @@ class BasicStrategy extends Strategy {
       
     if(BASIC_STRATEGY_DEBUG) {
       GameDebug.add(true, "avalaible simulations:");
-      for(integer index : Simulation sim in myMoveCells[myCurrentCellId]!.moveSim)
-        GameDebug.add(true, sim.actions,"sim #"+ index);
+      for(integer index : Simulation sim in myMoveCells[myCurrentCellId]!.moveSim) {
+        GameDebug.add(true, sim.actions,"sim #"+ index +"(MP:"+sim.roundObj.leeksRound[myId]!.minMP+")");
+	  }
+	   GameDebug.add(true, "avalaible simulations enemy:");
+      for(integer index : Simulation sim in enemyMoveCells[enemyCurrentCellId]!.moveSim) {
+        GameDebug.add(true, sim.actions,"sim #"+ index +"(MP:"+sim.roundObj.leeksRound[enemyId]!.minMP+")");
+	  }
     }
       
     //
@@ -120,8 +126,6 @@ class BasicStrategy extends Strategy {
     Map<integer,MoveCell> myMoveCellsAnnihilation = [:]; // on se touche tous les 2
     BasicStrategyTools.colorize(myMoveCells, myMoveCellsNeutral, myMoveCellsBad, myMoveCellsGood, 
 								myMoveCellsAnnihilation, enemyId);
-	  
-    GameDebug.add(BASIC_STRATEGY_DEBUG,myState,"myState");
       
     if(BASIC_STRATEGY_DEBUG) {
       for(MoveCell mc in myMoveCellsNeutral) {
@@ -211,7 +215,7 @@ class BasicStrategy extends Strategy {
   }
 
  /**
-  * setStrategy
+  * init
   * choix de l arme a degainer au depart et de la strategie global
   * 1 - WEAPON_SHOTGUN
   * 2 - WEAPON_NEUTRINO
@@ -219,7 +223,7 @@ class BasicStrategy extends Strategy {
   * 4 - WEAPON_MACHINE_GUN
   * 5 - WEAPON_PISTOL
   **/
-  static void setStart() {
+  static void init() {
     if(me.maxAOERange > enemy.maxAOERange) myStrategy = STRATEGY_LONG_RANGE;
     else if(!me.needLos && enemy.needLos) myStrategy = STRATEGY_HIDDEN;
     else myStrategy = STRATEGY_SHORT_RANGE;
@@ -238,6 +242,13 @@ class BasicStrategy extends Strategy {
     }
   }
 
+  /**
+   * update
+   **/
+  void update() {
+    lowLife = ((meRound.maxLife/meRound.maxTotalLife) < (enemyRound.maxLife/enemyRound.maxTotalLife));
+  }
+	
   /**
    * good
    **/
@@ -263,7 +274,7 @@ class BasicStrategy extends Strategy {
 	debugC("BasicStrategy=>good=>recuperer le meilleur good",COLOR_RED);
 	MoveCell finale = bestMc[0].moveCell as MoveCell;
 	finale.moveSim[bestMc[0].index as integer]!.execute();
-	meRound.moveToCell((bestMc[0].moveCell as MoveCell).id);
+	meRound.moveToCell(finale.id);
     finale.attackSim[bestMc[0].index as integer]!.execute();
 	if(finale.defenceScore != 0) moveTowardCell(finale.goodEscapes[bestMc[0].index as integer]![0].id);
 	// TODO: ici je ne bouge pas si je suis sur un vert on verra plus tard
@@ -283,25 +294,26 @@ class BasicStrategy extends Strategy {
     if(myState == STATE_CENTER) {
       integer centerId = meRound.getRelativeCenter();
       integer oldCellId = BasicStrategy.myCurrentCellId;
-      BasicStrategyTools.moveToCellPassBy(centerId, myMoveCellsNeutral); // TODO: ici il va utiliser les boots alors qu il devrait pas
+      BasicStrategyTools.moveToCellPassBy(centerId, myMoveCellsNeutral,true);
 	  BasicStrategy.myCurrentCellId = meRound.currentCellId;
       if(BasicStrategy.myCurrentCellId == centerId || oldCellId == BasicStrategy.myCurrentCellId) 
-		  myState = STATE_APPROACH; // je suis arrive au centre ou je ne peux pas avancer plus
+	    myState = STATE_APPROACH; // je suis arrive au centre ou je ne peux pas avancer plus
     } else if(myState == STATE_ESCAPE) {
-      BasicStrategyTools.moveAwayFromCellPassBy(BasicStrategy.enemyCurrentCellId, myMoveCellsNeutral);
+      BasicStrategyTools.moveAwayFromCellPassBy(BasicStrategy.enemyCurrentCellId, myMoveCellsNeutral, true);
 	  BasicStrategy.myCurrentCellId = meRound.currentCellId;
       heal();
-      myState = STATE_CENTER;
-    } else { // STATE_APPROACH
+	  conclude();
+      myState = STATE_ATTACK;
+    } else if(myState == STATE_APPROACH) {
       integer oldCellId = BasicStrategy.myCurrentCellId;
-      BasicStrategyTools.moveToCellPassBy(BasicStrategy.enemyCurrentCellId, myMoveCellsNeutral);
+      BasicStrategyTools.moveToCellPassBy(BasicStrategy.enemyCurrentCellId, myMoveCellsNeutral, true);
       if(oldCellId == myCurrentCellId) {
         myState = STATE_ATTACK; // je ne peux pas avancer plus
+		conclude();
       }
-    }
-	if(myState == STATE_ATTACK) {
+    } else {  // STATE_ATTACK
       if(mapSize(myMoveCellsAnnihilation) > 0) {
-		integer bestScore = 0;
+		integer bestScore = MoveCell.BAD_SCORE;
         Array<Object> bestMc = [];
         for(MoveCell mc in myMoveCellsAnnihilation) {
 	      for(integer index : integer score in mc.attackScores) {
@@ -313,15 +325,17 @@ class BasicStrategy extends Strategy {
 		    }
 	      }
 	    }
+		debugC("BasicStrategy=>good=>recuperer la meilleure des meilleur annihilation avec la meilleure escape",COLOR_RED);
 		MoveCell finale = bestMc[0].moveCell as MoveCell;
-	    finale.moveSim[bestMc[0].index as integer].execute();
+	    finale.moveSim[bestMc[0].index as integer]!.execute();
+		meRound.moveToCell(finale.id);
         finale.attackSim[bestMc[0].index as integer]!.execute();  
 		// TODO: je dois bouger pour aller sur la cell qui a la meilleure defence
       } else {
 		  // TODO: something
 	  }
 	}
-	conclude();
+	
     return true;
   }
     
@@ -344,8 +358,9 @@ class BasicStrategy extends Strategy {
 	// je recupere le meilleur good et son escape en fonction de la strategie 
 	// TODO: ici je prend la premiere au lieu de la meilleure on fera mieux apres
 	debugC("BasicStrategy=>bad=>recuperer le meilleur bad",COLOR_RED);
-	(bestMc[0].moveCell as MoveCell).moveSim[bestMc[0].index as integer]!.execute();
-	meRound.moveToCell((bestMc[0].moveCell as MoveCell).id);
+	MoveCell finale = (bestMc[0].moveCell as MoveCell);
+	finale.moveSim[bestMc[0].index as integer]!.execute();
+	meRound.moveToCell(finale.id);
 	protect();
 	heal();
 	conclude();
@@ -360,12 +375,10 @@ class BasicStrategy extends Strategy {
    * TODO: chip de saut
    **/
   static Array<Simulation> MPConditions(LeekRound owner) {
-    Simulation sim = new Simulation(owner);
+    Simulation sim = new Simulation(owner, 0);
     Array<Simulation> ret = [sim]; // cas sans chip
-    
     if(mapContainsKey(owner.toolsRound, CHIP_LEATHER_BOOTS))
       BasicStrategyTools.MPConditionsAddSim(ret, sim, owner.currentCellId, CHIP_LEATHER_BOOTS); // CHIP_LEATHER_BOOTS
-      
     return ret;
   }
 

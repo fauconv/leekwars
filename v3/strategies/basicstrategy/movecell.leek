@@ -133,7 +133,7 @@ class MoveCell extends Objects {
       integer ret = MoveCell.BAD_SCORE;
       for(RelativeCell rel in targetCells) {
 		if(!mapContainsKey(rel.simulations, index)) {
-          rel.simulations[index] = new Simulation(sim.owner, sim.extended, sim.id);
+          rel.simulations[index] = new Simulation(sim.owner, sim.id);
           rel.data[index] = BasicStrategy.computeAttack(rel.simulations[index]!, rel);
 		}
         if(rel.data[index] > ret) {
