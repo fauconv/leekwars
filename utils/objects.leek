@@ -9,7 +9,7 @@ include("functions");
  **/
 class Objects {
   
-  integer id;
+  integer id = 0;
   
   /**
    * toString
