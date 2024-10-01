@@ -4,8 +4,9 @@ include("objects");
  * Chain
  *
  * implementation des listes chainees
+ * Chain n a pas besoin d heriter de Objects vu qu il a son propre traitement dans gameDebug
  ****************************************************************************/
-class Chain extends Objects {
+class Chain {
   
   private _ChainElement|null _first = null;
   private _ChainElement|null _current = null;
@@ -17,7 +18,7 @@ class Chain extends Objects {
    *
    * construit une liste chainee a partir d un tableau ou d'une Map ou d'un Set ou une liste vide
    * ou copie une liste chainee. le curseur est place sur le premier element
-   * O(n)
+   * O(n) ou 2 operations si from == null
    **/
   constructor(Chain|Array<any>|Map<any,any>|Set|null from) {
     if(from != null) {
@@ -48,7 +49,7 @@ class Chain extends Objects {
    * clear
    *
    * vide la chaine de tous ses elements
-   * O(1)
+   * 11 operations
    **/
   void clear() {
     _first = null;
@@ -73,6 +74,7 @@ class Chain extends Objects {
     _first = _last = new _ChainElement(null, value, null);
     for(integer i = 1; i < count; i++) {
       _last = new _ChainElement(_last, value, null);
+      _last!.previous!.next = _last;
     }
     _current = _first;
   }
@@ -153,7 +155,7 @@ class Chain extends Objects {
    * isEmpty
    *
    * @return true si la chaine est vide
-   * O(1)
+   * 3 operations
    **/
   boolean isEmpty() {
     return (size == 0);
@@ -163,7 +165,7 @@ class Chain extends Objects {
    * count
    *
    * @return le nombre d element de la chaine
-   * O(1)
+   * 2 operations
    **/
   integer count() {
     return size;
@@ -173,7 +175,7 @@ class Chain extends Objects {
    * push
    *
    * ajoute element a la fin de la chaine
-   * O(1)
+   * 25 operations
    **/
   void push(any element) {
     _last = new _ChainElement(_last, element, null);
@@ -186,7 +188,7 @@ class Chain extends Objects {
    * unshift
    *
    * ajoute element au debut de la chaine
-   * O(1)
+   * 25 operations
    **/
   void unshift(any element) {
     _first = new _ChainElement(null,element,_first);
@@ -200,7 +202,7 @@ class Chain extends Objects {
    *
    * supprime le dernier element de la chaine et le renvoi et remet le curseur sur le premier element
    * @return le dernier element de la chaine ou null si la chaine est vide
-   * O(1)
+   * 27 operations
    **/
   any pop() {
     if(_last == null) return null
@@ -222,7 +224,7 @@ class Chain extends Objects {
    *
    * supprime le premier element de la chaine et le renvoi et remet le curseur sur le premier element
    * @return le premier element de la chaine ou null si la chaine est vide
-   * O(1)
+   * 27 operations
    **/
   any shift() {
     if(_first == null) return null;
@@ -276,7 +278,7 @@ class Chain extends Objects {
    *
    * @param chain est fusionnee a la fin de la chaine courante (les elements ne sont pas copies).
    * les 2 chaines deviennent identiques. Les curseurs ne sont pas modifies
-   * O(1)
+   * 29 operations
    **/
   void concat(Chain chain) {
     if(_last == null) _first = chain._first;
@@ -321,7 +323,7 @@ class Chain extends Objects {
    *
    * @return l element courant ou null si il n existe pas. attention l element courant peut etre 
    * null
-   * O(1)
+   * 7 operations
    **/
   any getCurrent() {
     if(_current == null) return null;
@@ -333,7 +335,8 @@ class Chain extends Objects {
    *
    * change la valeur de l element courant si il existe
    * pour ajouter un nouvel element voir insertBeforeCurrent et insertAfterCurrent
-   * O(1)
+   * @return true en cas de succes
+   * 8 operations
    **/
   boolean setCurrent(any element) {
     if(_current == null) return false;
@@ -344,11 +347,12 @@ class Chain extends Objects {
   /**
    * removeCurrent
    *
-   * supprime l element courant si il existe et la place le cursuer sur l element suivant ou l element
+   * supprime l element courant si il existe et la place le curseur sur l element suivant ou l element
    * precedent si c etait le dernier element
-   * O(1)
+   * @return true en cas de succes
+   * 45 operations
    **/
-  boolean removeCurrent(any element) {
+  boolean removeCurrent() {
     if(_current == null) return false;
     if(_current!.next != null) _current!.next!.previous = _current!.previous;
     else _last = _current!.previous
@@ -365,7 +369,7 @@ class Chain extends Objects {
    * insertBeforeCurrent
    *
    * insert avant l element courant
-   * O(1)
+   * 29 operations
    **/
   void insertBeforeCurrent(any element) {
     if(_current != null) {
@@ -379,11 +383,12 @@ class Chain extends Objects {
     }
     size++;
   }
+
   /**
    * insertAfterCurrent
    *
    * insert apres l element courant
-   * O(1)
+   * 29 operations
    **/
   void insertAfterCurrent(any element) {
     if(_current != null) {
@@ -403,7 +408,7 @@ class Chain extends Objects {
    *
    * avance le curseur de 1 element
    * @return le nouvel element ou le dernier si on ne peut pas avancer plus
-   * O(1)
+   * 17 operations
    **/
   any next() {
     if(_current == null) return null;
@@ -416,7 +421,7 @@ class Chain extends Objects {
    *
    * recule le curseur de 1 element
    * @return le nouvel element ou le premier si on ne peut pas reculer plus
-   * O(1)
+   * 17 operations
    **/
   any previous() {
     if(_current == null) return null;
@@ -429,7 +434,7 @@ class Chain extends Objects {
    *
    * @param setCursor si true position le curseur sur le premier element de la chaine
    * @return le premier element de la chaine ou null si il n existe pas
-   * O(1)
+   * 12 operations
    **/
   any first(boolean setCursor = true) {
     if(setCursor) _current = _first;
@@ -442,7 +447,7 @@ class Chain extends Objects {
    *
    * @param setCursor si true positionne le curseur sur le dernier element de la chaine
    * @return le dernier element de la chaine ou null si il n existe pas
-   * O(1)
+   * 12 operations
    **/
   any last(boolean setCursor = true) {
     if(setCursor) _current = _last;
@@ -454,7 +459,7 @@ class Chain extends Objects {
    * isFirst
    *
    * @return true si le curseur est sur le premier element de la chaine ou si la chaine est vide
-   * O(1)
+   * 8 operations
    **/
   boolean isFirst() {
     return (_current == null || _current!.previous == null);
@@ -464,29 +469,66 @@ class Chain extends Objects {
    * isLast
    *
    * @return true si le curseur est sur le dernier element de la chaine ou si la chaine est vide
-   * O(1)
+   * 8 operations
    **/
   boolean isLast() {
     return (_current == null || _current!.next == null);
   }
 
   /**
-   * toString
-   *
-   * @return string
+   * getCurrentPosition
+   * 
+   * @return la position du curseur dans la chaine à partir de 0. -1 si la liste est vide
+   * O(n)
    **/
-  string string(string space = "") {
-    string ret = "Chain [\n";
-    _ChainElement|null cursor = _first;
-    while(cursor != null) {
-      ret += space + string(cursor!.element as string);
-      cursor = cursor!.next;
+  integer getCurrentPosition() {
+    if(_current == null) return -1;
+    integer ret = 0;
+    _ChainElement cursor = _current!;
+    while(cursor.previous != null) {
+      ret++;
+      cursor = cursor.previous!;
     }
-    ret += space + "]";
     return ret;
   }
-  string shortString(string space = "") {
-    return this.class.name+":(size: "+size+")";
+
+  /**
+   * setCurrentPosition
+   * 
+   * @param X la position que doit prendre le curseur ou le dernier element si X > size
+   * @return true en cas de succes
+   * O(n)
+   **/
+  boolean setCurrentPosition(integer X) {
+    if(X < 0 || size <= 0) return false;
+    if(X >= size) X = size-1;
+    _current = _first;
+    for(integer i = 0; i< X; i++) _current = _current!.next;
+    return true;
+  }
+
+  /**
+   * getCurrentChainElement
+   *
+   * Attention a utiliser a vos risques et perils. Si le _ChainElement est surpprime de la chaine par 
+   * une autre fonction, le _ChainElement recupere deviendrait inconsistant
+   * @return le _ChainElement Courant
+   * 2 operations
+   **/
+  _ChainElement|null getCurrentChainElement() {
+    return _current;
+  }
+
+  /**
+   * setCurrentChainElement
+   * 
+   * Attention a utiliser a vos risques et perils. Si le _ChainElement a ete surpprime de la chaine par 
+   * une autre fonction, remettre le curseur dessus rendra la chaine inconsistante.
+   * Positionne le curseur sur cursor
+   * 3 operations
+   **/
+  void setCurrentChainElement(_ChainElement|null cursor) {
+    _current = cursor;
   }
 
 }

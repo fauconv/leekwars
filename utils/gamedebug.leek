@@ -88,6 +88,7 @@ class GameDebug extends Objects {
       str += "\n"
       string space2 = space + "  ";
       depth--;
+      _ChainElement|null current = obj.getCurrentChainElement();
       obj.first(true);
       for(integer i = 0; i < cpt;i++) {
         if(cnt >= lim) break;
@@ -100,6 +101,7 @@ class GameDebug extends Objects {
         cnt++;
         obj.next();
       }
+      obj.setCurrentChainElement(current);
       str += space+"]";
     } else {
       str += "]";
@@ -114,7 +116,7 @@ class GameDebug extends Objects {
    * @param obj : TYPE_OBJECT => Object ou Objects
    * internal
    **/
-  private static void objectDebug(Object|Objects obj, integer depth, Array<integer> limit, Array<integer> start, Array<boolean> revers, string space, string debugFunction) {
+  private static void objectDebug(any obj, integer depth, Array<integer> limit, Array<integer> start, Array<boolean> revers, string space, string debugFunction) {
     string ret;
     if(depth == 0) {
       if(obj instanceof Object) {
@@ -144,7 +146,7 @@ class GameDebug extends Objects {
       depth--;
       for(any value in keys) {
         str += space2+value+": ";
-        add(true, obj[value], "", depth, limit, start, revers, debugFunction, space2);
+        add(true, (obj as Object)[value], "", depth, limit, start, revers, debugFunction, space2);
       }
       str += space+"}";
     } else {
@@ -167,7 +169,7 @@ class GameDebug extends Objects {
       if(element instanceof Chain) 
         chainDebug(element as Chain, depth, limit, start, revers, space, debugFunction);
       else 
-        objectDebug(element as Object|Objects, depth, limit, start, revers, space, debugFunction);
+        objectDebug(element, depth, limit, start, revers, space, debugFunction);
     } else {
       str += string(element); // type simple et interval
     }
