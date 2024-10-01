@@ -69,7 +69,47 @@ class GameDebug extends Objects {
     unshift(start, star);
   }
   
-  /***
+  /**
+   * chainDebug
+   * internal
+   **/
+  private static void chainDebug(Chain obj, integer depth, Array<integer> limit, Array<integer> start, Array<boolean> revers, string space, string debugFunction) {
+    integer lim = 1000;
+    integer star = 0;
+    integer cnt = 0;
+    integer cpt;
+    boolean rev = false;
+    if(count(limit) > 0) lim = shift(limit) as integer;
+    if(count(start) > 0) star = shift(start) as integer;
+    if(count(revers) > 0) rev = shift(revers) as boolean;
+    cpt = obj.count();
+    str+= "Chain("+star+"-"+lim+"/"+cpt+") [";
+    if(cpt != 0 && depth > 0) {
+      str += "\n"
+      string space2 = space + "  ";
+      depth--;
+      obj.first(true);
+      for(integer i = 0; i < cpt;i++) {
+        if(cnt >= lim) break;
+        if(cnt < star) {
+          cnt++;
+          continue;
+        }
+        str += space2+i+": ";
+        add(true, obj.getCurrent(), "", depth, limit, start, revers, debugFunction, space2);
+        cnt++;
+        obj.next();
+      }
+      str += space+"]";
+    } else {
+      str += "]";
+    }
+    unshift(revers,rev);
+    unshift(limit,lim);
+    unshift(start, star);
+  }
+
+  /**
    * objectDebug
    * @param obj : TYPE_OBJECT => Object ou Objects
    * internal
@@ -124,7 +164,10 @@ class GameDebug extends Objects {
     if(type == TYPE_ARRAY || type == TYPE_MAP || type == TYPE_SET) {
       arrayDebug(element as Array<any>|Map<any,any>, depth, limit, start, revers, space, debugFunction);
     } else if(type == TYPE_OBJECT) {
-      objectDebug(element as Object|Objects, depth, limit, start, revers, space, debugFunction);
+      if(element instanceof Chain) 
+        chainDebug(element as Chain, depth, limit, start, revers, space, debugFunction);
+      else 
+        objectDebug(element as Object|Objects, depth, limit, start, revers, space, debugFunction);
     } else {
       str += string(element); // type simple et interval
     }

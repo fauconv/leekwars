@@ -1,23 +1,22 @@
 include("objects");
 
 /****************************************************************************
- * implementation des listes chainees
- ****************************************************************************/
-
-/****************************************************************************
  * Chain
+ *
+ * implementation des listes chainees
  ****************************************************************************/
 class Chain extends Objects {
   
-  private _ChainElement|null first = null;
-  private _ChainElement|null current = null;
-  private _ChainElement|null last = null;
+  private _ChainElement|null _first = null;
+  private _ChainElement|null _current = null;
+  private _ChainElement|null _last = null;
   private integer size = 0;
   
   /**
    * constructor
+   *
    * construit une liste chainee a partir d un tableau ou d'une Map ou d'un Set ou une liste vide
-   * ou copie une liste chainee mais pas les pointeurs nommes
+   * ou copie une liste chainee. le curseur est place sur le premier element
    * O(n)
    **/
   constructor(Chain|Array<any>|Map<any,any>|Set|null from) {
@@ -25,77 +24,82 @@ class Chain extends Objects {
       if(from instanceof Chain) {
         size = (from as Chain).size;
         if(size != 0) {
-          _ChainElement|null cursor = (from as Chain).first;
-          first = last = new _ChainElement(null,cursor!.element,null);
+          _ChainElement|null cursor = (from as Chain)._first;
+          _first = _last = new _ChainElement(null,cursor!.element,null);
           for(integer i = 1; i < size; i++) {
             cursor = cursor!.next;
-            last = new _ChainElement(last,cursor!.element,null);
-            last!.previous!.next = last;
+            _last = new _ChainElement(_last,cursor!.element,null);
+            _last!.previous!.next = _last;
           }
         }
       } else {
         for(any elem in from! as Array<any>|Map<any,any>|Set) {
-          last = new _ChainElement(last,elem,null);
-          if(last!.previous == null) first = last;
-          else last!.previous!.next = last;
+          _last = new _ChainElement(_last,elem,null);
+          if(_last!.previous == null) _first = _last;
+          else _last!.previous!.next = _last;
           size++;
         }
       }
-      current = first;
+      _current = _first;
     }
   }
 
   /**
    * clear
-   * vide la liste de tous ses elements
+   *
+   * vide la chaine de tous ses elements
    * O(1)
    **/
   void clear() {
-    first = null;
-    last = null;
-    current = null;
+    _first = null;
+    _last = null;
+    _current = null;
     size = 0;
   }
 
   /**
    * fill
-   * redimensionne la liste a la taille count et la rempli avec la valeur value
-   * O(count+pointers)
+   *
+   * redimensionne la chaine a la taille count et la rempli avec la valeur value
+   * O(count)
    **/
   void fill(any value, integer count = this.size) {
     (count < 0) and (count = 0);
-    first = null;
-    last = null;
+    _first = null;
+    _last = null;
     size = count;
-    current = null;
+    _current = null;
     if(size <= 0) return;
-    first = last = new _ChainElement(null, value, null);
+    _first = _last = new _ChainElement(null, value, null);
     for(integer i = 1; i < count; i++) {
-      last = new _ChainElement(last, value, null);
+      _last = new _ChainElement(_last, value, null);
     }
-    current = first;
+    _current = _first;
   }
   
   /**
    * get
-   * @return le Xieme element de la liste (en commencant a 0) ou null si il n existe pas
+   *
+   * @return le Xieme element de la chaine (en commencant a 0) ou null si il n existe pas
    * O(X)
    **/
   any get(integer X) {
     if(X >= size || X < 0) return null;
     if(size - X <= X) {
-      _ChainElement cursor = last!;
+      _ChainElement cursor = _last!;
       integer XX = size-X-1;
       for(integer i = 0; i < XX; i++) cursor = cursor.previous!;
       return cursor.element;
     } else {
-      _ChainElement cursor = first!;
+      _ChainElement cursor = _first!;
       for(integer i = 0; i < X; i++) cursor = cursor.next!;
       return cursor.element;
     }
   }
+
   /**
    * set
+   *
    * modifie l element a la position X, si il existe
    * @return true si l operation a reussi
    * O(X)
@@ -103,19 +107,21 @@ class Chain extends Objects {
   boolean set(integer X, any element) {
     if(X < 0 || X >= size) return false;
     if(size - X <= X) {
-      _ChainElement cursor = last!;
+      _ChainElement cursor = _last!;
       integer XX = size-X-1;
       for(integer i = 0; i < XX; i++) cursor = cursor.previous!;
       cursor.element = element;
     } else {
-      _ChainElement cursor = first!;
+      _ChainElement cursor = _first!;
       for(integer i = 0; i < X; i++) cursor = cursor.next!;
       cursor.element = element;
     }
     return true;
   }
+
   /**
    * del
+   *
    * supprime l element a la position X si il existe et remet le curseur sur le premier element
    * @return true si l operation a reussi
    * O(X)
@@ -123,111 +129,125 @@ class Chain extends Objects {
   boolean del(integer X) {
     if(X < 0 || X >= size) return false;
     if(size - X <= X) {
-      _ChainElement cursor = last!;
+      _ChainElement cursor = _last!;
       integer XX = size-X-1;
       for(integer i = 0; i < XX; i++) cursor = cursor.previous!;
       if(cursor.next != null) cursor.next!.previous = cursor.previous;
-      else last = cursor.previous;
+      else _last = cursor.previous;
       if(cursor.previous != null) cursor.previous!.next = cursor.next;
-      else first = cursor.next; 
+      else _first = cursor.next; 
     } else {
-      _ChainElement cursor = first!;
+      _ChainElement cursor = _first!;
       for(integer i = 0; i < X; i++) cursor = cursor.next!;
       if(cursor.next != null) cursor.next!.previous = cursor.previous;
-      else last = cursor.previous;
+      else _last = cursor.previous;
       if(cursor.previous != null) cursor.previous!.next = cursor.next;
-      else first = cursor.next; 
+      else _first = cursor.next; 
     }
     size--;
-    current = first;
+    _current = _first;
     return true;
   }
+
   /**
    * isEmpty
-   * @return true si la liste est vide
+   *
+   * @return true si la chaine est vide
    * O(1)
    **/
   boolean isEmpty() {
     return (size == 0);
   }
+
   /**
    * count
-   * @return le nombre d element de la liste
+   *
+   * @return le nombre d element de la chaine
    * O(1)
    **/
   integer count() {
     return size;
   }
+
   /**
    * push
-   * ajoute element a la fin de la liste
+   *
+   * ajoute element a la fin de la chaine
    * O(1)
    **/
   void push(any element) {
-    last = new _ChainElement(last, element, null);
-    if(last!.previous != null) last!.previous!.next = last;
-    else current = first = last;
+    _last = new _ChainElement(_last, element, null);
+    if(_last!.previous != null) _last!.previous!.next = _last;
+    else _current = _first = _last;
     size++;
   }
+
   /**
    * unshift
-   * ajoute element au debut de la liste
+   *
+   * ajoute element au debut de la chaine
    * O(1)
    **/
   void unshift(any element) {
-    first = new _ChainElement(null,element,first);
-    if(first!.next != null) first!.next!.previous = first;
-    else current = last = first;
+    _first = new _ChainElement(null,element,_first);
+    if(_first!.next != null) _first!.next!.previous = _first;
+    else _current = _last = _first;
     size++;
   }
+
   /**
    * pop
-   * supprime le dernier element de la liste et le renvoi et remet le curseur sur le premier element
-   * @return le dernier element de la liste ou null si la liste est vide
+   *
+   * supprime le dernier element de la chaine et le renvoi et remet le curseur sur le premier element
+   * @return le dernier element de la chaine ou null si la chaine est vide
    * O(1)
    **/
   any pop() {
-    if(last == null) return null
-    any elem = last!.element;
-    if(last!.previous == null) {
-      first = last = null;
+    if(_last == null) return null
+    any elem = _last!.element;
+    if(_last!.previous == null) {
+      _first = _last = null;
       size = 0;
     } else {
-      last = last!.previous;
-      last!.next = null;
+      _last = _last!.previous;
+      _last!.next = null;
       size--;
     }
-    current = first;
+    _current = _first;
     return elem;
   }
+
   /**
    * shift
-   * supprime le premier element de la liste et le renvoi et remet le curseur sur le premier element
-   * @return le premier element de la liste ou null si la liste est vide
+   *
+   * supprime le premier element de la chaine et le renvoi et remet le curseur sur le premier element
+   * @return le premier element de la chaine ou null si la chaine est vide
    * O(1)
    **/
   any shift() {
-    if(first == null) return null;
-    any elem = first!.element;
-    if(first!.next == null) {
-      first = last = null;
+    if(_first == null) return null;
+    any elem = _first!.element;
+    if(_first!.next == null) {
+      _first = _last = null;
       size = 0;
     } else {
-      first = first!.next;
-      first!.previous = null;
+      _first = _first!.next;
+      _first!.previous = null;
       size--;
     }
-    current = first;
+    _current = _first;
     return elem;
   }
+
   /**
    * toArray
-   * renvoi la liste sous forme de tableau, les elements ne sont pas copier
+   *
+   * renvoi la chaine sous forme de tableau, les elements ne sont pas copier
    * O(n)
    **/
   Array<any> toArray() {
     Array<any> ret = [];
-    _ChainElement|null cursor = first;
+    _ChainElement|null cursor = _first;
     while(cursor != null) {
       push(ret, cursor!.element);
       cursor = cursor!.next;
@@ -237,37 +257,43 @@ class Chain extends Objects {
   
   /**
    * toSet
-   * renvoi la liste sous forme d un set, les elements ne sont pas copier
+   *
+   * renvoi la chaine sous forme d un set, les elements ne sont pas copier
    * O(n)
    **/
   Set toSet() {
     Set ret = <>;
-    _ChainElement|null cursor = first;
+    _ChainElement|null cursor = _first;
     while(cursor != null) {
       setPut(ret, cursor!.element);
       cursor = cursor!.next;
     }
     return ret;
   }
+
   /**
    * concat
-   * @param chain est fusionner a la fin de la chaine courante (les elements ne sont pas copies).
-   * les 2 chaines deviennent identiques 
+   *
+   * @param chain est fusionnee a la fin de la chaine courante (les elements ne sont pas copies).
+   * les 2 chaines deviennent identiques. Les curseurs ne sont pas modifies
    * O(1)
    **/
   void concat(Chain chain) {
-    if(last == null) first = chain.first;
+    if(_last == null) _first = chain._first;
     else {
-      last!.next = chain.first;
-      if(chain.first != null) chain.first!.previous = last;
+      _last!.next = chain._first;
+      if(chain._first != null) chain._first!.previous = _last;
     }
-    last = chain.last;
+    _last = chain._last;
     size += chain.size;
-    chain.first = first;
+    chain._first = _first;
     chain.size = size;
   }
+
   /**
-   * copie une partie de la liste (mais pas les elements) en commencant a start et en finissant a end
+   * slice
+   *
+   * copie une partie de la chaine (mais pas les elements) en commencant a start et en finissant a end
    * @param stride : la fonction ne selectionne qu un element tous les stride
    * O(n)
    **/
@@ -275,7 +301,7 @@ class Chain extends Objects {
     Chain ret = new Chain();
     if(end < start || size == 0 || size <= start) return ret;
     if(end >= size) end = size-1;
-    _ChainElement cursor = first!;
+    _ChainElement cursor = _first!;
     integer i = 0;
     while(i < start) {
       cursor = cursor.next!;
@@ -289,143 +315,185 @@ class Chain extends Objects {
       }
     }
   }
+
   /**
    * getCurrent
+   *
    * @return l element courant ou null si il n existe pas. attention l element courant peut etre 
    * null
    * O(1)
    **/
   any getCurrent() {
-    if(current == null) return null;
-    return current!.element;
+    if(_current == null) return null;
+    return _current!.element;
   }
+
   /**
    * setCurrent
+   *
    * change la valeur de l element courant si il existe
-   * pour ajouter un nouvel element voir insert
+   * pour ajouter un nouvel element voir insertBeforeCurrent et insertAfterCurrent
    * O(1)
    **/
   boolean setCurrent(any element) {
-    if(current == null) return false;
-    current!.element = element;
+    if(_current == null) return false;
+    _current!.element = element;
     return true;
   }
+
   /**
    * removeCurrent
-   * supprime l element courant si il existe et la place le pointeur sur l element suivant ou l element
+   *
+   * supprime l element courant si il existe et la place le cursuer sur l element suivant ou l element
    * precedent si c etait le dernier element
    * O(1)
    **/
   boolean removeCurrent(any element) {
-    if(current == null) return false;
-    if(current!.next != null) current!.next!.previous = current!.previous;
-    else last = current!.previous
-    if(current!.previous != null) current!.previous!.next = current!.next;
-    else first = current!.next
+    if(_current == null) return false;
+    if(_current!.next != null) _current!.next!.previous = _current!.previous;
+    else _last = _current!.previous
+    if(_current!.previous != null) _current!.previous!.next = _current!.next;
+    else _first = _current!.next
     size--;
-    if(current!.next != null) current = current!.next;
-    else if(current!.previous != null) current = current!.previous;
-    else current = null;
+    if(_current!.next != null) _current = _current!.next;
+    else if(_current!.previous != null) _current = _current!.previous;
+    else _current = null;
     return true;
   }
+
   /**
    * insertBeforeCurrent
+   *
    * insert avant l element courant
    * O(1)
    **/
   void insertBeforeCurrent(any element) {
-    if(current != null) {
-      _ChainElement cursor = new _ChainElement(current!.previous,element,current);
-      current!.previous = cursor;
+    if(_current != null) {
+      _ChainElement cursor = new _ChainElement(_current!.previous,element,_current);
+      _current!.previous = cursor;
       if(cursor.previous != null) cursor.previous!.next = cursor;
-      else first = cursor;
+      else _first = cursor;
     } else {
-      current = new _ChainElement(null,element,null);
-      first = last = current;
+      _current = new _ChainElement(null,element,null);
+      _first = _last = _current;
     }
     size++;
   }
   /**
    * insertAfterCurrent
+   *
    * insert apres l element courant
    * O(1)
    **/
   void insertAfterCurrent(any element) {
-    if(current != null) {
-      _ChainElement cursor = new _ChainElement(current,element,current!.next);
+    if(_current != null) {
+      _ChainElement cursor = new _ChainElement(_current,element,_current!.next);
       if(cursor.next != null) cursor.next!.previous = cursor;
-      else last = cursor;
-      current!.next = cursor;
+      else _last = cursor;
+      _current!.next = cursor;
     } else {
-      current = new _ChainElement(null,element,null);
-      first = last = current;
+      _current = new _ChainElement(null,element,null);
+      _first = _last = _current;
     }
     size++;
   }
+
   /**
    * next
+   *
    * avance le curseur de 1 element
    * @return le nouvel element ou le dernier si on ne peut pas avancer plus
-   * O(count)
+   * O(1)
    **/
   any next() {
-    if(current == null) return null;
-    if(current!.next != null) current = current!.next;
-    return current!.element;
+    if(_current == null) return null;
+    if(_current!.next != null) _current = _current!.next;
+    return _current!.element;
   }
+
   /**
    * previous
+   *
    * recule le curseur de 1 element
    * @return le nouvel element ou le premier si on ne peut pas reculer plus
-   * O(count)
+   * O(1)
    **/
   any previous() {
-    if(current == null) return null;
-    if(current!.previous != null) current = current!.previous;
-    return current!.element;
+    if(_current == null) return null;
+    if(_current!.previous != null) _current = _current!.previous;
+    return _current!.element;
   }
+
   /**
    * first
-   * @param setCursor si true position le curseur sur le premier element de la liste
-   * @return le premier element de la liste ou null si il n existe pas
+   *
+   * @param setCursor si true position le curseur sur le premier element de la chaine
+   * @return le premier element de la chaine ou null si il n existe pas
    * O(1)
    **/
   any first(boolean setCursor = true) {
-    if(setCursor) current = first;
-    if(first != null) return first!.element;
+    if(setCursor) _current = _first;
+    if(_first != null) return _first!.element;
     return null;
   }
+
   /**
    * last
-   * @param setCursor si true position le curseur sur le dernier element de la liste
-   * @return le dernier element de la liste ou null si il n existe pas
+   *
+   * @param setCursor si true positionne le curseur sur le dernier element de la chaine
+   * @return le dernier element de la chaine ou null si il n existe pas
    * O(1)
    **/
   any last(boolean setCursor = true) {
-    if(setCursor) current = last;
-    if(last != null) return last!.element;
+    if(setCursor) _current = _last;
+    if(_last != null) return _last!.element;
     return null;
   }
+
   /**
    * isFirst
-   * @return true si le curseur est sur le premier element de la liste ou si la liste est vide
+   *
+   * @return true si le curseur est sur le premier element de la chaine ou si la chaine est vide
    * O(1)
    **/
   boolean isFirst() {
-    return (current == null || current!.previous == null);
+    return (_current == null || _current!.previous == null);
   }
+
   /**
    * isLast
-   * @return true si le curseur est sur le dernier element de la liste ou si la liste est vide
+   *
+   * @return true si le curseur est sur le dernier element de la chaine ou si la chaine est vide
    * O(1)
    **/
   boolean isLast() {
-    return (current == null || current!.next == null);
+    return (_current == null || _current!.next == null);
   }
+
+  /**
+   * toString
+   *
+   * @return string
+   **/
+  string string(string space = "") {
+    string ret = "Chain [\n";
+    _ChainElement|null cursor = _first;
+    while(cursor != null) {
+      ret += space + string(cursor!.element as string);
+      cursor = cursor!.next;
+    }
+    ret += space + "]";
+    return ret;
+  }
+  string shortString(string space = "") {
+    return this.class.name+":(size: "+size+")";
+  }
+
 }
 
 /****************************************************************************
  * _ChainElement
+ *
  * internal use only
  ****************************************************************************/
 class _ChainElement extends Objects {
@@ -436,6 +504,7 @@ class _ChainElement extends Objects {
   
   /**
    * constructor
+   *
    * O(1)
    **/
   constructor(_ChainElement|null previous, any element, _ChainElement|null next) {
@@ -444,4 +513,15 @@ class _ChainElement extends Objects {
     this.next = next;
   }
   
+  /**
+   * toString
+   *
+   * @return string
+   **/
+  string string(string space = "") {
+    return string(element as string);
+  }
+  string shortString(string space = "") {
+    return string(element as string);
+  }
 }

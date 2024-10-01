@@ -1,0 +1,15 @@
+include("gamedebug");
+
+integer opts, opts2;
+opts = getOperations();
+Chain c1 = new Chain();
+opts2 = getOperations();
+debug((opts2 - opts - 2) + " new");
+opts = getOperations();
+
+c1.fill("a",4);
+GameDebug.add(true,c1);
+
+
+GameDebug.display();
+pause();
