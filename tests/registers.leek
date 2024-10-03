@@ -1,3 +1,6 @@
 debug(getRegisters());
 
+setRegister("test", "toto");
+
+debug(getRegisters());
 pause();
