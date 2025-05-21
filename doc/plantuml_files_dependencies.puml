@@ -1,0 +1,54 @@
+@startuml
+
+title leekwars - files dependencies
+
+allowmixing
+
+class Round
+class Board
+package const
+class Cell 
+class Leek
+class Effect
+class Tool
+package effectfunctions
+class EffectResult
+class InterCellInfo
+class RelativeCell
+class Strategy
+class BasicStrategy
+class Talk
+package v3
+class GameDebug
+class LeekRound
+class CellRound
+class ToolRound
+class Simulation
+class Action
+
+Board -> Round
+Board -up-> const
+Board --> Cell
+Board ----> Leek
+Round <--> CellRound
+Round <--> LeekRound
+Cell -> InterCellInfo
+Leek <-> Tool
+Tool <-> Effect
+Effect .> effectfunctions
+v3 --> GameDebug
+v3 --> Board
+v3 --> BasicStrategy
+v3 --> Strategy
+Strategy --> Talk
+CellRound --> Cell
+CellRound <-> LeekRound
+LeekRound --> Leek
+LeekRound <-> ToolRound
+ToolRound -> Tool
+ToolRound -> Round
+Simulation --> Action
+BasicStrategy --> Simulation
+Action --> EffectResult
+effectfunctions .> EffectResult
+@enduml
