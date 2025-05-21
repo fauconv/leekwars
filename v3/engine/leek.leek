@@ -16,16 +16,7 @@ class Leek extends Objects {
   Array<Chip> chips = [];
   Map<integer,Tool> tools = [:];
   
-  Array<Tool> categoryDamage = [];
-  Array<Tool> categoryProtection = [];
-  Array<Tool> categoryHeal = [];
-  Array<Tool> categoryMPBuff = [];
-  Array<Tool> categoryBuff = [];
-  Array<Tool> categoryDeBuff = [];
-  Array<Tool> categoryBulb = [];
-  Array<Tool> categoryOther = [];
-  Array<Tool> categoryMove = [];
-  
+  Map<string,Array<Tool>> categories = [:];
   
   /**
    * constructor
@@ -34,6 +25,8 @@ class Leek extends Objects {
     this.id  = id
     name     = getName(id)!;
     farmer   = getFarmerName(id)!;
+
+    for(string category in CATEGORIES) categories[category] = [];
     
     Array<integer>|null weapons = getWeapons(id);
     if(weapons != null) for(integer weaponId in weapons!) {
@@ -59,7 +52,7 @@ class Leek extends Objects {
   void categoriseTool(Tool tool) {
     tools[tool.id] = tool;
     for(string category in tool.categories) push(this[category] as Array<Tool>, tool);
-    ((tool.categories["categoryDamage"]) && (tool.maxAOERange > maxAOERange)) and (maxAOERange = tool.maxAOERange);
+    ((tool.categories[CATEGORY_DAMAGE]) && (tool.maxAOERange > maxAOERange)) and (maxAOERange = tool.maxAOERange);
   }
     
   /**
@@ -72,37 +65,11 @@ class Leek extends Objects {
   }
   string string(string space = "") {
     string ret = this.class.name+"("+name+") maxAOE:"+maxAOERange+"\n";
-    ret += space+"damage:\n"
-    for(Tool tool in categoryDamage) {
-      ret += space+tool.shortString() + "\n";
-    }
-    ret += space+"protection:\n"
-    for(Tool tool in categoryProtection) {
-      ret += space+tool.shortString() + "\n";
-    }
-    ret += space+"heal:\n"
-    for(Tool tool in categoryHeal) {
-      ret += space+tool.shortString() + "\n";
-    }
-    ret += space+"MPBuff:\n"
-    for(Tool tool in categoryMPBuff) {
-      ret += space+tool.shortString() + "\n";
-    }
-    ret += space+"Buff:\n"
-    for(Tool tool in categoryBuff) {
-      ret += space+tool.shortString() + "\n";
-    }
-     ret += space+"DeBuff:\n"
-    for(Tool tool in categoryDeBuff) {
-      ret += space+tool.shortString() + "\n";
-    }
-    ret += space+"other:\n"
-    for(Tool tool in categoryOther) {
-      ret += space+tool.shortString() + "\n";
-    }
-    ret += space+"Move:\n"
-    for(Tool tool in categoryMove) {
-      ret += space+tool.shortString() + "\n";
+    for(string category in CATEGORIES) {
+      ret += space+category+":\n"
+      for(Tool tool in categories[category]!) {
+        ret += space+tool.shortString() + "\n";
+      }
     }
     return ret;  
   }

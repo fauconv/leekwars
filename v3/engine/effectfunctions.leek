@@ -1,5 +1,6 @@
 /*****************************************************************************
- * functions (Effect obj, LeekRound shooter, LeekRound target) => {integer minEffect, integer maxEffect, integer midEffect}
+ * Function<Effect, LeekRound, LeekRound => EffectResult>
+ * Function(Effect obj, LeekRound shooter, LeekRound target) => EffectResult
  *****************************************************************************/
 
 /**

@@ -1,4 +1,3 @@
-include("objects");
 
 /****************************************************************************
  * Chain
@@ -200,7 +199,8 @@ class Chain {
   /**
    * pop
    *
-   * supprime le dernier element de la chaine et le renvoi et remet le curseur sur le premier element
+   * supprime le dernier element de la chaine, le renvoi et remet le curseur sur le premier 
+   * element
    * @return le dernier element de la chaine ou null si la chaine est vide
    * 27 operations
    **/
@@ -222,7 +222,8 @@ class Chain {
   /**
    * shift
    *
-   * supprime le premier element de la chaine et le renvoi et remet le curseur sur le premier element
+   * supprime le premier element de la chaine, le renvoi et remet le curseur sur le premier
+   * element
    * @return le premier element de la chaine ou null si la chaine est vide
    * 27 operations
    **/
@@ -295,7 +296,8 @@ class Chain {
   /**
    * slice
    *
-   * copie une partie de la chaine (mais pas les elements) en commencant a start et en finissant a end
+   * copie une partie de la chaine (mais pas les elements) en commencant a start et en finissant
+   * a end
    * @param stride : la fonction ne selectionne qu un element tous les stride
    * O(n)
    **/
@@ -510,8 +512,8 @@ class Chain {
   /**
    * getCurrentChainElement
    *
-   * Attention a utiliser a vos risques et perils. Si le _ChainElement est surpprime de la chaine par 
-   * une autre fonction, le _ChainElement recupere deviendrait inconsistant
+   * Attention a utiliser a vos risques et perils. Si le _ChainElement est surpprime de la chaine
+   * par une autre fonction, le _ChainElement recupere deviendrait inconsistant
    * @return le _ChainElement Courant
    * 2 operations
    **/
@@ -522,8 +524,8 @@ class Chain {
   /**
    * setCurrentChainElement
    * 
-   * Attention a utiliser a vos risques et perils. Si le _ChainElement a ete surpprime de la chaine par 
-   * une autre fonction, remettre le curseur dessus rendra la chaine inconsistante.
+   * Attention a utiliser a vos risques et perils. Si le _ChainElement a ete surpprime de la 
+   * chaine par une autre fonction, remettre le curseur dessus rendra la chaine inconsistante.
    * Positionne le curseur sur cursor
    * 3 operations
    **/
@@ -538,7 +540,7 @@ class Chain {
  *
  * internal use only
  ****************************************************************************/
-class _ChainElement extends Objects {
+class _ChainElement {
   
   _ChainElement|null previous;
   any element;

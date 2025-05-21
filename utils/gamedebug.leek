@@ -1,13 +1,15 @@
 include("chain");
+include("objects");
+include("functions");
 
 /*****************************************************************************
  * GameDebug
  *****************************************************************************/
-class GameDebug extends Objects {
+class GameDebug {
   
-  static string str = "\n";
-  static integer opt = 0;
-  static integer ram = 0;
+  private static string str = "\n";
+  private static integer opt = 0;
+  private static integer ram = 0;
  
   /**
    * str

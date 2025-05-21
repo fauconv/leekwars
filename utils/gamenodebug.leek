@@ -1,34 +1,16 @@
 include("chain");
+include("objects");
+include("functions");
 
 /*****************************************************************************
  * GameDebug
  *****************************************************************************/
-class GameDebug extends Objects {
+class GameDebug {
   
-  static string str = "\n";
-  static integer opt = 0;
-  static integer ram = 0;
- 
   /**
    * str
    **/
   static void display() {
-  }
-  
-  /***
-   * arrayDebug
-   *
-   * internal
-   **/
-  private static void arrayDebug(Array<any>|Map<any,any> array, integer depth, Array<integer> limit, Array<integer> start, Array<boolean> revers, string space, string debugFunction) {
-  }
-  
-  /***
-   * objectDebug
-   * @param obj : TYPE_OBJECT => Object ou Objects
-   * internal
-   **/
-  private static void objectDebug(Object|Objects obj, integer depth, Array<integer> limit, Array<integer> start, Array<boolean> revers, string space, string debugFunction) {
   }
   
   /**

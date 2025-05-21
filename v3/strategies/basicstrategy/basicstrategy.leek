@@ -17,14 +17,20 @@ class BasicStrategy extends Strategy {
   static Enemy enemy;          
   static integer myMaxMP;
   static integer enemyMaxMP;
+	
   static boolean lowLife = false;
+  static boolean badLifeRatio = false;
+  static integer runCompare; // 0 = same MP, <0 he has more MP, >0 he has less MP
   static string myState = "center";
+  static string myStrategy = "unknown";
+	
   static string STATE_UNKNOWN = "unknown";
   static string STATE_ESCAPE = "escape";
   static string STATE_APPROACH = "approach";
   static string STATE_ATTACK = "attack";
+  static string STATE_FORCE  = "force";
   static string STATE_CENTER = "center";
-  static string myStrategy = "unknown";
+  
   static string STRATEGY_UNKNOWN = "unknown";
   static string STRATEGY_HIDDEN = "hidden";
   static string STRATEGY_LONG_RANGE = "long_range";
@@ -40,10 +46,10 @@ class BasicStrategy extends Strategy {
   static boolean isValide() {
     if(count(Board.enemies) > 1) return false;
     enemy = Board.enemies[0];
-    return isEmpty(enemy.categoryBulb);
+    return isEmpty(enemy.categories[CATEGORY_BULB]!);
   }
   
-  /**
+  /**s
    * apply
    **/
   boolean apply() {
@@ -78,7 +84,7 @@ class BasicStrategy extends Strategy {
     enemyMaxMP = 0;
     for(Simulation sim in MPToolList) enemyMaxMP = max(enemyMaxMP, sim.roundObj.leeksRound[enemyId]!.maxMP);
     Map<integer,MoveCell> enemyMoveCells = BasicStrategyTools.parcour(enemyRound, "maxMP", MPToolList, enemyMaxMP);
-      
+    runCompare = myMaxMP - enemyMaxMP;  
     if(BASIC_STRATEGY_DEBUG) {
       GameDebug.add(true, "avalaible simulations:");
       for(integer index : Simulation sim in myMoveCells[myCurrentCellId]!.moveSim) {
@@ -86,7 +92,7 @@ class BasicStrategy extends Strategy {
 	  }
 	   GameDebug.add(true, "avalaible simulations enemy:");
       for(integer index : Simulation sim in enemyMoveCells[enemyCurrentCellId]!.moveSim) {
-        GameDebug.add(true, sim.actions,"sim #"+ index +"(MP:"+sim.roundObj.leeksRound[enemyId]!.minMP+")");
+        GameDebug.add(true, sim.actions,"sim #"+ index +"(MP:"+sim.roundObj.leeksRound[enemyId]!.maxMP+")");
 	  }
     }
       
@@ -103,6 +109,10 @@ class BasicStrategy extends Strategy {
         mark(mc.id,COLOR_PINK,1);
         markText(mc.id,mapSize(mc.toolsList),0,1);
       }
+	  for(MoveCell mc in enemyMoveCells) {
+	    mark(mc.id,COLOR_RED,1);
+        markText(mc.id,mapSize(mc.moveSim),0,1);
+	  }
     }
     
     //
@@ -159,7 +169,7 @@ class BasicStrategy extends Strategy {
     //
     if(mapSize(myMoveCellsGood) > 0) return good(myMoveCellsGood, myMoveCellsAnnihilation);
     if(mapSize(myMoveCellsNeutral) > 0) return neutral(myMoveCellsNeutral, myMoveCellsAnnihilation, myMoveCellsBad);
-    if(mapSize(myMoveCellsAnnihilation) > 0) return good(myMoveCellsGood, myMoveCellsAnnihilation);
+    if(mapSize(myMoveCellsAnnihilation) > 0) return annihilation(myMoveCellsAnnihilation);
     return bad(myMoveCellsBad);
     
   }
@@ -240,13 +250,17 @@ class BasicStrategy extends Strategy {
         debugC(Board.me.tools, COLOR_RED);
       } // else j ai pas d arme
     }
+    GameDebug.add(BASIC_STRATEGY_DEBUG,me.maxAOERange+"/"+enemy.maxAOERange,"my/him AOERange");
+	GameDebug.add(BASIC_STRATEGY_DEBUG,enemy.tools,"enemy tools");
   }
 
   /**
    * update
    **/
   void update() {
-    lowLife = ((meRound.maxLife/meRound.maxTotalLife) < (enemyRound.maxLife/enemyRound.maxTotalLife));
+    badLifeRatio = ((meRound.maxLife/meRound.maxTotalLife) < (enemyRound.maxLife/enemyRound.maxTotalLife));
+	lowLife = ((meRound.maxLife/meRound.maxTotalLife) < 0.5);
+	(lowLife && badLifeRatio) and (myState = STATE_ESCAPE);
   }
 	
   /**
@@ -254,34 +268,29 @@ class BasicStrategy extends Strategy {
    **/
   static boolean good(Map<integer,MoveCell> myGoods, Map<integer,MoveCell> myAnnihilations) {
 	if(BasicStrategyTools.instaKill(myAnnihilations)) return true;
-    integer bestScore = 0;
-    Array<Object> bestMc = [];
-	// je recupere les meilleurs good
-	for(MoveCell mc in myGoods) {
-	  for(integer index : integer score in mc.attackScores) {
-		if(mc.defenceScore == 0 || count(mc.goodEscapes[index]!) > 0) {
-	      if(score == bestScore) {
-		    push(bestMc, {moveCell:mc, index:index});
-		  } else if(score > bestScore) {
-		    bestScore = score;
-		    bestMc = [{moveCell:mc, index:index}];
-		  }
-		}
-	  }
-	}
-	// je recupere le meilleur good et son escape en fonction de la strategie 
-	// TODO: ici je prend la premiere au lieu de la meilleure on fera mieux apres
-	debugC("BasicStrategy=>good=>recuperer le meilleur good",COLOR_RED);
-	MoveCell finale = bestMc[0].moveCell as MoveCell;
-	finale.moveSim[bestMc[0].index as integer]!.execute();
-	meRound.moveToCell(finale.id);
-    finale.attackSim[bestMc[0].index as integer]!.execute();
-	if(finale.defenceScore != 0) moveTowardCell(finale.goodEscapes[bestMc[0].index as integer]![0].id);
-	// TODO: ici je ne bouge pas si je suis sur un vert on verra plus tard
-	debugC("BasicStrategy=>good=>recuperer le meilleur escape",COLOR_RED);
-	myState = STATE_ATTACK;
+	boolean farestEscape = (myState == STATE_ESCAPE || myStrategy == STRATEGY_LONG_RANGE || 
+							myStrategy == STRATEGY_HIDDEN);
+	Object list = MoveCell.selectBestAttackEscape(myGoods, enemyCurrentCellId, farestEscape,true);
+	Object finalMc = (list.result as Array)[0] as Object;
+	(finalMc.moveCell as MoveCell).execute(finalMc.simIndex as integer,((finalMc.escapes as Array)[0] as MoveCell).id)
 	conclude();
 	heal();
+    myState = STATE_ATTACK;
+    return true;
+  }
+	
+  /**
+   * annihilation
+   **/
+  static boolean annihilation(Map<integer,MoveCell> myAnnihilations) {
+    boolean farestEscape = (myState == STATE_ESCAPE || myStrategy == STRATEGY_LONG_RANGE || 
+							myStrategy == STRATEGY_HIDDEN);
+	Object list = MoveCell.selectBestAttackEscape(myAnnihilations, enemyCurrentCellId, farestEscape,false);
+	Object finalMc = (list.result as Array)[0] as Object;
+	(finalMc.moveCell as MoveCell).execute(finalMc.simIndex as integer,((finalMc.escapes as Array)[0] as MoveCell).id)
+	conclude();
+	heal();
+    myState = STATE_ATTACK;
     return true;
   }
 
@@ -343,24 +352,11 @@ class BasicStrategy extends Strategy {
    * bad
    **/
   static boolean bad(Map<integer,MoveCell> moveCellsList) {
-    integer bestScore = MoveCell.INSTA_KILL;
-    Array<Object> bestMc = [];
-	for(MoveCell mc in moveCellsList) {
-	  for(integer index : integer score in mc.attackScores) {
-	    if(score == bestScore) {
-		  push(bestMc, {moveCell:mc, index:index});
-		} else if(score < bestScore) {
-		  bestScore = score;
-		  bestMc = [{moveCell:mc, index:index}];
-        }
-	  }
-	}
-	// je recupere le meilleur good et son escape en fonction de la strategie 
-	// TODO: ici je prend la premiere au lieu de la meilleure on fera mieux apres
-	debugC("BasicStrategy=>bad=>recuperer le meilleur bad",COLOR_RED);
-	MoveCell finale = (bestMc[0].moveCell as MoveCell);
-	finale.moveSim[bestMc[0].index as integer]!.execute();
-	meRound.moveToCell(finale.id);
+    boolean farestEscape = (myState == STATE_ESCAPE || myStrategy == STRATEGY_LONG_RANGE || 
+							myStrategy == STRATEGY_HIDDEN);
+	Object list = MoveCell.selectBestAttackEscape(moveCellsList, enemyCurrentCellId, farestEscape,false);
+	Object finalMc = (list.result as Array)[0] as Object;
+	(finalMc.moveCell as MoveCell).execute(finalMc.simIndex as integer,((finalMc.escapes as Array)[0] as MoveCell).id)
 	protect();
 	heal();
 	conclude();
@@ -378,7 +374,7 @@ class BasicStrategy extends Strategy {
     Simulation sim = new Simulation(owner, 0);
     Array<Simulation> ret = [sim]; // cas sans chip
     if(mapContainsKey(owner.toolsRound, CHIP_LEATHER_BOOTS))
-      BasicStrategyTools.MPConditionsAddSim(ret, sim, owner.currentCellId, CHIP_LEATHER_BOOTS); // CHIP_LEATHER_BOOTS
+      BasicStrategyTools.addSim(ret, sim, owner.currentCellId, CHIP_LEATHER_BOOTS); // CHIP_LEATHER_BOOTS
     return ret;
   }
 
@@ -395,9 +391,13 @@ class BasicStrategy extends Strategy {
    * 7- CHIP_PEBBLE
    * 8- CHIP_SPARK
    * 9- CHIP_SHOCK
-   * TODO: enlever les constante
+   * @return {score:integer, simulation: Simulation}
    **/
-  static integer computeAttack(Simulation sim, RelativeCell rel) {
+  static Object computeAttack(Simulation simu, RelativeCell rel, integer shooterCurrentCell) {
+	Simulation sim = new Simulation(simu, simu.id);
+	Array<Simulation> ret = [sim]; // cas sans chip
+	if(mapContainsKey(simu.owner.toolsRound, CHIP_PROTEIN))
+      BasicStrategyTools.addSim(ret, sim, shooterCurrentCell, CHIP_PROTEIN); // CHIP_PROTEIN
     Map<integer, Tool> toolsList = rel.toolsList;
     integer targetCell = rel.id;
 	LeekRound shooter = sim.owner;
@@ -422,8 +422,8 @@ class BasicStrategy extends Strategy {
     minTP = BasicStrategyTools.addTool(CHIP_PEBBLE, toolsInfo, toolsList, targetCell, minTP, result, sim, shooter);
     minTP = BasicStrategyTools.addTool(CHIP_SPARK, toolsInfo, toolsList, targetCell, minTP, result, sim, shooter);
     minTP = BasicStrategyTools.addTool(CHIP_SHOCK, toolsInfo, toolsList, targetCell, minTP, result, sim, shooter);
-	if(sim.roundObj.leeksRound[enemyId]!.maxLife <= 0) return MoveCell.INSTA_KILL;
-    return result.midEffect;
+	if(sim.roundObj.leeksRound[enemyId]!.maxLife <= 0) return {score:MoveCell.INSTA_KILL,simulation:sim};
+    return {score:result.midEffect,simulation:sim};
   }
 
   /**

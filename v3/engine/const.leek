@@ -7,13 +7,11 @@
 //
 global boolean gFirstRound  = true;        // premier tour
 global boolean gSecondRound = false;       // deuxieme tour
-global Strategy gAvailableStrategie;       // selected strategy
 global boolean gBoardInit   = false;       // true quand le board est initialise completement
 
 //
 // const
 //
-global integer LAUNCH_TYPE_SQUARE = 4;     // a missing launch_type constant 
 global integer NB_CELLS           = 613;
 global integer MAX_DISTANCE       = 34; // 2*17
 global integer CENTER_CELL_ID     = 306;
@@ -77,7 +75,7 @@ global Array<string> STAR_DIRECTION = [
   "right"
 ];
 
-global Array<string> HEIGHT_DIRECTION   = ["top","bottom"];
+global Array<string> HEIGHT_DIRECTION = ["top","bottom"];
 global Array<string> WIDTH_DIRECTION = ["left","right"];
 
 //
@@ -97,68 +95,6 @@ global Map<integer,string> EFFECT_TARGET_TRANSLATOR = [
   EFFECT_TARGET_ENEMIES:"effect_target_enemies",
   EFFECT_TARGET_NON_SUMMONS:"effect_target_non_summons",
   EFFECT_TARGET_SUMMONS:"effect_target_summons"
-]
-
-global Map<integer,string> EFFECT_TYPE_TRANSLATOR = [
-  EFFECT_ABSOLUTE_SHIELD:"effect_absolute_shield",
-  EFFECT_ABSOLUTE_VULNERABILITY:"effect_absolute_vulnerability",
-  EFFECT_ADD_STATE:"effect_add_state",
-  EFFECT_AFTEREFFECT:"effect_aftereffect",
-  EFFECT_ALLY_KILLED_TO_AGILITY:"effect_ally_killed_to_agility",
-  EFFECT_ANTIDOTE:"effect_antidote",
-  EFFECT_ATTRACT:"effect_attract",
-  EFFECT_BOOST_MAX_LIFE:"effect_boost_max_life",
-  EFFECT_BUFF_AGILITY:"effect_buff_agility",
-  EFFECT_BUFF_MP:"effect_buff_mp",
-  EFFECT_BUFF_RESISTANCE:"effect_buff_resistance",
-  EFFECT_BUFF_STRENGTH:"effect_buff_strength",
-  EFFECT_BUFF_TP:"effect_buff_tp",
-  EFFECT_BUFF_WISDOM:"effect_buff_wisdom",
-  EFFECT_CRITICAL_TO_HEAL:"effect_critical_to_heal",
-  EFFECT_DAMAGE:"effect_damage",
-  EFFECT_DAMAGE_RETURN:"effect_damage_return",
-  EFFECT_DAMAGE_TO_ABSOLUTE_SHIELD:"effect_damage_to_absolute_shield",
-  EFFECT_DAMAGE_TO_STRENGTH:"effect_damage_to_strength",
-  EFFECT_DEBUFF:"effect_debuff",
-  EFFECT_HEAL:"effect_heal",
-  EFFECT_INVERT:"effect_invert",
-  EFFECT_KILL:"effect_kill",
-  EFFECT_KILL_TO_TP:"effect_kill_to_tp",
-  EFFECT_LIFE_DAMAGE:"effect_life_damage",
-  EFFECT_MOVED_TO_MP:"effect_moved_to_mp",
-  EFFECT_NOVA_DAMAGE:"effect_nova_damage",
-  EFFECT_NOVA_DAMAGE_TO_MAGIC:"effect_nova_damage_to_magic",
-  EFFECT_NOVA_VITALITY:"effect_nova_vitality",
-  EFFECT_POISON:"effect_poison",
-  EFFECT_POISON_TO_SCIENCE:"effect_poison_to_science",
-  EFFECT_PROPAGATION:"effect_propagation",
-  EFFECT_PUSH:"effect_push",
-  EFFECT_RAW_ABSOLUTE_SHIELD:"effect_raw_absolute_shield",
-  EFFECT_RAW_BUFF_AGILITY:"effect_raw_buff_agility",
-  EFFECT_RAW_BUFF_MAGIC:"effect_raw_buff_magic",
-  EFFECT_RAW_BUFF_MP:"effect_raw_buff_mp",
-  EFFECT_RAW_BUFF_POWER:"effect_raw_buff_power",
-  EFFECT_RAW_BUFF_RESISTANCE:"effect_raw_buff_resistance",
-  EFFECT_RAW_BUFF_SCIENCE:"effect_raw_buff_science",
-  EFFECT_RAW_BUFF_STRENGTH:"effect_raw_buff_strength",
-  EFFECT_RAW_BUFF_TP:"effect_raw_buff_tp",
-  EFFECT_RAW_BUFF_WISDOM:"effect_raw_buff_wisdom",
-  EFFECT_RAW_HEAL:"effect_raw_heal",
-  EFFECT_RAW_RELATIVE_SHIELD:"effect_raw_relative_shield",
-  EFFECT_RELATIVE_SHIELD:"effect_relative_shield",
-  EFFECT_REMOVE_SHACKLES:"effect_remove_shackles",
-  EFFECT_REPEL:"effect_repel",
-  EFFECT_RESURRECT:"effect_resurrect",
-  EFFECT_SHACKLE_AGILITY:"effect_shackle_agility",
-  EFFECT_SHACKLE_MAGIC:"effect_shackle_magic",
-  EFFECT_SHACKLE_MP:"effect_shackle_mp",
-  EFFECT_SHACKLE_STRENGTH:"effect_shackle_strength",
-  EFFECT_SHACKLE_TP:"effect_shackle_tp",
-  EFFECT_SHACKLE_WISDOM:"effect_shackle_wisdom",
-  EFFECT_STEAL_ABSOLUTE_SHIELD:"effect_steal_absolute_shield",
-  EFFECT_SUMMON:"effect_summon",
-  EFFECT_TELEPORT:"effect_teleport",
-  EFFECT_VULNERABILITY:"effect_vulnerability"
 ]
 
 //
@@ -311,91 +247,110 @@ global Map<integer,string> TOOL_NAME_TRANSLATOR = [
   CHIP_WINGED_BOOTS:"chip winged_boots",
   CHIP_WIZARD_BULB:"chip wizard_bulb",
   CHIP_WIZARDRY:"chip wizardry",
-  425: "chip exasperation"
+  CHIP_EXASPERATION: "chip exasperation"
 ]
 
 //
 // category
 //
+global string CATEGORY_DAMAGE = "categoryDamage";
+global string CATEGORY_PROTECTION = "categoryProtection";
+global string CATEGORY_HEAL = "categoryHeal";
+global string CATEGORY_HEAL_DEFAULT = "categoryHealDefault";
+global string CATEGORY_MP_DEBUFF = "categoryMPBuff";
+global string CATEGORY_BUFF = "categoryBuff";
+global string CATEGORY_DEBUFF = "categoryDeBuff";
+global string CATEGORY_DEBUFF_DEFAULT = "categoryDeBuffDefault";
+global string CATEGORY_BULB = "categoryBulb";
+global string CATEGORY_OTHER = "categoryOther";  
+global string CATEGORY_MOVE = "categoryMove";
+
 global Array<string> CATEGORIES = [
-  "categoryDamage",
-  "categoryProtection",
-  "categoryHeal",
-  "categoryMPBuff",
-  "categoryBuff",
-  "categoryDeBuff",
-  "categoryBulb",
-  "categoryOther",  
-  "categoryMove",   
+  CATEGORY_DAMAGE,
+  CATEGORY_PROTECTION,
+  CATEGORY_HEAL,
+  CATEGORY_HEAL_DEFAULT,
+  CATEGORY_MP_DEBUFF,
+  CATEGORY_BUFF,
+  CATEGORY_DEBUFF,
+  CATEGORY_DEBUFF_DEFAULT,
+  CATEGORY_BULB,
+  CATEGORY_OTHER,  
+  CATEGORY_MOVE,   
 ];
 
-global Map<integer,string> EFFECT_CATEGORY = [
-  EFFECT_AFTEREFFECT:"categoryDamage",
-  EFFECT_DAMAGE:"categoryDamage",
-  EFFECT_KILL:"categoryDamage",
-  EFFECT_LIFE_DAMAGE:"categoryDamage",
-  EFFECT_POISON:"categoryDamage",
+//
+// voir la liste des fonction dans effectfunctions
+//
+global Map<integer,Array<any>> EFFECT_TYPE_TRANSLATOR_CATEGORY = [
+  EFFECT_AFTEREFFECT:["effect_aftereffect",CATEGORY_DAMAGE,effect_aftereffect],
+  EFFECT_DAMAGE:["effect_damage",CATEGORY_DAMAGE,effect_damage],
+  EFFECT_KILL:["effect_kill",CATEGORY_DAMAGE,effect_kill],
+  EFFECT_LIFE_DAMAGE:["effect_life_damage",CATEGORY_DAMAGE,effect_life_damage],
+  EFFECT_POISON:["effect_poison",CATEGORY_DAMAGE,effect_poison],
 
-  EFFECT_ABSOLUTE_SHIELD:"categoryProtection",
-  EFFECT_RAW_ABSOLUTE_SHIELD:"categoryProtection",
-  EFFECT_RAW_RELATIVE_SHIELD:"categoryProtection",
-  EFFECT_RELATIVE_SHIELD:"categoryProtection",
+  EFFECT_ABSOLUTE_SHIELD:["effect_absolute_shield",CATEGORY_PROTECTION,effect_absolute_shield],
+  EFFECT_RAW_ABSOLUTE_SHIELD:["effect_raw_absolute_shield",CATEGORY_PROTECTION,effect_raw_absolute_shield],
+  EFFECT_RAW_RELATIVE_SHIELD:["effect_raw_relative_shield",CATEGORY_PROTECTION,effect_raw_relative_shield],
+  EFFECT_RELATIVE_SHIELD:["effect_relative_shield",CATEGORY_PROTECTION,effect_relative_shield],
 
-  EFFECT_ANTIDOTE:"categoryHeal",
-  EFFECT_HEAL:"categoryHeal",
-  EFFECT_RAW_HEAL:"categoryHeal",
-  EFFECT_REMOVE_SHACKLES:"categoryHeal",
+  EFFECT_HEAL:["effect_heal",CATEGORY_HEAL,effect_heal],
+  EFFECT_RAW_HEAL:["effect_raw_heal",CATEGORY_HEAL,effect_raw_heal],
 
-  EFFECT_RAW_BUFF_MP:"categoryMPBuff",
-  EFFECT_BUFF_MP:"categoryMPBuff",
+  EFFECT_ANTIDOTE:["effect_antidote",CATEGORY_HEAL_DEFAULT,effect_default],
+  EFFECT_REMOVE_SHACKLES:["effect_remove_shackles",CATEGORY_HEAL_DEFAULT,effect_default],
 
-  EFFECT_BOOST_MAX_LIFE:"categoryBuff",
-  EFFECT_BUFF_AGILITY:"categoryBuff",
-  EFFECT_BUFF_RESISTANCE:"categoryBuff",
-  EFFECT_BUFF_STRENGTH:"categoryBuff",
-  EFFECT_BUFF_TP:"categoryBuff",
-  EFFECT_BUFF_WISDOM:"categoryBuff",
-  EFFECT_DAMAGE_RETURN:"categoryBuff",
-  EFFECT_NOVA_DAMAGE:"categoryBuff",
-  EFFECT_NOVA_VITALITY:"categoryBuff",
-  EFFECT_RAW_BUFF_AGILITY:"categoryBuff",
-  EFFECT_RAW_BUFF_MAGIC:"categoryBuff",
-  EFFECT_RAW_BUFF_POWER:"categoryBuff",
-  EFFECT_RAW_BUFF_RESISTANCE:"categoryBuff",
-  EFFECT_RAW_BUFF_SCIENCE:"categoryBuff",
-  EFFECT_RAW_BUFF_STRENGTH:"categoryBuff",
-  EFFECT_RAW_BUFF_TP:"categoryBuff",
-  EFFECT_RAW_BUFF_WISDOM:"categoryBuff",
+  EFFECT_RAW_BUFF_MP:["effect_raw_buff_mp",CATEGORY_MP_DEBUFF,effect_raw_buff_mp],
+  EFFECT_BUFF_MP:["effect_buff_mp",CATEGORY_MP_DEBUFF,effect_buff_mp],
 
-  EFFECT_DEBUFF:"categoryDeBuff",
-  EFFECT_SHACKLE_AGILITY:"categoryDeBuff",
-  EFFECT_SHACKLE_MAGIC:"categoryDeBuff",
-  EFFECT_SHACKLE_MP:"categoryDeBuff",
-  EFFECT_SHACKLE_STRENGTH:"categoryDeBuff",
-  EFFECT_SHACKLE_TP:"categoryDeBuff",
-  EFFECT_SHACKLE_WISDOM:"categoryDeBuff",
-  EFFECT_STEAL_ABSOLUTE_SHIELD:"categoryDeBuff",
-  EFFECT_VULNERABILITY:"categoryDeBuff",
+  EFFECT_BOOST_MAX_LIFE:["effect_boost_max_life",CATEGORY_BUFF,effect_boost_max_life],
+  EFFECT_BUFF_AGILITY:["effect_buff_agility",CATEGORY_BUFF,effect_buff_agility],
+  EFFECT_BUFF_RESISTANCE:["effect_buff_resistance",CATEGORY_BUFF,effect_buff_resistance],
+  EFFECT_BUFF_STRENGTH:["effect_buff_strength",CATEGORY_BUFF,effect_buff_strength],
+  EFFECT_BUFF_TP:["effect_buff_tp",CATEGORY_BUFF,effect_buff_tp],
+  EFFECT_BUFF_WISDOM:["effect_buff_wisdom",CATEGORY_BUFF,effect_buff_wisdom],
+  EFFECT_DAMAGE_RETURN:["effect_damage_return",CATEGORY_BUFF,effect_damage_return],
+  EFFECT_NOVA_DAMAGE:["effect_nova_damage",CATEGORY_BUFF,effect_nova_damage],
+  EFFECT_NOVA_VITALITY:["effect_nova_vitality",CATEGORY_BUFF,effect_nova_vitality],
+  EFFECT_RAW_BUFF_AGILITY:["effect_raw_buff_agility",CATEGORY_BUFF,effect_raw_buff_agility],
+  EFFECT_RAW_BUFF_MAGIC:["effect_raw_buff_magic",CATEGORY_BUFF,effect_raw_buff_magic],
+  EFFECT_RAW_BUFF_POWER:["effect_raw_buff_power",CATEGORY_BUFF,effect_raw_buff_power],
+  EFFECT_RAW_BUFF_RESISTANCE:["effect_raw_buff_resistance",CATEGORY_BUFF,effect_raw_buff_resistance],
+  EFFECT_RAW_BUFF_SCIENCE:["effect_raw_buff_science",CATEGORY_BUFF,effect_raw_buff_science],
+  EFFECT_RAW_BUFF_STRENGTH:["effect_raw_buff_strength",CATEGORY_BUFF,effect_raw_buff_strength],
+  EFFECT_RAW_BUFF_TP:["effect_raw_buff_tp",CATEGORY_BUFF,effect_raw_buff_tp],
+  EFFECT_RAW_BUFF_WISDOM:["effect_raw_buff_wisdom",CATEGORY_BUFF,effect_raw_buff_wisdom],
 
-  EFFECT_SUMMON:"categoryBulb",
+  EFFECT_DEBUFF:["effect_debuff",CATEGORY_DEBUFF_DEFAULT,effect_default],
+  EFFECT_STEAL_ABSOLUTE_SHIELD:["effect_steal_absolute_shield",CATEGORY_DEBUFF_DEFAULT,effect_default], // TODO:
 
-  EFFECT_ABSOLUTE_VULNERABILITY:"categoryOther",
-  EFFECT_ALLY_KILLED_TO_AGILITY:"categoryOther",
-  EFFECT_CRITICAL_TO_HEAL:"categoryOther",
-  EFFECT_DAMAGE_TO_ABSOLUTE_SHIELD:"categoryOther",
-  EFFECT_DAMAGE_TO_STRENGTH:"categoryOther",
-  EFFECT_KILL_TO_TP:"categoryOther",
-  EFFECT_MOVED_TO_MP:"categoryOther",
-  EFFECT_NOVA_DAMAGE_TO_MAGIC:"categoryOther",
-  EFFECT_POISON_TO_SCIENCE:"categoryOther",
-  EFFECT_PROPAGATION:"categoryOther",
-  EFFECT_REPEL:"categoryOther",
-  EFFECT_RESURRECT:"categoryOther",
-  EFFECT_ADD_STATE:"categoryOther",
+  EFFECT_ABSOLUTE_VULNERABILITY:["effect_absolute_vulnerability",CATEGORY_DEBUFF,effect_absolute_vulnerability],
+  EFFECT_SHACKLE_AGILITY:["effect_shackle_agility",CATEGORY_DEBUFF,effect_shackle_agility],
+  EFFECT_SHACKLE_MAGIC:["effect_shackle_magic",CATEGORY_DEBUFF,effect_shackle_magic],
+  EFFECT_SHACKLE_MP:["effect_shackle_mp",CATEGORY_DEBUFF,effect_shackle_mp],
+  EFFECT_SHACKLE_STRENGTH:["effect_shackle_strength",CATEGORY_DEBUFF,effect_shackle_strength],
+  EFFECT_SHACKLE_TP:["effect_shackle_tp",CATEGORY_DEBUFF,effect_shackle_tp],
+  EFFECT_SHACKLE_WISDOM:["effect_shackle_wisdom",CATEGORY_DEBUFF,effect_shackle_wisdom],
+  EFFECT_VULNERABILITY:["effect_vulnerability",CATEGORY_DEBUFF,effect_vulnerability],
 
-  EFFECT_ATTRACT:"categoryMove",
-  EFFECT_INVERT:"categoryMove",
-  EFFECT_PUSH:"categoryMove",
-  EFFECT_TELEPORT:"categoryMove",
-  60: "categoryOther" // pour la chip exasperation
+  EFFECT_SUMMON:["effect_summon",CATEGORY_BULB,effect_default],
+
+  EFFECT_ALLY_KILLED_TO_AGILITY:["effect_ally_killed_to_agility",CATEGORY_OTHER,effect_default],
+  EFFECT_CRITICAL_TO_HEAL:["effect_critical_to_heal",CATEGORY_OTHER,effect_default],
+  EFFECT_DAMAGE_TO_ABSOLUTE_SHIELD:["effect_damage_to_absolute_shield",CATEGORY_OTHER,effect_default],
+  EFFECT_DAMAGE_TO_STRENGTH:["effect_damage_to_strength",CATEGORY_OTHER,effect_default],
+  EFFECT_KILL_TO_TP:["effect_kill_to_tp",CATEGORY_OTHER,effect_default],
+  EFFECT_MOVED_TO_MP:["effect_moved_to_mp",CATEGORY_OTHER,effect_default],
+  EFFECT_NOVA_DAMAGE_TO_MAGIC:["effect_nova_damage_to_magic",CATEGORY_OTHER,effect_default],
+  EFFECT_POISON_TO_SCIENCE:["effect_poison_to_science",CATEGORY_OTHER,effect_default],
+  EFFECT_PROPAGATION:["effect_propagation",CATEGORY_OTHER,effect_default],
+  EFFECT_REPEL:["effect_repel",CATEGORY_OTHER,effect_default],
+  EFFECT_RESURRECT:["effect_resurrect",CATEGORY_OTHER,effect_default],
+  EFFECT_ADD_STATE:["effect_add_state",CATEGORY_OTHER,effect_default],
+  EFFECT_EXASPERATION: ["effect_exasperation", CATEGORY_OTHER,effect_default] // pour la chip exasperation
+
+  EFFECT_ATTRACT:["effect_attract",CATEGORY_MOVE,effect_default],
+  EFFECT_INVERT:["effect_invert",CATEGORY_MOVE,effect_default],
+  EFFECT_PUSH:["effect_push",CATEGORY_MOVE,effect_default],
+  EFFECT_TELEPORT:["effect_teleport",CATEGORY_MOVE,effect_default],
 ]

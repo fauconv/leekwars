@@ -7,6 +7,7 @@ class ToolRound extends Objects {
   
   Tool tool;
   integer cooldown; 
+  // TODO: Ajout d une nombre d utilisation restant
   Round roundObj;
   LeekRound owner;
   
@@ -51,16 +52,15 @@ class ToolRound extends Objects {
     (owner.maxAgility <= 0) and (criticalFactor = 1.0);
     for(Effect effect in tool.effects) {
       if(effect.modOnCast) {
-        GameDebug.add(EFFECT_DEBUG,"apply on caster only:");
         EffectResult delta2 = effect.simulateUse(owner, owner, 1.0, 1, midCriticalLuck, criticalFactor)
-        GameDebug.add(EFFECT_DEBUG, delta2,"effect dmg");
+        GameDebug.add(EFFECT_DEBUG, delta2,"simulateUse (modOnCast)");
         delta.add(delta2);
       } else {
         integer nbTargets = count(targets);
         for(integer i : integer targetId in targets) {
           LeekRound target = roundObj.leeksRound[targetId]!;
           EffectResult delta2 = effect.simulateUse(owner, target, AOEs[i], nbTargets, midCriticalLuck, criticalFactor)
-          GameDebug.add(EFFECT_DEBUG, delta2,"effect dmg");
+          GameDebug.add(EFFECT_DEBUG, delta2,"simulateUse");
           delta.add(delta2);
         }
       }
@@ -148,12 +148,10 @@ class ChipRound extends ToolRound {
   
   /**
    * simulateUseOnCell
-   * abstract
    **/
   EffectResult simulateUseOnCell(integer cellId) {
     Array<integer> entities = getChipTargets(id, cellId)!; // ne gerer pas l enemi qui se tire sur lui meme
     if(owner.id != Board.myId && roundObj.leeksRound[owner.id]!.currentCellId == cellId) push(entities, owner.id); 
-	GameDebug.add(true,entities,"entities");
     integer nbTarget = count(entities);
     Array<real> AOEs = [];
     for(integer entity in entities)

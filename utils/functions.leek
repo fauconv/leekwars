@@ -1,6 +1,10 @@
 /************************************************************************************
- * Missing functions in LS4
+ * Missing functions and const in LS4
  ***********************************************************************************/
+
+global integer EFFECT_EXASPERATION = 60;
+global integer LAUNCH_TYPE_SQUARE = 4;
+global integer CHIP_EXASPERATION = 425;
 
 /***
  * first

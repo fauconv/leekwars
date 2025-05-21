@@ -7,11 +7,10 @@ class RelativeCell extends Objects {
   real AOE;
   integer targetCell; // cell where is the target leek
   Map<integer, Tool> toolsList;
-  Map<integer, Simulation> simulations = [:];
-  Map<integer, any> data = [:]; // permet de stocker des donner relative a chaque simulation
+  Map<integer, any> data = [:]; // permet de stocker des donner
 
   /**
-   * constructor
+   * constructors
    * @param tools : Attention: le tableau n est pas copie
    **/
   constructor(integer id, real AOE, integer targetCell, Map<integer, Tool> tools) {

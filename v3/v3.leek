@@ -1,10 +1,10 @@
 /**************************************************************************
  * debug
  **************************************************************************/
-global boolean EFFECT_DEBUG = true;
+global boolean EFFECT_DEBUG = false;
 global boolean LEEKROUND_DEBUG = true;
 global boolean BASIC_STRATEGY_DEBUG = true;
-global boolean UNIT_TEST_DEBUG = false;
+global boolean UNIT_TEST_DEBUG = true;
 include("../utils/gamedebug");
 //include("../utils/gamenodebug");
 
@@ -15,20 +15,19 @@ include("engine/const");
 include("engine/effectresult");
 include("engine/talk");
 include("engine/strategy");
-include("engine/intercellinfo");
 include("engine/relativecell");
 include("engine/cell");
-include("engine/board");
-include("engine/effect");
-include("engine/effectfunctions");
-include("engine/tool");
 include("engine/leek");
-include("engine/round/round");
-include("engine/round/cellround");
-include("engine/round/leekround");
-include("engine/round/toolround");
-include("engine/round/action");
-include("engine/round/simulation");
+include("engine/tool");
+include("engine/intercellinfo");
+include("engine/board");
+include("engine/effectfunctions");
+include("engine/round");
+include("engine/cellround");
+include("engine/leekround");
+include("engine/toolround");
+include("engine/simulation/action");
+include("engine/simulation/simulation");
 if(!gBoardInit) {
   if(!(gBoardInit = Board.init())) {
     debugC("Initialisation en 2 temps",COLOR_BLUE);
@@ -44,14 +43,14 @@ if(!gBoardInit) {
  *************************************************************************/
 include("strategies/UT/unit_test");
 include("strategies/basicstrategy/basicstrategy");
-if(UnitTest.isValide()) gAvailableStrategie = new UnitTest();
-else if(BasicStrategy.isValide()) gAvailableStrategie = new BasicStrategy();
-else gAvailableStrategie = new Strategy();
+Strategy availableStrategie = new Strategy();       // selected strategy
+if(UnitTest.isValide()) availableStrategie = new UnitTest();
+else if(BasicStrategy.isValide()) availableStrategie = new BasicStrategy();
 
 /*******************************************************
  * main
  *******************************************************/
-gAvailableStrategie.apply()
+availableStrategie.apply();
 end();
 
 /*********************************************************

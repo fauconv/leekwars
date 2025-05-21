@@ -22,7 +22,6 @@ var interval2 = [0..5]; // 3 ops
 // ajout d'un element a la fin :
 obj[1] = 4;     // 3 ops (on ne peut pas creer de propriete numerique dans un objet)
 obj.deux = 4;
-debug(obj);
 push(array,4);  // 2 ops
 map["un"] = 4;  // 4 ops
 map[1] = 4;     // 4 ops (les maps acceptent un index string ou numerique)
@@ -37,7 +36,7 @@ insert(array, 5, 0); // O(n) ops
                      // impossible avec un interval
 
 // modification d'un element :
-obj.un = 1;     // 2 ops
+obj[1] = 1;     // 2 ops
 array[0] = 1;   // 2 ops
 map["un"] = 1;  // 4 ops
                 // impossible avec un set
@@ -46,11 +45,7 @@ map["un"] = 1;  // 4 ops
 // suppression d'un element :
                      // impossible pour les objets
 remove(array,0)      // O(n) ops
-push(array,4);  // 2 ops
-push(array,4);  // 2 ops
-push(array,4);  // 2 ops
-var c = count(array) - 1;
-remove(array,c)      // 1 op , suppression en fin de tableau
+pop(array)           // 5 op , suppression en fin de tableau
 mapRemove(map, "un") // 2 ops
 setRemove(set, 4)    // 2 ops
                      // impossible avec un interval

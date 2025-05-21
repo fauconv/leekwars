@@ -20,7 +20,7 @@ class Action extends Objects {
 /******************************************************************************
  * SetWeaponAction
  ******************************************************************************/
-class SetWeaponAction extends Objects {
+class SetWeaponAction extends Action {
   
   integer toolId;
   integer ownerId;
@@ -114,15 +114,17 @@ class ToolAction extends Action {
   integer targetCell;
   integer ownerId;
   boolean notUseInSim;
+  boolean repeat
 
   /**
    * constructor
    **/
-  constructor(integer ownerId, integer toolId, integer targetCell, boolean notUseInSim = false) {
+  constructor(integer ownerId, integer toolId, integer targetCell, boolean notUseInSim = false, boolean repeat = true) {
     this.toolId = toolId;
     this.targetCell = targetCell;
     this.ownerId = ownerId;
     this.notUseInSim = notUseInSim;
+	this.repeat = repeat;
   }
 
   /**
@@ -139,7 +141,7 @@ class ToolAction extends Action {
    **/
   void execute() {
     Board.currentRound.meRound.toolsRound[toolId]!.useOnCell(targetCell);
-    if( Board.me.tools[toolId]!.cooldown == 0) {
+    if(repeat && Board.me.tools[toolId]!.cooldown == 0) {
       integer cost = Board.me.tools[toolId]!.cost;
       while(getTP() > cost) Board.currentRound.meRound.toolsRound[toolId]!.useOnCell(targetCell);
     }

@@ -1,5 +1,14 @@
-Array<integer> enemy = getEnemies();
-integer moi = getCell()!;
-integer lui = getCell(enemy[0])!;
-debug(getWeaponTargets(WEAPON_PISTOL, lui));
+include("../utils/gamedebug");
+
+integer opts, opts2;
+
+Map c1 = ["1":1];
+
+opts = getOperations();
+mapFirst(c1)
+opts2 = getOperations();
+debug((opts2 - opts - 2) + " clear");
+GameDebug.add(true,c1);
+
+GameDebug.display();
 pause();

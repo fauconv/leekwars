@@ -23,68 +23,6 @@ class Effect extends Objects {
   Function<Effect, LeekRound, LeekRound => EffectResult> simulateUseFunction; // function (Effect obj, LeekRound shooter, LeekRound target, real AOE, real midCriticalLuck) => EffectResult
   
   Tool owner;
-  
-  static Map<integer,Function<Effect, LeekRound, LeekRound => EffectResult>> SIMULATE_USE_FUNCTION = [
-    EFFECT_ABSOLUTE_SHIELD:effect_absolute_shield,
-    EFFECT_ABSOLUTE_VULNERABILITY:effect_absolute_vulnerability,
-    EFFECT_ADD_STATE:effect_default, // TODO: effect_add_state
-    EFFECT_AFTEREFFECT:effect_aftereffect,
-    EFFECT_ALLY_KILLED_TO_AGILITY:effect_default, // TODO: effect_ally_killed_to_agility
-    EFFECT_ANTIDOTE: effect_default, // TODO: effect_antidote
-    EFFECT_ATTRACT:effect_default, // TODO: effect_attract
-    EFFECT_BOOST_MAX_LIFE:effect_boost_max_life,
-    EFFECT_BUFF_AGILITY:effect_buff_agility,
-    EFFECT_BUFF_MP:effect_buff_mp,
-    EFFECT_BUFF_RESISTANCE:effect_buff_resistance,
-    EFFECT_BUFF_STRENGTH:effect_buff_strength,
-    EFFECT_BUFF_TP:effect_buff_tp,
-    EFFECT_BUFF_WISDOM:effect_buff_wisdom,
-    EFFECT_CRITICAL_TO_HEAL:effect_default, // TODO: effect_critical_to_heal
-    EFFECT_DAMAGE:effect_damage,
-    EFFECT_DAMAGE_RETURN:effect_damage_return,
-    EFFECT_DAMAGE_TO_ABSOLUTE_SHIELD:effect_default, // TODO: effect_damage_to_absolute_shield
-    EFFECT_DAMAGE_TO_STRENGTH:effect_default, // TODO: effect_damage_to_strength
-    EFFECT_DEBUFF: effect_default, // TODO: effect_debuff
-    EFFECT_HEAL:effect_heal,
-    EFFECT_INVERT:effect_default, // TODO: effect_invert
-    EFFECT_KILL:effect_kill,
-    EFFECT_KILL_TO_TP:effect_default, // TODO: effect_kill_to_tp
-    EFFECT_LIFE_DAMAGE:effect_life_damage,
-    EFFECT_MOVED_TO_MP:effect_default, // TODO: effect_moved_to_mp
-    EFFECT_NOVA_DAMAGE:effect_nova_damage,
-    EFFECT_NOVA_DAMAGE_TO_MAGIC:effect_default, // TODO: effect_nova_damage_to_magic
-    EFFECT_NOVA_VITALITY:effect_nova_vitality,
-    EFFECT_POISON:effect_poison,
-    EFFECT_POISON_TO_SCIENCE:effect_default, // TODO: effect_poison_to_science
-    EFFECT_PROPAGATION:effect_default, // TODO: effect_propagation
-    EFFECT_PUSH:effect_default, // TODO: effect_push
-    EFFECT_RAW_ABSOLUTE_SHIELD:effect_raw_absolute_shield,
-    EFFECT_RAW_BUFF_AGILITY:effect_raw_buff_agility,
-    EFFECT_RAW_BUFF_MAGIC:effect_raw_buff_magic,
-    EFFECT_RAW_BUFF_MP:effect_raw_buff_mp,
-    EFFECT_RAW_BUFF_POWER:effect_raw_buff_power,
-    EFFECT_RAW_BUFF_RESISTANCE:effect_raw_buff_resistance,
-    EFFECT_RAW_BUFF_SCIENCE:effect_raw_buff_science,
-    EFFECT_RAW_BUFF_STRENGTH:effect_raw_buff_strength,
-    EFFECT_RAW_BUFF_TP:effect_raw_buff_tp,
-    EFFECT_RAW_BUFF_WISDOM:effect_raw_buff_wisdom,
-    EFFECT_RAW_HEAL:effect_raw_heal,
-    EFFECT_RAW_RELATIVE_SHIELD:effect_raw_relative_shield,
-    EFFECT_RELATIVE_SHIELD:effect_relative_shield,
-    EFFECT_REMOVE_SHACKLES:effect_default, // TODO: effect_remove_shackles
-    EFFECT_REPEL:effect_default, // TODO: effect_repel
-    EFFECT_RESURRECT:effect_default, // TODO: effect_resurrect
-    EFFECT_SHACKLE_AGILITY:effect_shackle_agility,
-    EFFECT_SHACKLE_MAGIC:effect_shackle_magic,
-    EFFECT_SHACKLE_MP:effect_shackle_mp,
-    EFFECT_SHACKLE_STRENGTH:effect_shackle_strength,
-    EFFECT_SHACKLE_TP:effect_shackle_tp,
-    EFFECT_SHACKLE_WISDOM:effect_shackle_wisdom,
-    EFFECT_STEAL_ABSOLUTE_SHIELD:effect_default, // TODO: effect_steal_absolute_shield
-    EFFECT_SUMMON:effect_default, // TODO: effect_summon
-    EFFECT_TELEPORT:effect_default, // TODO: effect_teleport
-    EFFECT_VULNERABILITY:effect_vulnerability
-  ]; // function (Effect obj, LeekRound shooter, LeekRound target, real AOE, real midCriticalLuck) => {integer minEffect, integer maxEffect, integer midEffect}
 
   //
   // temporary variables
@@ -102,12 +40,14 @@ class Effect extends Objects {
   constructor(Array<integer|real> effectArray, Tool owner) {
     this.owner = owner;
     type = effectArray[0] as integer;
-    if(EFFECT_CATEGORY[type] == null) {
+    if(EFFECT_TYPE_TRANSLATOR_CATEGORY[type] == null) {
       debugC("Effect=>constructor=>type("+type+")inconnu sur tool("+owner.id+")",COLOR_RED);
       category = "categoryOther";
       setRegister("error_Effect_category_"+type, "Effect=>constructor=>type("+type+")inconnu sur tool("+owner.id+")");
+      simulateUseFunction = EFFECT_TYPE_TRANSLATOR_CATEGORY[type]![2] as Function<Effect, LeekRound, LeekRound => EffectResult>;
     } else {
-      category = EFFECT_CATEGORY[type]!;
+      category = EFFECT_TYPE_TRANSLATOR_CATEGORY[type]![1] as string;
+      simulateUseFunction = effect_default;
     }
     minEffect = round(effectArray[1] as real);
     maxEffect = round(effectArray[2] as real);
@@ -125,7 +65,6 @@ class Effect extends Objects {
     modNoRep  = (targets & EFFECT_MODIFIER_NOT_REPLACEABLE) > 0;
     modOnCast = (targets & EFFECT_MODIFIER_ON_CASTER) > 0;
     modStack  = (targets & EFFECT_MODIFIER_STACKABLE) > 0;
-    simulateUseFunction = Effect.SIMULATE_USE_FUNCTION[type]!;
   }
   
   /**
@@ -140,8 +79,11 @@ class Effect extends Objects {
                             real criticalFactor) {
     
     Leek targetLeek = target.leek;
-    if((targetLeek.isAllie && !targetAllie) ||
-       (targetLeek.isEnemy && !targetEnemy) ||
+	Leek shooterLeek = shooter.leek;
+    if((targetLeek.isAllie && shooterLeek.isAllie && !targetAllie) ||
+	   (targetLeek.isEnemy && shooterLeek.isEnemy && !targetAllie) ||
+       (targetLeek.isEnemy && shooterLeek.isAllie && !targetEnemy) ||
+	   (targetLeek.isAllie && shooterLeek.isEnemy && !targetEnemy) ||
        (targetLeek.isSummon && !targetSummon) ||
        (!targetLeek.isSummon && !targetNonSummon) ||
        (modNoRep && mapContainsKey(target.effects, type)) ||
@@ -149,7 +91,7 @@ class Effect extends Objects {
     
     (modMulti) and (AOE *= nbTargets);
     
-    GameDebug.add(EFFECT_DEBUG, EFFECT_TYPE_TRANSLATOR[type]+" on "+target.leek.name+"(AOE:"+AOE+")","simulate use effect");
+    GameDebug.add(EFFECT_DEBUG, EFFECT_TYPE_TRANSLATOR_CATEGORY[type]![0]+" on "+target.leek.name+"(AOE:"+AOE+")","simulate use effect");
 
     tmpMidCriticalLuck = midCriticalLuck;
     tmpMinEffect = minEffect*AOE;
@@ -286,10 +228,10 @@ class Effect extends Objects {
    * @return string
    **/
   string string(string space = "") {
-    return "Effect("+EFFECT_TYPE_TRANSLATOR[type]+") {cat: "+category+" min: "+minEffect+"\n  max: "+maxEffect+" mid:"+midEffect + "}\n";
+    return "Effect("+EFFECT_TYPE_TRANSLATOR_CATEGORY[type]![0] as string+") {cat: "+category+" min: "+minEffect+"\n  max: "+maxEffect+" mid:"+midEffect + "}\n";
   }
   string shortString(string space = "") {
-    return "Effect("+EFFECT_TYPE_TRANSLATOR[type] + ")";
+    return "Effect("+EFFECT_TYPE_TRANSLATOR_CATEGORY[type]![0] as string + ")";
   }
   
 } // class

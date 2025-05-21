@@ -9,8 +9,6 @@ class MoveCell extends Objects {
 	
   Cell cell;
   Map<integer,Simulation> moveSim = [:]; // liste des simulation qui aboutisse a cette moveCell
-	                                     // Les simulations son classe de celle qui demande le moins de TP a celle qui en 
-                                         // demande le plus
                                          // l index correspond au numero de la sim
   integer maxRemainingMP; // = max(moveSim[x].roundObj.leeksRound[ownerId].min/maxMP)
   Map<integer,Simulation> attackSim = [:]; // pour chaque sim je determine la meilleure relativeCell
@@ -28,7 +26,7 @@ class MoveCell extends Objects {
 	                                               // l index correspond au numero de la sim
   integer defenceScore = 0;  // degat infliger lorsque le poireau enemy m attack sur cette moveCell
   string minMaxMP;
-    
+
   /**
    * constructor
    **/
@@ -49,7 +47,7 @@ class MoveCell extends Objects {
    **/
   void computeEscape(Map<integer, MoveCell> moveCellList) {
 	// on prend le leekround de la premiere simulation vu que toute les sim on la meme position 
-    Map<integer,integer> cellList = moveSim[0]!.owner.parcour(cell, maxRemainingMP);
+    Map<integer,integer> cellList = (mapFirst(moveSim) as Simulation).owner.parcour(cell, maxRemainingMP);
 	for(integer index : Simulation sim in moveSim) {
 	  for(integer cellId : integer remainingMP in cellList) {
 	    integer usedMP = maxRemainingMP-remainingMP;
@@ -132,13 +130,11 @@ class MoveCell extends Objects {
       integer minTP = sim.roundObj.meRound.minTP;
       integer ret = MoveCell.BAD_SCORE;
       for(RelativeCell rel in targetCells) {
-		if(!mapContainsKey(rel.simulations, index)) {
-          rel.simulations[index] = new Simulation(sim.owner, sim.id);
-          rel.data[index] = BasicStrategy.computeAttack(rel.simulations[index]!, rel);
-		}
-        if(rel.data[index] > ret) {
-		  attackSim[index] = rel.simulations[index];
-          ret = rel.data[index] as integer;
+		if(!mapContainsKey(rel.data, index)) rel.data[index] = BasicStrategy.computeAttack(sim, rel);
+		Object obj = rel.data[index] as Object;
+        if(obj.score > ret) { // on prend la premiere sim qui match
+		  attackSim[index] = obj.simulation as Simulation;
+          ret = obj.score as integer;
         }
       }
 	  attackScores[index] = ret;
@@ -150,6 +146,107 @@ class MoveCell extends Objects {
    **/
   integer computeDefence(integer attackLeek) {
     return (defenceScore = BasicStrategy.computeDefence(enemyTools, attackLeek));
+  }
+  
+  /**
+   * selectBestEscape
+   * donne dans obj la liste des moveCell avec le defenceScore le plus faible 
+   * puis la distance a cellId la plus grande ou la plus faible selon farestEscape
+   * @param obj {dist: integer, escapes: Array<MoveCell>, defenceScore: integer}
+   **/
+  static void selectBestEscape(Object obj, integer cellId, boolean farestEscape, 
+							     Map<integer,MoveCell>|Array<MoveCell>list) {
+    for(MoveCell mc in list) {
+	  integer dist = mc.cell.interCellInfo[cellId].range;
+	  if(mc.defenceScore<obj.defenceScore || mc.defenceScore == obj.defenceScore &&
+		 (dist>obj.dist && farestEscape || !farestEscape && dist<obj.dist)) {
+	    obj.dist = dist;
+		obj.escapes = [mc];
+        obj.defenceScore = mc.defenceScore;
+	  } else if(mc.defenceScore == obj.defenceScore && dist == obj.dist) push(obj.escapes as Array, mc);
+	}
+  }
+	
+  /**
+   * selectBestEscapeOfOneSim
+   * @return {dist: integer, escapes: Array<MoveCell>, defenceScore: integer}
+   **/
+  Object selectBestEscapeOfOneSim(integer cellId, boolean farestEscape, integer simIndex, boolean onlyGood = false) {
+	Object obj = {
+	  dist: cell.interCellInfo[cellId].range,
+	  escapes: [this],
+      defenceScore: defenceScore
+	}
+	MoveCell.selectBestEscape(obj, cellId, farestEscape, goodEscapes[simIndex]!);
+	if(!onlyGood) MoveCell.selectBestEscape(obj, cellId, farestEscape, escapes[simIndex]!);
+	return obj;
+  }
+	
+  /**
+   * selectBestEscapeBySim
+   * @return Map<simId integer, {dist: integer, escapes: Array<MoveCell>, defenceScore: integer}>
+   **/
+   Map<integer,Object> selectBestEscapeBySim(integer cellId, boolean farestEscape, boolean onlyGood = false) {
+	 Map<integer, Object> ret;
+     for(integer simIndex : Simulation sim in moveSim) {
+	   ret[simIndex] = selectBestEscapeOfOneSim(cellId, farestEscape, simIndex, onlyGood);
+	 }
+	 return ret;
+   }
+
+  /**
+   * selectBestSimAttackEscape
+   * @return {dist: integer, escapes: Array<MoveCell>, defenceScore: integer, simIndex: integer, score: integer}
+   **/
+  Object selectBestSimAttackEscape(integer cellId, boolean farestEscape, boolean onlyGood = false) {
+    Object ret = {score:MoveCell.BAD_SCORE}
+	for(integer simIndex : integer attackScore in attackScores) {
+	  Object escape = selectBestEscapeOfOneSim(cellId, farestEscape, simIndex, onlyGood);
+	  integer score = attackScore - escape.defenceScore as integer;
+      if(score > ret.score) {
+	    ret = escape;
+		ret.score = score;
+		ret.simIndex = simIndex;
+	  }
+	}
+	return ret;
+  }
+
+  /**
+   * selectBestAttackEscape
+   * @return {score: integer, dist: integer, result:Array<{moveCell: MoveCell, dist: integer, escapes: Array<MoveCell>, defenceScore: integer, simIndex: integer, score: integer}>}
+   **/
+  static Object selectBestAttackEscape(Map<integer,MoveCell>|Array<MoveCell>list, integer cellId, boolean farestEscape,
+									   boolean onlyGood = false) {
+    integer dist;
+	if(farestEscape) dist = 0;
+	else dist = MAX_DISTANCE+1;
+	Object ret = {score:MoveCell.BAD_SCORE,dist:dist}
+	for(MoveCell mc in list) {
+	  Object result = mc.selectBestSimAttackEscape(cellId, farestEscape, onlyGood);
+	  if(result.score > ret.score || result.score == ret.score &&
+		 (result.dist > ret.dist && farestEscape || result.dist < ret.dist && !farestEscape)) {
+	    ret.score = result.score;
+		ret.dist = result.dist;
+		result.moveCell = mc;
+		ret.result = [result];
+	  } else if(result.score == ret.score && result.dist == ret.dist) {
+		result.moveCell = mc;
+		push(ret.result as Array,result);
+	  }
+	}
+	return ret;
+  }
+
+  /**
+   * execute
+   **/
+  void execute(integer simIndex, integer escapeId = -1) {
+    moveSim[simIndex]!.execute();
+	// TODO: si au final on a plus de MP que prevu il faut recommencer la phase de selection de la MC
+	Board.currentRound.meRound.moveToCell(id);
+    if(mapContainsKey(attackSim, simIndex)) attackSim[simIndex]!.execute();
+	if(escapeId != -1 && escapeId != id) Board.currentRound.meRound.moveToCell(id);
   }
 
 }

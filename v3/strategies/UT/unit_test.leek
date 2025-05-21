@@ -125,14 +125,14 @@ class UnitTest extends Strategy {
    **/
   boolean leek() {
     //GameDebug.add(true, Board.me,"me",2);
-    if(Board.me.categoryDamage[1].shortString() == "Chip(chip ice)" && Board.me.categoryProtection[0].shortString() == "Chip(chip helmet)")
+    if(Board.me.categories["categoryDamage"]![1].shortString() == "Chip(chip ice)" && Board.me.categories["categoryProtection"]![0].shortString() == "Chip(chip helmet)")
       debugC("Leek OK", COLOR_GREEN);
     else 
       debugC("Leek me KO", COLOR_RED);
     return true;
   }
   
-  /**
+  /**s
    * leekRound
    **/
   boolean leekRound() {

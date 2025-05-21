@@ -7,7 +7,7 @@ class BasicStrategyTools extends Objects {
    * MPConditionsAddSim
    * macro pour MPConditions 
    **/
-  static Simulation MPConditionsAddSim(Array<Simulation> ret, Simulation sim, integer currentCellId, integer toolId) {
+  static Simulation addSim(Array<Simulation> ret, Simulation sim, integer currentCellId, integer toolId) {
     sim = new Simulation(sim, sim.id+1);
     sim.addToolAction(toolId, currentCellId);
     push(ret, sim);
@@ -172,6 +172,7 @@ class BasicStrategyTools extends Objects {
                            integer targetCell, integer minTP, EffectResult result, Simulation sim, 
                            LeekRound shooter, boolean keepWeapon = true) {
     if(mapContainsKey(toolsList, weaponId)) {
+      debug(TOOL_NAME_TRANSLATOR[weaponId]+"-"+shooter.leek.name);
       if(!toolsInfo[weaponId]!.isChip && shooter.weaponId != weaponId) { // si il faut faire un setWeapon
         if(keepWeapon) return minTP;
         if(minTP >= (toolsInfo[weaponId]!.cost + SET_WEAPON_COST)) {
@@ -180,7 +181,7 @@ class BasicStrategyTools extends Objects {
       }
       if(minTP >= toolsInfo[weaponId]!.cost) {
         do {
-          EffectResult ret = sim.addToolAction(weaponId, targetCell, toolsInfo[weaponId]!.cooldown == 0);
+          EffectResult ret = sim.addToolAction(weaponId, targetCell);
           result.add(ret);
           minTP = shooter.minTP;
         } while(minTP >= toolsInfo[weaponId]!.cost && toolsInfo[weaponId]!.cooldown == 0);
@@ -223,12 +224,12 @@ class BasicStrategyTools extends Objects {
 	for(MoveCell mc in myAnnihilations) {
 	  for(integer index : integer score in mc.attackScores) {
 	    if(score >= MoveCell.INSTA_KILL) {
-		  mc.moveSim[index]!.execute();
-		  mc.attackSim[index]!.execute();
+		  mc.execute(index);
 		  return true;
 		}
 	  }
 	}
+	return false;
   }
-	
+
 }

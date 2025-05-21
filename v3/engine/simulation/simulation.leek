@@ -17,7 +17,7 @@ class Simulation extends Objects {
     roundObj = new Round(leekRound.roundObj);
     if(leekRound instanceof LeekRound) {
       actions = [];
-      owner = leekRound as LeekRound;
+      owner = roundObj.leeksRound[(leekRound as LeekRound).id]!;
 	  this.id = id;
 	  this.extended = (id > 0);
     } else {
@@ -31,8 +31,8 @@ class Simulation extends Objects {
   /**
    * ajoute une action de type ToolAction et l execute dans le round mais ne fait pas le update du round
    **/
-  EffectResult addToolAction(integer toolId, integer targetCell, boolean notUseInSim = false) {
-    ToolAction t = new ToolAction(owner.id,toolId, targetCell, notUseInSim)
+  EffectResult addToolAction(integer toolId, integer targetCell, boolean notUseInSim = false, boolean repeat = true) {
+    ToolAction t = new ToolAction(owner.id,toolId, targetCell, notUseInSim, repeat)
     push(actions, t);
     return t.simulate(roundObj);
   }
