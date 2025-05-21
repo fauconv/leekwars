@@ -124,7 +124,7 @@ class ToolAction extends Action {
     this.targetCell = targetCell;
     this.ownerId = ownerId;
     this.notUseInSim = notUseInSim;
-	this.repeat = repeat;
+	  this.repeat = repeat;
   }
 
   /**

@@ -16,7 +16,6 @@ class EffectResult
 class InterCellInfo
 class RelativeCell
 class Strategy
-class BasicStrategy
 package v3
 class GameDebug
 class LeekRound
@@ -26,25 +25,24 @@ class Simulation
 class Action
 class Talk
 
-Board -> Round
-Board -up-> const
-Round --> CellRound
-Round --> LeekRound
-Cell --> InterCellInfo
-Tool -> Effect
-Effect .> effectfunctions
-v3 --> GameDebug
-v3 --> Board
-v3 --> BasicStrategy
+v3 -> GameDebug
 v3 --> Strategy
-Strategy --> Talk
-CellRound --> Cell
-LeekRound --> Leek
-LeekRound -> ToolRound
-ToolRound --> Tool
+Strategy --> Simulation
+Strategy -> Talk
 Simulation --> Action
-BasicStrategy --> Simulation
-Action --> EffectResult
-effectfunctions .> EffectResult
+Simulation --> Board
+Simulation --> effectfunctions
+Simulation --> EffectResult
+Simulation --> Round 
+Simulation --> const
+Simulation --> CellRound
+Simulation --> LeekRound
+Simulation --> Cell
+Simulation --> InterCellInfo
+Simulation --> ToolRound
+Simulation --> Tool
+Simulation --> Leek
+Simulation --> Effect
+Simulation --> RelativeCell
 
 @enduml

@@ -5,29 +5,13 @@ global boolean EFFECT_DEBUG = false;
 global boolean LEEKROUND_DEBUG = true;
 global boolean BASIC_STRATEGY_DEBUG = true;
 global boolean UNIT_TEST_DEBUG = true;
-include("../utils/gamedebug");
-//include("../utils/gamenodebug");
+include("utils/gamedebug");
+//include("utils/gamenodebug");
 
 /**************************************************************************
  * init
  **************************************************************************/
-include("engine/const");
-include("engine/effectresult");
-include("engine/talk");
 include("engine/strategy");
-include("engine/relativecell");
-include("engine/cell");
-include("engine/leek");
-include("engine/tool");
-include("engine/intercellinfo");
-include("engine/board");
-include("engine/effectfunctions");
-include("engine/round");
-include("engine/cellround");
-include("engine/leekround");
-include("engine/toolround");
-include("engine/simulation/action");
-include("engine/simulation/simulation");
 if(!gBoardInit) {
   if(!(gBoardInit = Board.init())) {
     debugC("Initialisation en 2 temps",COLOR_BLUE);
