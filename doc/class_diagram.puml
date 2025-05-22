@@ -1,0 +1,108 @@
+@startuml
+
+abstract class Action {
+  #integer ownerId;
+  EffectResult simulate(Round)
+  void execute()
+}
+class SetWeaponAction {
+  -integer toolId
+  constructor(integer ownerId, integer toolId)
+}
+class MoveAction {
+  -integer cellId;
+  -integer usedMP
+  constructor(integer cellId, integer ownerId, integer usedMP)
+}
+class ToolAction {
+  -integer toolId
+  -integer targetCell
+  -boolean notUseInSim
+  -boolean repeat
+  constructor(integer ownerId, integer toolId, integer targetCell, boolean notUseInSim = false, boolean repeat = true)
+}
+class "static Board" as Board {
+  {static} +integer myId
+  {static} +integer maxAOERange
+  {static} +Cell centerCell
+  {static} +Me me
+  {static} +Round currentRound
+  {static} +Round previousRound
+  {static} +Cell centerCell
+}
+abstract class Cell {
+  +integer x
+  +integer y
+  +boolean isDeadEnd
+  +boolean isWall
+  +Cell top
+  +Cell bottom
+  +Cell left
+  +Cell right
+  +Cell leftTop
+  +Cell rightTop
+  +Cell leftBottom
+  +Cell rightBottom
+  Array<Integer> getTrajectory(Cell endCell)
+  Map<integer,RelativeCell> getRelativeCells(Array<Tool> tools)???
+}
+class FreeCell {
+  constructor(integer idCell, InterCellInfo interCellNull)
+}
+class Wall {
+  constructor(integer idCell, InterCellInfo interCellNull)
+}
+class InterCellInfo {
+  +integer range
+  +boolean isInline
+  +boolean isDiag
+  constructor()
+  constructor(Cell cellFrom, Cell cellTo)
+}
+class CellRound {
+  constructor(Cell cell, Round roundObj)
+}
+class Effect {
+  +string category
+  +Enumeration type
+  +integer minEffect
+  +integer maxEffect
+  +integer midEffect
+  +integer turns
+  +boolean targetAllie
+  +boolean targetCaster
+  +boolean targetSummon
+  +boolean targetNonSummon
+  +boolean targetEnemy
+  +boolean modIred
+  +boolean modMulti
+  +boolean modNoRep
+  +boolean modOnCast
+  +boolean modStack
+  +Function<Effect, LeekRound, LeekRound => EffectResult> simulateUseFunction???
+  +real tmpMidCriticalLuck???
+  +real tmpMinEffect???
+  +real tmpMaxEffect???
+  +real tmpMidEffect???
+  constructor(Array<integer|real> effectArray, Tool owner)
+}
+class EffectResult
+class LeekRound
+class RelativeCell
+class Tool
+class Me
+class Enemy
+class Allie
+
+Action <|-- SetWeaponAction
+Action <|-- MoveAction
+Action <|-- ToolAction
+Cell *-- InterCellInfo : interCellInfo
+Cell <|-- FreeCell
+Cell <|-- Wall
+Board *-- Cell : cells
+Board o-- Enemy : enemies
+Board o-- Allie : allies
+Board *-- Leek : leeks
+
+@enduml

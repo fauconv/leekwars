@@ -6,11 +6,11 @@ allowmixing
 
 class Round
 class Board
-package const
 class Cell 
 class Leek
 class Effect
 class Tool
+package const
 package effectfunctions
 class EffectResult
 class InterCellInfo
@@ -21,28 +21,26 @@ class GameDebug
 class LeekRound
 class CellRound
 class ToolRound
-class Simulation
 class Action
 class Talk
 
 v3 -> GameDebug
 v3 --> Strategy
-Strategy --> Simulation
+Strategy --> Board
 Strategy -> Talk
-Simulation --> Action
-Simulation --> Board
-Simulation --> effectfunctions
-Simulation --> EffectResult
-Simulation --> Round 
-Simulation --> const
-Simulation --> CellRound
-Simulation --> LeekRound
-Simulation --> Cell
-Simulation --> InterCellInfo
-Simulation --> ToolRound
-Simulation --> Tool
-Simulation --> Leek
-Simulation --> Effect
-Simulation --> RelativeCell
+Board --> Action
+Board --> effectfunctions
+Board --> EffectResult
+Board --> Round 
+Board --> const
+Round --> CellRound
+Round --> LeekRound
+Board --> Cell
+Cell --> InterCellInfo
+Round --> ToolRound
+Board --> Tool
+Board --> Leek
+Board --> Effect
+Board --> RelativeCell
 
 @enduml

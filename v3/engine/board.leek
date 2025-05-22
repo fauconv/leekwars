@@ -1,21 +1,31 @@
+include("const");
+include("cell");
+include("effect");
+include("leek");
+include("relativecell");
+include("round/round");
+include("tool");
+include("effectresult");
+include("effectfunctions");
+include("action");
+
 /******************************************************************************
  * Board
  * TODO : cas des summon
  ******************************************************************************/
 class Board extends Objects {
   
-  static integer myId;
-  static integer maxAOERange;
-  static Me me;       
-  static Round currentRound;
-  static Round previousRound;
-  static Cell centerCell;
+  public static integer myId;
+  public static integer maxAOERange;
+  public static Me me;       
+  public static Round currentRound;
+  public static Round previousRound;
+  public static Cell centerCell;
   
-  static Array<Enemy> enemies = []; 
-  static Array<Allie> allies  = [];
-  static Map<integer, Leek> leeks;    
-  static Array<Cell> cells = [];    // Array(Cell) par consequent Map  
-  static Array<Cell> deadEnds = []; 
+  public static Array<Enemy> enemies = []; 
+  public static Array<Allie> allies  = [];
+  public static Map<integer, Leek> leeks;    
+  public static Array<Cell> cells = [];    // Array(Cell) par consequent Map  
   
   /**
    * constructor
@@ -58,7 +68,7 @@ class Board extends Objects {
       //
       // cells creations
       //
-      InterCellInfo interCellNull = new InterCellInfo(maxAOERange);
+      InterCellInfo interCellNull = new InterCellInfo();
       for(integer i = 0;i < NB_CELLS; i++) {
         push(cells, (getCellContent(i) == CELL_OBSTACLE)?new Wall(i, interCellNull):new FreeCell(i, interCellNull));
       }
@@ -77,6 +87,7 @@ class Board extends Objects {
     
       //
       // deadend
+      // TODO: chercher un algorythme moins bourrin
       //
       boolean deadEndLoop = true;
       while(deadEndLoop) {
@@ -90,7 +101,6 @@ class Board extends Objects {
           if(deadCount >= 3) {
             objCell.isDeadEnd = true;
             deadEndLoop = true;
-            push(deadEnds, objCell);
           }
         }
       }
@@ -105,8 +115,7 @@ class Board extends Objects {
       for(integer y = 0; y <= x; y++) { // je dois gerer la range 0
         Cell cellTo = cells[y];
         if(cellTo.isWall) continue;
-        integer range = getCellDistance(x, y);
-        cellFrom.interCellInfo[cellTo.id] = cellTo.interCellInfo[cellFrom.id] = new InterCellInfo(cellFrom, cellTo, range);
+        cellFrom.interCellInfo[cellTo.id] = cellTo.interCellInfo[cellFrom.id] = new InterCellInfo(cellFrom, cellTo);
       }
     }
   

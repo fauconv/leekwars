@@ -4,33 +4,33 @@
  ******************************************************************************/
 class Effect extends Objects {
   
-  string category;
-  integer type;     // Enumeration
-  integer minEffect;
-  integer maxEffect;
-  integer midEffect;
-  integer turns;
-  boolean targetAllie;
-  boolean targetCaster;
-  boolean targetSummon;
-  boolean targetNonSummon;
-  boolean targetEnemy;
-  boolean modIred;   // non utilise
-  boolean modMulti;
-  boolean modNoRep;
-  boolean modOnCast;
-  boolean modStack;
-  Function<Effect, LeekRound, LeekRound => EffectResult> simulateUseFunction; // function (Effect obj, LeekRound shooter, LeekRound target, real AOE, real midCriticalLuck) => EffectResult
+  public string category;
+  public integer type;     // Enumeration
+  public integer minEffect;
+  public integer maxEffect;
+  public integer midEffect;
+  public integer turns;
+  public boolean targetAllie;
+  public boolean targetCaster;
+  public boolean targetSummon;
+  public boolean targetNonSummon;
+  public boolean targetEnemy;
+  public boolean modIred;   // non utilise
+  public boolean modMulti;
+  public boolean modNoRep;
+  public boolean modOnCast;
+  public boolean modStack;
+  public Function<Effect, LeekRound, LeekRound => EffectResult> simulateUseFunction; // function (Effect obj, LeekRound shooter, LeekRound target, real AOE, real midCriticalLuck) => EffectResult
   
-  Tool owner;
+  public Tool owner;
 
   //
   // temporary variables
   //
-  real tmpMidCriticalLuck;
-  real tmpMinEffect;
-  real tmpMaxEffect;
-  real tmpMidEffect;
+  public real tmpMidCriticalLuck;
+  public real tmpMinEffect;
+  public real tmpMaxEffect;
+  public real tmpMidEffect;
   
   
   /**

@@ -74,7 +74,7 @@ class MoveCell extends Objects {
       boolean isDiag = interCellInfo.isDiag;
       boolean isInLine = interCellInfo.isInline;        
       Map<integer,Tool> toolsList = [:];
-	  string hash = "";
+      string hash = "";
       for(Tool tool in enemyRelativeCell.toolsList) {
         if(tool.canUseTool(range, isInsight, isInLine, isDiag)) {
 		  toolsList[tool.id] = tool;

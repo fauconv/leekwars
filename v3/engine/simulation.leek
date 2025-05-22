@@ -1,19 +1,4 @@
-include("const");
-include("board");
-include("cell");
-include("cellround");
-include("effect");
-include("intercellinfo");
-include("leek");
-include("leekround");
-include("relativecell");
-include("round");
-include("tool");
-include("toolround");
-include("effectresult");
-include("effectfunctions");
-include("action");
-
+//TODO: deplacer les actions dans le round et supprimer simulation
 /******************************************************************************
  * Simulation
  * stock l historique des actions qui ont ete faite dans le round associer

@@ -3,10 +3,10 @@
  ******************************************************************************/
 class CellRound extends Objects {
   
-  Cell cell;
-  LeekRound|null leekOnCell = null;
+  public Cell cell;
+  public LeekRound|null leekOnCell = null;
   
-  Round roundObj;
+  public Round roundObj;
   
   /**
    * constructor

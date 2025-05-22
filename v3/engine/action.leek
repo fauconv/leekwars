@@ -3,10 +3,12 @@
  ******************************************************************************/
 class Action extends Objects {
   
+  protected integer ownerId;
+
   /**
    * simulateUse
    **/
-  EffectResult simulate(Round roundObj) {
+  EffectResult simulate() {
     return new EffectResult();
   }
     
@@ -15,6 +17,7 @@ class Action extends Objects {
    **/
   void execute() {
   }
+
 }
 
 /******************************************************************************
@@ -22,8 +25,7 @@ class Action extends Objects {
  ******************************************************************************/
 class SetWeaponAction extends Action {
   
-  integer toolId;
-  integer ownerId;
+  private integer toolId;
 
   /**
    * constructor
@@ -65,9 +67,8 @@ class SetWeaponAction extends Action {
  ******************************************************************************/
 class MoveAction extends Action {
 
-  integer cellId;
-  integer ownerId;
-  integer usedMP;
+  private integer cellId;
+  private integer usedMP;
 
   /**
    * constructor
@@ -110,29 +111,23 @@ class MoveAction extends Action {
  ******************************************************************************/
 class ToolAction extends Action {
 
-  integer toolId;
-  integer targetCell;
-  integer ownerId;
-  boolean notUseInSim;
-  boolean repeat
+  private integer toolId;
+  private integer targetCell;
 
   /**
    * constructor
    **/
-  constructor(integer ownerId, integer toolId, integer targetCell, boolean notUseInSim = false, boolean repeat = true) {
+  constructor(integer ownerId, integer toolId, integer targetCell) {
     this.toolId = toolId;
     this.targetCell = targetCell;
     this.ownerId = ownerId;
-    this.notUseInSim = notUseInSim;
-	  this.repeat = repeat;
   }
 
   /**
    * simulate
    **/
   EffectResult simulate(Round roundObj) {
-    if(!notUseInSim) return roundObj.leeksRound[ownerId]!.toolsRound[toolId]!.simulateUseOnCell(targetCell);
-    return new EffectResult();
+    return roundObj.leeksRound[ownerId]!.toolsRound[toolId]!.simulateUseOnCell(targetCell);
   }
 
   /**
@@ -141,10 +136,6 @@ class ToolAction extends Action {
    **/
   void execute() {
     Board.currentRound.meRound.toolsRound[toolId]!.useOnCell(targetCell);
-    if(repeat && Board.me.tools[toolId]!.cooldown == 0) {
-      integer cost = Board.me.tools[toolId]!.cost;
-      while(getTP() > cost) Board.currentRound.meRound.toolsRound[toolId]!.useOnCell(targetCell);
-    }
   }
     
   /**

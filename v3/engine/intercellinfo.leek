@@ -7,15 +7,15 @@ class InterCellInfo extends Objects {
   boolean isDiag;
 
   /**
-   * constructor
+   * constructors
    **/
-  constructor(integer maxAOERange) {
+  constructor() {
     range = MAX_DISTANCE;
     isInline = false;
     isDiag = false;
   }
-  constructor(Cell cellFrom, Cell cellTo, integer range) {                                                                
-    this.range = range;
+  constructor(Cell cellFrom, Cell cellTo) {                                                                
+    range = getCellDistance(cellFrom.id, cellTo.id);
     if(range <= Board.maxAOERange) {
       this.isInline = (cellFrom.x == cellTo.x || cellFrom.y == cellTo.y);
       this.isDiag = (abs(cellFrom.x-cellTo.x) == abs(cellFrom.y-cellTo.y));

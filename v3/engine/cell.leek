@@ -1,27 +1,29 @@
+include("intercellinfo");
+
 /******************************************************************************
  * Cell
  ******************************************************************************/
 class Cell extends Objects {
   
-  integer x;
-  integer y;
-  boolean isDeadEnd;
-  boolean isWall;
-  Cell top;
-  Cell bottom;
-  Cell left;
-  Cell right;
-  Cell leftTop;
-  Cell rightTop;
-  Cell leftBottom;
-  Cell rightBottom;
+  public integer x;
+  public integer y;
+  public boolean isDeadEnd;
+  public boolean isWall;
+  public Cell top;
+  public Cell bottom;
+  public Cell left;
+  public Cell right;
+  public Cell leftTop;
+  public Cell rightTop;
+  public Cell leftBottom;
+  public Cell rightBottom;
   
   Array<InterCellInfo> interCellInfo = []
   
   /**
    * constructor
    **/
-  constructor(integer idCell, InterCellInfo interCellNull) {
+  protected constructor(integer idCell, InterCellInfo interCellNull) {
       
     id = idCell;
     x = getCellX(idCell) as integer;
@@ -67,18 +69,6 @@ class Cell extends Objects {
     }
     
     return ret;
-  }
-  
-  /**
-   * getTowardCellId
-   * donne le CellId de la prochaine position du leek en utilisant maxMP, 
-   * si il s approche de target en partant de this
-   **/
-  integer getTowardCellId(integer targetCellId, integer maxMP) {
-    Array<integer> path = getPath(id, targetCellId)!;
-    integer c = count(path);
-    if(c > maxMP-1) return path[maxMP-1];
-    return path[c-1];
   }
     
   /**

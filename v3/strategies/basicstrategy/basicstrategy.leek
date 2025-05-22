@@ -7,7 +7,7 @@ include("basicstrategytools");
 class BasicStrategy extends Strategy {
   
   static Me me;
-  static integer myId;s
+  static integer myId;
   static integer enemyId;
   static Round currentRound;
   static MeRound meRound;
