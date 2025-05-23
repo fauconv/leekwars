@@ -2,7 +2,7 @@
 
 abstract class Action {
   #integer ownerId;
-  EffectResult simulate(Round)
+  EffectResult simulate(Round roundObj)
   void execute()
 }
 class SetWeaponAction {
@@ -21,14 +21,16 @@ class ToolAction {
   -boolean repeat
   constructor(integer ownerId, integer toolId, integer targetCell, boolean notUseInSim = false, boolean repeat = true)
 }
-class "static Board" as Board {
+entity Board {
   {static} +integer myId
   {static} +integer maxAOERange
   {static} +Cell centerCell
   {static} +Me me
-  {static} +Round currentRound
-  {static} +Round previousRound
+  {static} +RealRound currentRound
+  {static} +RealRound previousRound
   {static} +Cell centerCell
+  {static} boolean init()
+  {static} void update()
 }
 abstract class Cell {
   +integer x
@@ -79,6 +81,7 @@ class Effect {
   +boolean modNoRep
   +boolean modOnCast
   +boolean modStack
+  +Tool owner
   +Function<Effect, LeekRound, LeekRound => EffectResult> simulateUseFunction???
   +real tmpMidCriticalLuck???
   +real tmpMinEffect???
@@ -89,7 +92,13 @@ class Effect {
 class EffectResult
 class LeekRound
 class RelativeCell
-class Tool
+abstract class Tool
+class Weapon
+class Chip
+abstract class Round
+class RealRound
+class SimulatedRound
+abstract class Leek
 class Me
 class Enemy
 class Allie
@@ -104,5 +113,12 @@ Board *-- Cell : cells
 Board o-- Enemy : enemies
 Board o-- Allie : allies
 Board *-- Leek : leeks
+Round <|-- RealRound
+Round <|-- SimulatedRound
+Leek <|-- Me
+Leek <|-- Enemy
+Leek <|-- Allie
+Tool <|-- Weapon
+Tool <|-- Chip
 
 @enduml

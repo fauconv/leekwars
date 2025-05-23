@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ==========================================================================\
+|
+|   To learn how to make your own language parser, please check the following
+|   link:
+|       https://npp-user-manual.org/docs/function-list/
+|
+\=========================================================================== -->
+<NotepadPlus>
+  <functionList>
+    <parser
+      displayName="leekscript"
+      id         ="leekscript"
+      commentExpr="(?x)                                   # to be able to add comment in this partern
+                   (?s:\x2F\x2A.*?\x2A\x2F)               # Multi Line Comment  x2F -> '/'  x2A -> '*'  
+                  |(?m-s:\x2F{2}.*$)                      # Single Line Comment //
+                  |(?s:\x22(?:[^\x22\x5C]|\x5C.)*\x22)    # String Literal - Double Quoted
+                  |(?s:\x27(?:[^\x27\x5C]|\x5C.)*\x27)    # String Literal - Single Quoted
+                  "
+    >
+      <classRange
+        mainExpr    ="(?x)                      # to be able to add comment in this partern
+                      (?m-i)                    # ^ and $ match at line-breaks, case-sensitive
+                      ^\h*                      # optional leading white-space at start-of-line
+                      class\s+
+                      \K                        # discard text matched so far
+                      \w+                       # identifier used as class name
+                      (?:                       # optional extends-from-class
+                        \s+extends
+                        \s+\w+
+                      )?
+                      \s*\{
+                     "
+        openSymbole ="\{"
+        closeSymbole="\}"
+      >
+        <className>
+          <nameExpr expr="[^\{]+" />
+        </className>
+        <function
+          mainExpr=  "(?x)                      # to be able to add comment in this partern
+                      (?m-i)                    # ^ and $ match at line-breaks, case-sensitive
+                      ^\h*                      # optional leading white-space at start-of-line
+                      (?:(?:                                # field modifiers
+                        p(?:r(?:ivate|otected)|ublic)       # - access modifiers
+                       |abstract|final|static               # - ...
+                      )\s+)*                                # require a white-space separator
+                      \K                                    # discard text matched so far
+                      (?'VALID_ID'
+                        \b(?!(?:                            # keywords not to be used as identifier
+                            do
+                        |   else
+                        |   for
+                        |   if
+                        |   while
+                        )\b)
+                        \w+                                 # identifier used as function name
+                      )
+                      \s*\(                                 # start of function parameters
+                      [^\{\)]*\s*\)\s*\{                    # start of function body
+                     "
+        >
+          <functionName>
+            <funcNameExpr expr="[^\{]+" />
+          </functionName>
+        </function>
+      </classRange>
+      <function
+        mainExpr=    "(?x)                      # to be able to add comment in this partern
+                      (?m-i)                    # ^ and $ match at line-breaks, case-sensitive
+                      ^\h*                      # optional leading white-space at start-of-line
+                      (?:(?:                                # field modifiers
+                        p(?:r(?:ivate|otected)|ublic)       # - access modifiers
+                       |abstract|final|static               # - ...
+                      )\s+)*                                # require a white-space separator
+                      (?-i:function)\s+
+                      \K                                    # discard text matched so far
+                      (?'VALID_ID'
+                        \b(?!(?:                            # keywords not to be used as identifier
+                            do
+                        |   else
+                        |   for
+                        |   if
+                        |   while
+                        )\b)
+                        \w+                                 # identifier used as function name
+                      )
+                      \s*\(                                 # start of function parameters
+                      [^\{\)]*\s*\)\s*\{                    # start of function body
+                     "
+      >
+        <functionName>
+          <nameExpr expr="[^\{]+" />
+        </functionName>
+      </function>
+    </parser>
+  </functionList>
+</NotepadPlus>

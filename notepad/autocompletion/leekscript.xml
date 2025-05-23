@@ -1,0 +1,2063 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<NotepadPlus>
+   <AutoComplete language="leekscript">
+    <Environment ignoreCase="no" startFunc="(" stopFunc=")" paramSeparator="," terminal=";" additionalWordChar = "."/>
+    <KeyWord name="abs" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="acos" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="asin" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="atan" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="atan2" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="binString" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="bitCount" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="bitReverse" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="bitsToReal" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="byteReverse" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="cbrt" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="ceil" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="cos" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="exp" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="floor" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="hexString" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="hypot" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="isFinite" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="isInfinite" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="isNaN" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="isPermutation" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="leadingZeros" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="log" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="log10" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="log2" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="max" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="min" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="number" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="pow" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="rand" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="randInt" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="randReal" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="realBits" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="rotateLeft" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="rotateRight" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="round" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="signum" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="sin" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="sqrt" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="tan" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="toDegrees" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="toRadians" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="trailingZeros" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="charAt" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="codePointAt" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="contains" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="endsWith" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="indexOf" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="length" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="replace" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="split" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="startsWith" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="string" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="substring" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="toLower" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="toUpper" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="arrayChunk" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="arrayClear" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="arrayConcat" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="arrayEvery" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="arrayFilter" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="arrayFlatten" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="arrayFoldLeft" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="arrayFoldRight" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="arrayFrequencies" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="arrayGet" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="arrayIter" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="arrayMap" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="arrayMax" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="arrayMin" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="arrayPartition" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="arrayRandom" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="arrayRemoveAll" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="arraySlice" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="arraySome" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="arraySort" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="arrayUnique" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="average" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="count" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="fill" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="inArray" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="insert" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="isEmpty" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="join" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="keySort" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="pop" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="push" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="pushAll" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="remove" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="removeElement" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="removeKey" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="reverse" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="search" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="shift" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="shuffle" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="sort" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="subArray" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="sum" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="unshift" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapAverage" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapClear" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapContains" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapContainsKey" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapEvery" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapFill" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapFilter" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapFold" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapGet" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapIsEmpty" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapIter" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapKeys" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapMap" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapMax" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapMerge" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapMin" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapPut" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapPutAll" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapRemove" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapRemoveAll" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapReplace" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapReplaceAll" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapSearch" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapSize" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapSome" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapSum" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mapValues" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getAbsoluteShield" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getAgility" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getAIID" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getAIName" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getBirthTurn" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getCell" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getChips" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getDamageReturn" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getEffects" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getEntity" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getEntityTurnOrder" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getFarmerCountry" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getFarmerID" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getFarmerName" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getFrequency" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getLaunchedEffects" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getLeekID" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getLevel" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getLife" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getMagic" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getMP" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getName" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getPassiveEffects" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getPower" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getRelativeShield" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getResistance" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getScience" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getStates" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getStrength" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getSummoner" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getSummons" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getTeamID" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getTeamName" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getTotalLife" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getTotalMP" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getTotalTP" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getTP" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getType" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getWeapon" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getWeapons" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getWisdom" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="isAlive" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="isAlly" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="isDead" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="isEnemy" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="isStatic" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="isSummon" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="listen" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="say" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="setWeapon" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="canUseWeapon" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="canUseWeaponOnCell" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getAllWeapons" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getWeaponArea" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getWeaponCost" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getWeaponEffectiveArea" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getWeaponEffects" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getWeaponLaunchType" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getWeaponMaxRange" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getWeaponMinRange" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getWeaponName" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getWeaponPassiveEffects" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="isWeapon" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="useWeapon" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="useWeaponOnCell" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="weaponNeedLos" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="canUseChip" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="canUseChipOnCell" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="chipNeedLos" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getAllChips" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getChipArea" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getChipCooldown" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getChipCost" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getChipEffectiveArea" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getChipEffects" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getChipLaunchType" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getChipMaxRange" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getChipMinRange" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getChipName" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getCooldown" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="isChip" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="resurrect" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="summon" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="useChip" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="useChipOnCell" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getCellContent" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getCellDistance" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getCellFromXY" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getCellX" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getCellY" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getEntityOnCell" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getMapType" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getObstacles" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getPath" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getPathLength" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="isEmptyCell" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="isEntity" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="isObstacle" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="isOnSameLine" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getAliveAllies" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getAliveEnemies" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getAliveEnemiesCount" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getAllEffects" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getAlliedTurret" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getAllies" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getAlliesCount" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getAlliesLife" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getBulbChips" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getCellsToUseChip" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getCellsToUseChipOnCell" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getCellsToUseWeapon" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getCellsToUseWeaponOnCell" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getCellToUseChip" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getCellToUseChipOnCell" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getCellToUseWeapon" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getCellToUseWeaponOnCell" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getChipTargets" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getDate" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getDeadAllies" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getDeadEnemies" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getDeadEnemiesCount" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getEnemies" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getEnemiesCount" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getEnemiesLife" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getEnemyTurret" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getFarthestAlly" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getFarthestEnemy" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getFightContext" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getFightID" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getFightType" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getNearestAlly" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getNearestAllyTo" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getNearestAllyToCell" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getNearestEnemy" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getNearestEnemyTo" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getNearestEnemyToCell" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getNextPlayer" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getPreviousPlayer" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getTime" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getTurn" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getWeaponTargets" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="lineOfSight" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="moveAwayFrom" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="moveAwayFromCell" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="moveAwayFromCells" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="moveAwayFromEntities" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="moveAwayFromLine" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="moveToward" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="moveTowardCell" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="moveTowardCells" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="moveTowardEntities" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="moveTowardLine" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="clearMarks" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="clone" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="debug" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="debugC" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="debugE" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="debugW" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="deleteRegister" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getMaxRAM" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getOperations" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getRegister" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getRegisters" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getTimestamp" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getUsedRAM" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="include" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="jsonDecode" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="jsonEncode" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="mark" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="markText" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="pause" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="setRegister" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="show" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="typeOf" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getMessageAuthor" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getMessageParams" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getMessages" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getMessageType" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="sendAll" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="sendTo" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getBlue" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getColor" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getGreen" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="getRed" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="setClear" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="setContains" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="setDifference" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="setDisjunction" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="setIntersection" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="setIsEmpty" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="setIsSubsetOf" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="setPut" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="setRemove" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="setSize" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="setToArray" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="setUnion" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="intervalAverage" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="intervalCombine" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="intervalIntersection" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="intervalIsBounded" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="intervalIsClosed" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="intervalIsEmpty" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="intervalIsLeftBounded" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="intervalIsLeftClosed" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="intervalIsRightBounded" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="intervalIsRightClosed" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="intervalMax" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="intervalMin" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="intervalSize" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+    <KeyWord name="intervalToArray" func="yes">
+		   <Overload retVal="" descr="">
+			   <Param name="" />
+		   </Overload>
+		</KeyWord>
+		<KeyWord name="and" func="no" />
+		<KeyWord name="break" func="no" />
+		<KeyWord name="class" func="no" />
+		<KeyWord name="continue" func="no" />
+		<KeyWord name="do" func="no" />
+		<KeyWord name="else" func="no" />
+		<KeyWord name="extends" func="no" />
+		<KeyWord name="final" func="no" />
+		<KeyWord name="for" func="no" />
+		<KeyWord name="function" func="no" />
+		<KeyWord name="global" func="no" />
+		<KeyWord name="if" func="no" />
+		<KeyWord name="in" func="no" />
+		<KeyWord name="instanceof" func="no" />
+		<KeyWord name="new" func="no" />
+		<KeyWord name="not" func="no" />
+		<KeyWord name="or" func="no" />
+		<KeyWord name="private" func="no" />
+		<KeyWord name="protected" func="no" />
+		<KeyWord name="public" func="no" />
+		<KeyWord name="return" func="no" />
+		<KeyWord name="static" func="no" />
+		<KeyWord name="while" func="no" />
+		<KeyWord name="Infinity" func="no" />
+		<KeyWord name="NaN" func="no" />
+		<KeyWord name="PI" func="no" />
+		<KeyWord name="" func="no" />
+		<KeyWord name="SORT_ASC" func="no" />
+		<KeyWord name="SORT_DESC" func="no" />
+		<KeyWord name="" func="no" />
+		<KeyWord name="CRITICAL_FACTOR" func="no" />
+		<KeyWord name="" func="no" />
+		<KeyWord name="EFFECT_ABSOLUTE_SHIELD" func="no" />
+		<KeyWord name="EFFECT_ABSOLUTE_VULNERABILITY" func="no" />
+		<KeyWord name="EFFECT_ADD_STATE" func="no" />
+		<KeyWord name="EFFECT_AFTEREFFECT" func="no" />
+		<KeyWord name="EFFECT_ALLY_KILLED_TO_AGILITY" func="no" />
+		<KeyWord name="EFFECT_ANTIDOTE" func="no" />
+		<KeyWord name="EFFECT_ATTRACT" func="no" />
+		<KeyWord name="EFFECT_BOOST_MAX_LIFE" func="no" />
+		<KeyWord name="EFFECT_BUFF_AGILITY" func="no" />
+		<KeyWord name="EFFECT_BUFF_MP" func="no" />
+		<KeyWord name="EFFECT_BUFF_RESISTANCE" func="no" />
+		<KeyWord name="EFFECT_BUFF_STRENGTH" func="no" />
+		<KeyWord name="EFFECT_BUFF_TP" func="no" />
+		<KeyWord name="EFFECT_BUFF_WISDOM" func="no" />
+		<KeyWord name="EFFECT_CRITICAL_TO_HEAL" func="no" />
+		<KeyWord name="EFFECT_DAMAGE" func="no" />
+		<KeyWord name="EFFECT_DAMAGE_RETURN" func="no" />
+		<KeyWord name="EFFECT_DAMAGE_TO_ABSOLUTE_SHIELD" func="no" />
+		<KeyWord name="EFFECT_DAMAGE_TO_STRENGTH" func="no" />
+		<KeyWord name="EFFECT_DEBUFF" func="no" />
+		<KeyWord name="EFFECT_HEAL" func="no" />
+		<KeyWord name="EFFECT_INVERT" func="no" />
+		<KeyWord name="EFFECT_KILL" func="no" />
+		<KeyWord name="EFFECT_KILL_TO_TP" func="no" />
+		<KeyWord name="EFFECT_LIFE_DAMAGE" func="no" />
+		<KeyWord name="EFFECT_MODIFIER_IRREDUCTIBLE" func="no" />
+		<KeyWord name="EFFECT_MODIFIER_MULTIPLIED_BY_TARGETS" func="no" />
+		<KeyWord name="EFFECT_MODIFIER_NOT_REPLACEABLE" func="no" />
+		<KeyWord name="EFFECT_MODIFIER_ON_CASTER" func="no" />
+		<KeyWord name="EFFECT_MODIFIER_STACKABLE" func="no" />
+		<KeyWord name="EFFECT_MOVED_TO_MP" func="no" />
+		<KeyWord name="EFFECT_NOVA_DAMAGE" func="no" />
+		<KeyWord name="EFFECT_NOVA_DAMAGE_TO_MAGIC" func="no" />
+		<KeyWord name="EFFECT_NOVA_VITALITY" func="no" />
+		<KeyWord name="EFFECT_POISON" func="no" />
+		<KeyWord name="EFFECT_POISON_TO_SCIENCE" func="no" />
+		<KeyWord name="EFFECT_PROPAGATION" func="no" />
+		<KeyWord name="EFFECT_PUSH" func="no" />
+		<KeyWord name="EFFECT_RAW_ABSOLUTE_SHIELD" func="no" />
+		<KeyWord name="EFFECT_RAW_BUFF_AGILITY" func="no" />
+		<KeyWord name="EFFECT_RAW_BUFF_MAGIC" func="no" />
+		<KeyWord name="EFFECT_RAW_BUFF_MP" func="no" />
+		<KeyWord name="EFFECT_RAW_BUFF_POWER" func="no" />
+		<KeyWord name="EFFECT_RAW_BUFF_RESISTANCE" func="no" />
+		<KeyWord name="EFFECT_RAW_BUFF_SCIENCE" func="no" />
+		<KeyWord name="EFFECT_RAW_BUFF_STRENGTH" func="no" />
+		<KeyWord name="EFFECT_RAW_BUFF_TP" func="no" />
+		<KeyWord name="EFFECT_RAW_BUFF_WISDOM" func="no" />
+		<KeyWord name="EFFECT_RAW_HEAL" func="no" />
+		<KeyWord name="EFFECT_RAW_RELATIVE_SHIELD" func="no" />
+		<KeyWord name="EFFECT_RELATIVE_SHIELD" func="no" />
+		<KeyWord name="EFFECT_REMOVE_SHACKLES" func="no" />
+		<KeyWord name="EFFECT_REPEL" func="no" />
+		<KeyWord name="EFFECT_RESURRECT" func="no" />
+		<KeyWord name="EFFECT_SHACKLE_AGILITY" func="no" />
+		<KeyWord name="EFFECT_SHACKLE_MAGIC" func="no" />
+		<KeyWord name="EFFECT_SHACKLE_MP" func="no" />
+		<KeyWord name="EFFECT_SHACKLE_STRENGTH" func="no" />
+		<KeyWord name="EFFECT_SHACKLE_TP" func="no" />
+		<KeyWord name="EFFECT_SHACKLE_WISDOM" func="no" />
+		<KeyWord name="EFFECT_STEAL_ABSOLUTE_SHIELD" func="no" />
+		<KeyWord name="EFFECT_SUMMON" func="no" />
+		<KeyWord name="EFFECT_TARGET_ALLIES" func="no" />
+		<KeyWord name="EFFECT_TARGET_CASTER" func="no" />
+		<KeyWord name="EFFECT_TARGET_ENEMIES" func="no" />
+		<KeyWord name="EFFECT_TARGET_NON_SUMMONS" func="no" />
+		<KeyWord name="EFFECT_TARGET_SUMMONS" func="no" />
+		<KeyWord name="EFFECT_TELEPORT" func="no" />
+		<KeyWord name="EFFECT_VULNERABILITY" func="no" />
+		<KeyWord name="ENTITY_BULB" func="no" />
+		<KeyWord name="ENTITY_CHEST" func="no" />
+		<KeyWord name="ENTITY_LEEK" func="no" />
+		<KeyWord name="ENTITY_MOB" func="no" />
+		<KeyWord name="ENTITY_TURRET" func="no" />
+		<KeyWord name="STATE_INVINCIBLE" func="no" />
+		<KeyWord name="USE_CRITICAL" func="no" />
+		<KeyWord name="USE_FAILED" func="no" />
+		<KeyWord name="USE_INVALID_COOLDOWN" func="no" />
+		<KeyWord name="USE_INVALID_POSITION" func="no" />
+		<KeyWord name="USE_INVALID_TARGET" func="no" />
+		<KeyWord name="USE_NOT_ENOUGH_TP" func="no" />
+		<KeyWord name="USE_SUCCESS" func="no" />
+		<KeyWord name="USE_TOO_MANY_SUMMONS" func="no" />
+		<KeyWord name="" func="no" />
+		<KeyWord name="WEAPON_AXE" func="no" />
+		<KeyWord name="WEAPON_BAZOOKA" func="no" />
+		<KeyWord name="WEAPON_B_LASER" func="no" />
+		<KeyWord name="WEAPON_BROADSWORD" func="no" />
+		<KeyWord name="WEAPON_DARK_KATANA" func="no" />
+		<KeyWord name="WEAPON_DESTROYER" func="no" />
+		<KeyWord name="WEAPON_DOUBLE_GUN" func="no" />
+		<KeyWord name="WEAPON_ELECTRISOR" func="no" />
+		<KeyWord name="WEAPON_ENHANCED_LIGHTNINGER" func="no" />
+		<KeyWord name="WEAPON_EXPLORER_RIFLE" func="no" />
+		<KeyWord name="WEAPON_FLAME_THROWER" func="no" />
+		<KeyWord name="WEAPON_GAZOR" func="no" />
+		<KeyWord name="WEAPON_GRENADE_LAUNCHER" func="no" />
+		<KeyWord name="WEAPON_HEAVY_SWORD" func="no" />
+		<KeyWord name="WEAPON_ILLICIT_GRENADE_LAUNCHER" func="no" />
+		<KeyWord name="WEAPON_J_LASER" func="no" />
+		<KeyWord name="WEAPON_KATANA" func="no" />
+		<KeyWord name="WEAPON_LASER" func="no" />
+		<KeyWord name="WEAPON_LIGHTNINGER" func="no" />
+		<KeyWord name="WEAPON_MACHINE_GUN" func="no" />
+		<KeyWord name="WEAPON_MAGNUM" func="no" />
+		<KeyWord name="WEAPON_M_LASER" func="no" />
+		<KeyWord name="WEAPON_MYSTERIOUS_ELECTRISOR" func="no" />
+		<KeyWord name="WEAPON_NEUTRINO" func="no" />
+		<KeyWord name="WEAPON_PISTOL" func="no" />
+		<KeyWord name="WEAPON_REVOKED_M_LASER" func="no" />
+		<KeyWord name="WEAPON_RHINO" func="no" />
+		<KeyWord name="WEAPON_RIFLE" func="no" />
+		<KeyWord name="WEAPON_SHOTGUN" func="no" />
+		<KeyWord name="WEAPON_SWORD" func="no" />
+		<KeyWord name="WEAPON_UNBRIDLED_GAZOR" func="no" />
+		<KeyWord name="WEAPON_UNSTABLE_DESTROYER" func="no" />
+		<KeyWord name="" func="no" />
+		<KeyWord name="CHIP_ACCELERATION" func="no" />
+		<KeyWord name="CHIP_ADRENALINE" func="no" />
+		<KeyWord name="CHIP_ALTERATION" func="no" />
+		<KeyWord name="CHIP_ANTIDOTE" func="no" />
+		<KeyWord name="CHIP_APOCALYPSE" func="no" />
+		<KeyWord name="CHIP_ARMOR" func="no" />
+		<KeyWord name="CHIP_ARMORING" func="no" />
+		<KeyWord name="CHIP_ARSENIC" func="no" />
+		<KeyWord name="CHIP_AWEKENING" func="no" />
+		<KeyWord name="CHIP_BALL_AND_CHAIN" func="no" />
+		<KeyWord name="CHIP_BANDAGE" func="no" />
+		<KeyWord name="CHIP_BARK" func="no" />
+		<KeyWord name="CHIP_BOXING_GLOVE" func="no" />
+		<KeyWord name="CHIP_BRAINWASHING" func="no" />
+		<KeyWord name="CHIP_BRAMBLE" func="no" />
+		<KeyWord name="CHIP_BURNING" func="no" />
+		<KeyWord name="CHIP_CARAPACE" func="no" />
+		<KeyWord name="CHIP_COLLAR" func="no" />
+		<KeyWord name="CHIP_COVETOUSNESS" func="no" />
+		<KeyWord name="CHIP_COVID" func="no" />
+		<KeyWord name="CHIP_CRUSHING" func="no" />
+		<KeyWord name="CHIP_CURE" func="no" />
+		<KeyWord name="CHIP_DESINTEGRATION" func="no" />
+		<KeyWord name="CHIP_DEVIL_STRIKE" func="no" />
+		<KeyWord name="CHIP_DIVINE_PROTECTION" func="no" />
+		<KeyWord name="CHIP_DOME" func="no" />
+		<KeyWord name="CHIP_DOPING" func="no" />
+		<KeyWord name="CHIP_DRIP" func="no" />
+		<KeyWord name="CHIP_ELEVATION" func="no" />
+		<KeyWord name="CHIP_FEROCITY" func="no" />
+		<KeyWord name="CHIP_FERTILIZER" func="no" />
+		<KeyWord name="CHIP_FIRE_BULB" func="no" />
+		<KeyWord name="CHIP_FLAME" func="no" />
+		<KeyWord name="CHIP_FLASH" func="no" />
+		<KeyWord name="CHIP_FORTRESS" func="no" />
+		<KeyWord name="CHIP_FRACTURE" func="no" />
+		<KeyWord name="CHIP_GRAPPLE" func="no" />
+		<KeyWord name="CHIP_HEALER_BULB" func="no" />
+		<KeyWord name="CHIP_HELMET" func="no" />
+		<KeyWord name="CHIP_ICE" func="no" />
+		<KeyWord name="CHIP_ICEBERG" func="no" />
+		<KeyWord name="CHIP_ICED_BULB" func="no" />
+		<KeyWord name="CHIP_INVERSION" func="no" />
+		<KeyWord name="CHIP_JUMP" func="no" />
+		<KeyWord name="CHIP_KILL" func="no" />
+		<KeyWord name="CHIP_KNOWLEDGE" func="no" />
+		<KeyWord name="CHIP_LEATHER_BOOTS" func="no" />
+		<KeyWord name="CHIP_LIBERATION" func="no" />
+		<KeyWord name="CHIP_LIGHTNING" func="no" />
+		<KeyWord name="CHIP_LIGHTNING_BULB" func="no" />
+		<KeyWord name="CHIP_LOAM" func="no" />
+		<KeyWord name="CHIP_MANUMISSION" func="no" />
+		<KeyWord name="CHIP_METALLIC_BULB" func="no" />
+		<KeyWord name="CHIP_METEORITE" func="no" />
+		<KeyWord name="CHIP_MIRROR" func="no" />
+		<KeyWord name="CHIP_MOTIVATION" func="no" />
+		<KeyWord name="CHIP_MUTATION" func="no" />
+		<KeyWord name="CHIP_PEBBLE" func="no" />
+		<KeyWord name="CHIP_PLAGUE" func="no" />
+		<KeyWord name="CHIP_PLASMA" func="no" />
+		<KeyWord name="CHIP_PRECIPITATION" func="no" />
+		<KeyWord name="CHIP_PRISM" func="no" />
+		<KeyWord name="CHIP_PROTEIN" func="no" />
+		<KeyWord name="CHIP_PUNISHMENT" func="no" />
+		<KeyWord name="CHIP_PUNY_BULB" func="no" />
+		<KeyWord name="CHIP_RAGE" func="no" />
+		<KeyWord name="CHIP_RAMPART" func="no" />
+		<KeyWord name="CHIP_REFLEXES" func="no" />
+		<KeyWord name="CHIP_REGENERATION" func="no" />
+		<KeyWord name="CHIP_REMISSION" func="no" />
+		<KeyWord name="CHIP_REPOTTING" func="no" />
+		<KeyWord name="CHIP_RESURRECTION" func="no" />
+		<KeyWord name="CHIP_ROCK" func="no" />
+		<KeyWord name="CHIP_ROCKFALL" func="no" />
+		<KeyWord name="CHIP_ROCKY_BULB" func="no" />
+		<KeyWord name="CHIP_SAVANT_BULB" func="no" />
+		<KeyWord name="CHIP_SERUM" func="no" />
+		<KeyWord name="CHIP_SEVEN_LEAGUE_BOOTS" func="no" />
+		<KeyWord name="CHIP_SHIELD" func="no" />
+		<KeyWord name="CHIP_SHOCK" func="no" />
+		<KeyWord name="CHIP_SLOW_DOWN" func="no" />
+		<KeyWord name="CHIP_SOLIDIFICATION" func="no" />
+		<KeyWord name="CHIP_SOPORIFIC" func="no" />
+		<KeyWord name="CHIP_SPARK" func="no" />
+		<KeyWord name="CHIP_STALACTITE" func="no" />
+		<KeyWord name="CHIP_STEROID" func="no" />
+		<KeyWord name="CHIP_STRETCHING" func="no" />
+		<KeyWord name="CHIP_TACTICIAN_BULB" func="no" />
+		<KeyWord name="CHIP_TELEPORTATION" func="no" />
+		<KeyWord name="CHIP_THERAPY" func="no" />
+		<KeyWord name="CHIP_THORN" func="no" />
+		<KeyWord name="CHIP_TOXIN" func="no" />
+		<KeyWord name="CHIP_TRANQUILIZER" func="no" />
+		<KeyWord name="CHIP_TRANSMUTATION" func="no" />
+		<KeyWord name="CHIP_VACCINE" func="no" />
+		<KeyWord name="CHIP_VAMPIRIZATION" func="no" />
+		<KeyWord name="CHIP_VENOM" func="no" />
+		<KeyWord name="CHIP_WALL" func="no" />
+		<KeyWord name="CHIP_WARM_UP" func="no" />
+		<KeyWord name="CHIP_WHIP" func="no" />
+		<KeyWord name="CHIP_WINGED_BOOTS" func="no" />
+		<KeyWord name="CHIP_WIZARD_BULB" func="no" />
+		<KeyWord name="CHIP_WIZARDRY" func="no" />
+		<KeyWord name="USE_RESURRECT_INVALID_ENTITY" func="no" />
+		<KeyWord name="" func="no" />
+		<KeyWord name="AREA_ALLIES" func="no" />
+		<KeyWord name="AREA_CIRCLE_1" func="no" />
+		<KeyWord name="AREA_CIRCLE_2" func="no" />
+		<KeyWord name="AREA_CIRCLE_3" func="no" />
+		<KeyWord name="AREA_ENEMIES" func="no" />
+		<KeyWord name="AREA_FIRST_INLINE" func="no" />
+		<KeyWord name="AREA_LASER_LINE" func="no" />
+		<KeyWord name="AREA_PLUS_1" func="no" />
+		<KeyWord name="AREA_PLUS_2" func="no" />
+		<KeyWord name="AREA_PLUS_3" func="no" />
+		<KeyWord name="AREA_POINT" func="no" />
+		<KeyWord name="AREA_SQUARE_1" func="no" />
+		<KeyWord name="AREA_SQUARE_2" func="no" />
+		<KeyWord name="AREA_X_1" func="no" />
+		<KeyWord name="AREA_X_2" func="no" />
+		<KeyWord name="AREA_X_3" func="no" />
+		<KeyWord name="BOSS_EVIL_PUMPKIN" func="no" />
+		<KeyWord name="BOSS_FENNEL_KING" func="no" />
+		<KeyWord name="BOSS_NASU_SAMOURAI" func="no" />
+		<KeyWord name="FIGHT_CONTEXT_CHALLENGE" func="no" />
+		<KeyWord name="FIGHT_CONTEXT_GARDEN" func="no" />
+		<KeyWord name="FIGHT_CONTEXT_TEST" func="no" />
+		<KeyWord name="FIGHT_CONTEXT_TOURNAMENT" func="no" />
+		<KeyWord name="FIGHT_TYPE_BATTLE_ROYALE" func="no" />
+		<KeyWord name="FIGHT_TYPE_BOSS" func="no" />
+		<KeyWord name="FIGHT_TYPE_FARMER" func="no" />
+		<KeyWord name="FIGHT_TYPE_SOLO" func="no" />
+		<KeyWord name="FIGHT_TYPE_TEAM" func="no" />
+		<KeyWord name="LAUNCH_TYPE_CIRCLE" func="no" />
+		<KeyWord name="LAUNCH_TYPE_DIAGONAL" func="no" />
+		<KeyWord name="LAUNCH_TYPE_DIAGONAL_INVERTED" func="no" />
+		<KeyWord name="LAUNCH_TYPE_LINE" func="no" />
+		<KeyWord name="LAUNCH_TYPE_LINE_INVERTED" func="no" />
+		<KeyWord name="LAUNCH_TYPE_STAR" func="no" />
+		<KeyWord name="LAUNCH_TYPE_STAR_INVERTED" func="no" />
+		<KeyWord name="MAX_TURNS" func="no" />
+		<KeyWord name="SUMMON_LIMIT" func="no" />
+		<KeyWord name="" func="no" />
+		<KeyWord name="TYPE_ARRAY" func="no" />
+		<KeyWord name="TYPE_BOOLEAN" func="no" />
+		<KeyWord name="TYPE_CLASS" func="no" />
+		<KeyWord name="TYPE_FUNCTION" func="no" />
+		<KeyWord name="TYPE_INTERVAL" func="no" />
+		<KeyWord name="TYPE_MAP" func="no" />
+		<KeyWord name="TYPE_NULL" func="no" />
+		<KeyWord name="TYPE_NUMBER" func="no" />
+		<KeyWord name="TYPE_OBJECT" func="no" />
+		<KeyWord name="TYPE_SET" func="no" />
+		<KeyWord name="TYPE_STRING" func="no" />
+		<KeyWord name="" func="no" />
+		<KeyWord name="INSTRUCTIONS_LIMIT" func="no" />
+		<KeyWord name="OPERATIONS_LIMIT" func="no" />
+		<KeyWord name="" func="no" />
+		<KeyWord name="" func="no" />
+		<KeyWord name="MESSAGE_ATTACK" func="no" />
+		<KeyWord name="MESSAGE_BUFF_AGILITY" func="no" />
+		<KeyWord name="MESSAGE_BUFF_FORCE" func="no" />
+		<KeyWord name="MESSAGE_BUFF_MP" func="no" />
+		<KeyWord name="MESSAGE_BUFF_TP" func="no" />
+		<KeyWord name="MESSAGE_CUSTOM" func="no" />
+		<KeyWord name="MESSAGE_DEBUFF" func="no" />
+		<KeyWord name="MESSAGE_HEAL" func="no" />
+		<KeyWord name="MESSAGE_MOVE_AWAY" func="no" />
+		<KeyWord name="MESSAGE_MOVE_AWAY_CELL" func="no" />
+		<KeyWord name="MESSAGE_MOVE_TOWARD" func="no" />
+		<KeyWord name="MESSAGE_MOVE_TOWARD_CELL" func="no" />
+		<KeyWord name="MESSAGE_SHIELD" func="no" />
+		<KeyWord name="" func="no" />
+		<KeyWord name="COLOR_BLUE" func="no" />
+		<KeyWord name="COLOR_GREEN" func="no" />
+		<KeyWord name="COLOR_RED" func="no" />
+		<KeyWord name="" func="no" />
+		<KeyWord name="false" func="no" />
+		<KeyWord name="true" func="no" />
+		<KeyWord name="this" func="no" />
+		<KeyWord name="abstract" func="no" />
+		<KeyWord name="arguments" func="no" />
+		<KeyWord name="await" func="no" />
+		<KeyWord name="byte" func="no" />
+		<KeyWord name="case" func="no" />
+		<KeyWord name="catch" func="no" />
+		<KeyWord name="char" func="no" />
+		<KeyWord name="const" func="no" />
+		<KeyWord name="default" func="no" />
+		<KeyWord name="double" func="no" />
+		<KeyWord name="enum" func="no" />
+		<KeyWord name="eval" func="no" />
+		<KeyWord name="export" func="no" />
+		<KeyWord name="finally" func="no" />
+		<KeyWord name="float" func="no" />
+		<KeyWord name="goto" func="no" />
+		<KeyWord name="implements" func="no" />
+		<KeyWord name="import" func="no" />
+		<KeyWord name="int" func="no" />
+		<KeyWord name="interface" func="no" />
+		<KeyWord name="let" func="no" />
+		<KeyWord name="long" func="no" />
+		<KeyWord name="native" func="no" />
+		<KeyWord name="package" func="no" />
+		<KeyWord name="short" func="no" />
+		<KeyWord name="switch" func="no" />
+		<KeyWord name="synchronized" func="no" />
+		<KeyWord name="throw" func="no" />
+		<KeyWord name="throws" func="no" />
+		<KeyWord name="transient" func="no" />
+		<KeyWord name="try" func="no" />
+		<KeyWord name="typeof" func="no" />
+		<KeyWord name="volatile" func="no" />
+		<KeyWord name="with" func="no" />
+		<KeyWord name="yield" func="no" />
+		<KeyWord name="var" func="no" />
+		<KeyWord name="void" func="no" />
+		<KeyWord name="any" func="no" />
+		<KeyWord name="null" func="no" />
+		<KeyWord name="boolean" func="no" />
+		<KeyWord name="integer" func="no" />
+		<KeyWord name="real" func="no" />
+		<KeyWord name="string" func="no" />
+		<KeyWord name="Array" func="no" />
+		<KeyWord name="Map" func="no" />
+		<KeyWord name="Object" func="no" />
+		<KeyWord name="Set" func="no" />
+		<KeyWord name="Interval" func="no" />
+  </AutoComplete>
+</NotepadPlus>

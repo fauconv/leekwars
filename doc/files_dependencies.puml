@@ -4,28 +4,39 @@ title leekwars - files dependencies
 
 allowmixing
 
-class Round
-class Board
-class Cell 
-class Leek
-class Effect
-class Tool
-package const
-package effectfunctions
-class EffectResult
-class InterCellInfo
-class RelativeCell
-class Strategy
-package v3
-class GameDebug
-class LeekRound
-class CellRound
-class ToolRound
-class Action
-class Talk
+package engine {
+  package round {
+    class Round
+    class LeekRound
+    class CellRound
+    class ToolRound
+  }
+  class Board
+  class Cell 
+  class Leek
+  class Effect
+  class Tool
+  frame const
+  frame effectfunctions
+  class EffectResult
+  class InterCellInfo
+  class RelativeCell
+  class Strategy
+  class Action
+  class Talk
+}
 
-v3 -> GameDebug
-v3 --> Strategy
+frame main
+
+package utils {
+  class GameDebug
+  class Objects
+  class Chain
+  frame functions
+}
+
+main -> GameDebug
+main --> Strategy
 Strategy --> Board
 Strategy -> Talk
 Board --> Action
@@ -42,5 +53,8 @@ Board --> Tool
 Board --> Leek
 Board --> Effect
 Board --> RelativeCell
+GameDebug --> Objects
+GameDebug --> Chain
+GameDebug --> functions
 
 @enduml
