@@ -293,7 +293,6 @@ class LeekRound extends Objects {
     minMP -= usingMP;
     maxMP -= usingMP;
     midMP -= usingMP;
-    if(minMP < 0) debugC("LeekRound=>simulateMoveToCell=>ERREUR !!!!",COLOR_RED);
     currentCell.leekOnCell = null;
     currentCellId = cellId;
     currentCell = roundObj.cellsRound[cellId];

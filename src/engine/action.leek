@@ -8,7 +8,7 @@ class Action extends Objects {
   /**
    * simulateUse
    **/
-  EffectResult simulate() {
+  EffectResult simulate(Round roundObj) {
     return new EffectResult();
   }
     
