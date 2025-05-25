@@ -10,8 +10,10 @@ class CellRound extends Objects {
   
   /**
    * constructor
+   * @param roundObj : le round liee a la cellule
+   * @param cell : la cell liee a la cellule
    **/
-  constructor(Cell cell, Round roundObj) {
+  public constructor(Round roundObj, Cell cell) {
     id = cell.id;
     this.cell = cell;
     this.roundObj = roundObj;

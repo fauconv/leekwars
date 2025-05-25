@@ -119,8 +119,6 @@ class Enemy extends Leek {
  ******************************************************************************/
 class Me extends Leek {
   
-  integer historicalRelativeCenterCellId = -1; // filled by leekRound
-  
   /**
    * constructor
    **/

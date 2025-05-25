@@ -18,8 +18,8 @@ class Board extends Objects {
   public static integer myId;
   public static integer maxAOERange;
   public static Me me;       
-  public static Round currentRound;
-  public static Round previousRound;
+  public static RealRound currentRound;
+  public static RealRound previousRound;
   public static Cell centerCell;
   
   public static Array<Enemy> enemies = []; 
@@ -122,7 +122,7 @@ class Board extends Objects {
     //
     // first round
     //
-    previousRound = currentRound = new Round();
+    previousRound = currentRound = new RealRound();
     
     return true;
   }
@@ -143,7 +143,7 @@ class Board extends Objects {
       }
     }
     previousRound = currentRound;
-    currentRound = new Round();
+    currentRound = new RealRound();
     currentRound.updateState(previousRound);
   }
   

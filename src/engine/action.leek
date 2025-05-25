@@ -7,6 +7,7 @@ class Action extends Objects {
 
   /**
    * simulateUse
+   * @param roundObj : le round sur lequel simuler l action
    **/
   EffectResult simulate(Round roundObj) {
     return new EffectResult();
@@ -37,6 +38,7 @@ class SetWeaponAction extends Action {
 
   /**
    * simulate
+   * @param roundObj : le round sur lequel simuler l action
    **/
   EffectResult simulate(Round roundObj) {
     roundObj.leeksRound[ownerId]!.simulateSetWeapon(toolId);
@@ -81,6 +83,7 @@ class MoveAction extends Action {
 
   /**
    * simulate
+   * @param roundObj : le round sur lequel simuler l action
    **/
   EffectResult simulate(Round roundObj) {
     roundObj.leeksRound[ownerId]!.simulateMoveToCell(cellId, usedMP)
@@ -125,6 +128,7 @@ class ToolAction extends Action {
 
   /**
    * simulate
+   * @param roundObj : le round sur lequel simuler l action
    **/
   EffectResult simulate(Round roundObj) {
     return roundObj.leeksRound[ownerId]!.toolsRound[toolId]!.simulateUseOnCell(targetCell);
@@ -132,7 +136,9 @@ class ToolAction extends Action {
 
   /**
    * execute
-   * Attention: ne fait pas l update du round
+  * Attention: ne fait pas l update du round
+   * on ne fait un update du round qu apres avoir executer toutes les actions
+   * pour economiser des operations
    **/
   void execute() {
     Board.currentRound.meRound.toolsRound[toolId]!.useOnCell(targetCell);

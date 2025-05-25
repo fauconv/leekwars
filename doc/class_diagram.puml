@@ -62,7 +62,10 @@ class InterCellInfo {
   constructor(Cell cellFrom, Cell cellTo)
 }
 class CellRound {
-  constructor(Cell cell, Round roundObj)
+  +Cell cell
+  +LeekRound leekOnCell
+  +Round roundObj
+  +constructor(Round roundObj, Cell cell)
 }
 class Effect {
   +string category
@@ -90,14 +93,97 @@ class Effect {
   constructor(Array<integer|real> effectArray, Tool owner)
 }
 class EffectResult
-class LeekRound
+abstract class LeekRound {
+  +Leek leek
+  +CellRound currentCell
+  +integer currentCellId
+  +integer minTP
+  +integer maxTP
+  +integer midTP
+  +integer maxTotalLife
+  +integer minTotalLife
+  +integer midTotalLife
+  +integer maxLife
+  +integer midLife
+  +integer minLife
+  +integer minResistance
+  +integer maxResistance
+  +integer midResistance
+  +integer minAgility
+  +integer maxAgility
+  +integer midAgility
+  +integer minStrength
+  +integer maxStrength
+  +integer midStrength
+  +integer minMagic
+  +integer maxMagic
+  +integer midMagic
+  +integer minScience
+  +integer maxScience
+  +integer midScience
+  +integer minWisdom
+  +integer maxWisdom
+  +integer midWisdom
+  +integer minAbsoluteShield
+  +integer maxAbsoluteShield
+  +integer midAbsoluteShield
+  +integer minRelativeShield
+  +integer maxRelativeShield
+  +integer midRelativeShield
+  +integer minDmgReturn
+  +integer maxDmgReturn
+  +integer midDmgReturn
+  +integer minMP
+  +integer maxMP
+  +integer midMP
+  +integer minPower
+  +integer maxPower
+  +integer midPower
+  +integer maxInjury
+  +integer midInjury
+  +integer minInjury
+  +integer maxAOERange
+  +ToolRound weapon
+  +integer weaponId
+  +Round roundObj
+  +Map<integer,Array<Array<integer|boolean>>> effects
+  #constructor(Round roundObj, Leek|LeekRound leek)
+  +update()
+  -categoriseTool(ToolRound toolRound)
+  +void simulateSetWeapon(integer weaponId)
+  +void simulateMoveToCell(integer cellId, integer usingMP)
+  +Map<integer,integer> route(integer remainingMP)
+  
+}
+class MeRound {
+ +integer relativeCenterCellId
+ +Array<integer>|null pathToCenter
+ +constructor(Round roundObj, MeRound|null clone = null)
+ +integer getRelativeCenter()
+}
+class AllieRound {
+  +constructor(Round roundObj, Leek|AllieRound leek)
+}
+class EnemyRound {
+  +string state
+  +constructor(Round roundObj, EnemyRound|Leek leek)
+  +void updateState(EnemyRound previousEnemyRound, Array<InterCellInfo> myInter)
+}
 class RelativeCell
 abstract class Tool
 class Weapon
 class Chip
-abstract class Round
-class RealRound
-class SimulatedRound
+abstract class Round {
+  +MeRound MeRound
+  +updateState(Round previousRound)
+}
+class RealRound {
+  +constructor()
+  +update()
+}
+class SimulatedRound {
+  +constructor(Round clone)
+}
 abstract class Leek
 class Me
 class Enemy
@@ -120,5 +206,17 @@ Leek <|-- Enemy
 Leek <|-- Allie
 Tool <|-- Weapon
 Tool <|-- Chip
+LeekRound <|-- MeRound
+LeekRound <|-- AllieRound
+LeekRound <|-- EnemyRound
+Round *-- CellRound : cellsRound
+Round o-- AllieRound : alliesRound
+Round o-- EnemyRound : enemiesRound
+Round *-- LeekRound : leeksRound
+LeekRound *-- ToolRound : toolsRound
+LeekRound o-- WeaponRound : weaponsRound
+LeekRound o-- ChipRound : chipsRound
+ToolRound <|-- WeaponRound
+ToolRound <|-- ChipRound
 
 @enduml

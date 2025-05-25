@@ -47,7 +47,7 @@ class MoveCell extends Objects {
    **/
   void computeEscape(Map<integer, MoveCell> moveCellList) {
 	// on prend le leekround de la premiere simulation vu que toute les sim on la meme position 
-    Map<integer,integer> cellList = (mapFirst(moveSim) as Simulation).owner.parcour(cell, maxRemainingMP);
+    Map<integer,integer> cellList = (mapFirst(moveSim) as Simulation).owner.route(cell, maxRemainingMP);
 	for(integer index : Simulation sim in moveSim) {
 	  for(integer cellId : integer remainingMP in cellList) {
 	    integer usedMP = maxRemainingMP-remainingMP;

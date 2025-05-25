@@ -15,13 +15,13 @@ class BasicStrategyTools extends Objects {
   }
 
   /**
-   * parcour
-   * encapsulation de leekRound.parcour
+   * route
+   * encapsulation de leekRound.route
    **/
-  static Map<integer,MoveCell> parcour(LeekRound leekRound, string minMax, Array<Simulation> MPToolList, 
+  static Map<integer,MoveCell> route(LeekRound leekRound, string minMax, Array<Simulation> MPToolList, 
 										integer maxRemainingMP) {
     integer leekId = leekRound.id;
-    Map<integer,integer> cellList = leekRound.parcour(leekRound.currentCell.cell, maxRemainingMP);
+    Map<integer,integer> cellList = leekRound.route(maxRemainingMP);
     Map<integer,MoveCell> moveCells = [:];
 	Array<Map<integer,Simulation>> sortedSim = [];
 	for(integer usedMP = 0; usedMP <= maxRemainingMP; usedMP++) push(sortedSim, [:]);

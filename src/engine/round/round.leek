@@ -7,25 +7,43 @@ include("cellround");
  ******************************************************************************/
 class Round extends Objects {
   
-  MeRound meRound;
+  public MeRound meRound;
   
-  Array<CellRound> cellsRound = [];
+  public Array<CellRound> cellsRound = [];
   
-  Array<AllieRound> alliesRound = [];
-  Array<EnemyRound> enemiesRound = [];
+  public Array<AllieRound> alliesRound = [];
+  public Array<EnemyRound> enemiesRound = [];
   
-  Map<integer, LeekRound> leeksRound = [:];
-  
+  public Map<integer, LeekRound> leeksRound = [:];
+
+  /**
+   * updateState
+   * mets a jour les variables des enemyleek qui indique la tendance de l ennemy entre la round
+   * precedent et this
+   * @param previousRound : le round precedent this 
+   **/
+  public updateState(Round previousRound) {
+    Array<InterCellInfo> myInter = meRound.currentCell.cell.interCellInfo;
+    for(EnemyRound enemy in enemiesRound) enemy.updateState(previousRound.leeksRound[enemy.id] as EnemyRound, myInter);
+  }
+
+}
+
+/******************************************************************************
+ * RealRound
+ ******************************************************************************/
+class RealRound extends Round {
+
   /**
    * constructor
    **/
-  constructor() {
+  public constructor() {
       
     //
     // cells creations
     //
     for(integer i = 0;i < NB_CELLS; i++) {
-      push(cellsRound, new CellRound(Board.cells[i],this));
+      push(cellsRound, new CellRound(this, Board.cells[i]));
     }
      
     id = getTurn();
@@ -40,7 +58,7 @@ class Round extends Objects {
     // add enemies
     //
     for(Leek enemy in Board.enemies) {
-      EnemyRound en = new EnemyRound(enemy, this);
+      EnemyRound en = new EnemyRound(this, enemy);
       push(enemiesRound, en);
       leeksRound[en.id] = en;
     }
@@ -49,23 +67,51 @@ class Round extends Objects {
     // add allies
     //
     for(Leek enemy in Board.allies) {
-      AllieRound en = new AllieRound(enemy, this);
+      AllieRound en = new AllieRound(this, enemy);
       push(alliesRound, en);
       leeksRound[en.id] = en;
     }
     
   }
+
+  /**
+   * update
+   * mets a jour le round par rapport aux actions qui viennent d etre executer :
+   * - met a jour la liste des leek vivant
+   * - met a jour la liste des chip dispo de chaque leek
+   * - met a jour les valeurs caracteristique des leek
+   * le leekOnCell et le setWeapon son deja mis a jour par l execution des actions 
+   **/
+  public update() {
+    for(integer id : LeekRound leek in leeksRound) {
+      if(!isAlive(id)) {
+        mapRemove(leeksRound,id);
+        if(leek.leek.isEnemy) removeElement(enemiesRound,leek);
+        else if(leek.leek.isAllie) removeElement(alliesRound,leek);
+      } else {
+        leek.update(full);
+      }  
+    }
+  }
+
+}
+
+/******************************************************************************
+ * SimulatedRound
+ ******************************************************************************/
+ class SimulatedRound extends Round {
+
   /**
    * constructor
    * @param clone : le round a cloner
    **/
-  constructor(Round clone) {
+  public constructor(Round clone) {
       
     //
     // cells creations
     //
     for(integer i = 0;i < NB_CELLS; i++) {
-      push(cellsRound, new CellRound(Board.cells[i],this));
+      push(cellsRound, new CellRound(this, Board.cells[i]));
     }
     
     id = clone.id;
@@ -80,7 +126,7 @@ class Round extends Objects {
     // add enemies
     //
     for(EnemyRound enemy in clone.enemiesRound) {
-      EnemyRound en = new EnemyRound(enemy, this); 
+      EnemyRound en = new EnemyRound(this, enemy); 
       push(enemiesRound, en);
       leeksRound[en.id] = en;
     }
@@ -89,41 +135,11 @@ class Round extends Objects {
     // add allies
     //
     for(AllieRound enemy in clone.alliesRound) {
-      AllieRound en = new AllieRound(enemy, this);
+      AllieRound en = new AllieRound(this, enemy);
       push(alliesRound, en);
       leeksRound[en.id] = en;
     }
      
   }
-  
-  /**
-   * update
-   * mets a jour le round par rapport au simulation (de deplacement ou de tire)
-   * - met a jour leekOnCell
-   * - met a jour la liste des leek vivant
-   * - met a jour la liste des arme dispo de chaque leek
-   * - met a jour les valeurs caracteristique des leek
-   * @param full : si false ne met pas  a jour la liste des caracteristique des leek
-   *               - true s utilise pour mettre a jour le round courant a mesure que l on fait des actions
-   *               - false s utilise quand on simule des actions car les caracteristiques des poireau son calcule par simulation
-   **/
-  update(boolean full = true) {
-    for(integer id : LeekRound leek in leeksRound) {
-      if(!isAlive(id)) {
-        mapRemove(leeksRound,id);
-        if(leek.leek.isEnemy) removeElement(enemiesRound,leek);
-        else if(leek.leek.isAllie) removeElement(alliesRound,leek);
-      } else {
-        leek.update(full);
-      }  
-    }
-  }
 
-  /**
-   * updateState
-   **/
-  updateState(Round previousRound) {
-    Array<InterCellInfo> myInter = meRound.currentCell.cell.interCellInfo;
-    for(EnemyRound enemy in enemiesRound) enemy.updateState(previousRound.leeksRound[enemy.id] as EnemyRound, myInter);
-  }
-}
+ }

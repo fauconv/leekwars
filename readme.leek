@@ -3,9 +3,10 @@
 Refaire le moteur en integrant les actions dans le round et supprimer les simulations et terminer le diagramme de classes
 creer des RealRound et des SimulatedRound
 
-- file action : ok
-- file cell : ok
 - file const : ok
-... TODO
+- file cellround : ok
+- file round : ok
+- file leekround : ok
+... TODO:
 
 **/

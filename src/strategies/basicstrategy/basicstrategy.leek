@@ -79,11 +79,11 @@ class BasicStrategy extends Strategy {
     Array<Simulation> MPToolList = MPConditions(meRound);
     myMaxMP = 0;
     for(Simulation sim in MPToolList) myMaxMP = max(myMaxMP, sim.roundObj.leeksRound[myId]!.minMP);
-    Map<integer,MoveCell> myMoveCells = BasicStrategyTools.parcour(meRound, "minMP", MPToolList, myMaxMP);
+    Map<integer,MoveCell> myMoveCells = BasicStrategyTools.route(meRound, "minMP", MPToolList, myMaxMP);
     MPToolList = MPConditions(enemyRound);
     enemyMaxMP = 0;
     for(Simulation sim in MPToolList) enemyMaxMP = max(enemyMaxMP, sim.roundObj.leeksRound[enemyId]!.maxMP);
-    Map<integer,MoveCell> enemyMoveCells = BasicStrategyTools.parcour(enemyRound, "maxMP", MPToolList, enemyMaxMP);
+    Map<integer,MoveCell> enemyMoveCells = BasicStrategyTools.route(enemyRound, "maxMP", MPToolList, enemyMaxMP);
     runCompare = myMaxMP - enemyMaxMP;  
     if(BASIC_STRATEGY_DEBUG) {
       GameDebug.add(true, "avalaible simulations:");

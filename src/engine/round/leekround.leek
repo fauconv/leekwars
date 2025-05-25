@@ -3,86 +3,82 @@
  ******************************************************************************/
 class LeekRound extends Objects {
 
-  static string STATE_APPROACH = "Approaching";
-  static string STATE_UNKNOWN  = "Unknown";
-  static string STATE_ESCAPE   = "Escaping";
+  public static string STATE_APPROACH = "Approaching";
+  public static string STATE_UNKNOWN  = "Unknown";
+  public static string STATE_ESCAPE   = "Escaping";
     
-  Leek leek;
-  CellRound currentCell;
-  integer currentCellId;
+  public Leek leek;
+  public CellRound currentCell;
+  public integer currentCellId;
   
-  integer minTP;
-  integer maxTP;
-  integer midTP;
-  integer maxTotalLife;
-  integer minTotalLife;
-  integer midTotalLife;
-  integer maxLife;
-  integer midLife;
-  integer minLife;
-  integer minResistance;
-  integer maxResistance;
-  integer midResistance;
-  integer minAgility;
-  integer maxAgility;
-  integer midAgility;
-  integer minStrength;
-  integer maxStrength;
-  integer midStrength;
-  integer minMagic;
-  integer maxMagic;
-  integer midMagic;
-  integer minScience;
-  integer maxScience;
-  integer midScience;
-  integer minWisdom;
-  integer maxWisdom;
-  integer midWisdom;
-  integer minAbsoluteShield;
-  integer maxAbsoluteShield;
-  integer midAbsoluteShield;
-  integer minRelativeShield;
-  integer maxRelativeShield;
-  integer midRelativeShield;
-  integer minDmgReturn;
-  integer maxDmgReturn;
-  integer midDmgReturn;
-  integer minMP;
-  integer maxMP;
-  integer midMP;
-  integer minPower;
-  integer maxPower;
-  integer midPower;
+  public integer minTP;
+  public integer maxTP;
+  public integer midTP;
+  public integer maxTotalLife;
+  public integer minTotalLife;
+  public integer midTotalLife;
+  public integer maxLife;
+  public integer midLife;
+  public integer minLife;
+  public integer minResistance;
+  public integer maxResistance;
+  public integer midResistance;
+  public integer minAgility;
+  public integer maxAgility;
+  public integer midAgility;
+  public integer minStrength;
+  public integer maxStrength;
+  public integer midStrength;
+  public integer minMagic;
+  public integer maxMagic;
+  public integer midMagic;
+  public integer minScience;
+  public integer maxScience;
+  public integer midScience;
+  public integer minWisdom;
+  public integer maxWisdom;
+  public integer midWisdom;
+  public integer minAbsoluteShield;
+  public integer maxAbsoluteShield;
+  public integer midAbsoluteShield;
+  public integer minRelativeShield;
+  public integer maxRelativeShield;
+  public integer midRelativeShield;
+  public integer minDmgReturn;
+  public integer maxDmgReturn;
+  public integer midDmgReturn;
+  public integer minMP;
+  public integer maxMP;
+  public integer midMP;
+  public integer minPower;
+  public integer maxPower;
+  public integer midPower;
 
-  integer maxInjury;
-  integer midInjury;
-  integer minInjury;
+  public integer maxInjury;
+  public integer midInjury;
+  public integer minInjury;
   
-  integer maxAOERange;
-  ToolRound|null weapon;
-  integer|null weaponId;
+  public integer maxAOERange;
+  public ToolRound|null weapon;
+  public integer|null weaponId;
+  public Round roundObj;
+
+  public Map<integer,Array<Array<integer|boolean>>> effects = [:];
   
-  Map<integer,Array<Array<integer|boolean>>> effects = [:];
+  public Map<integer, ToolRound> toolsRound = [:];
+  public Array<WeaponRound> weaponsRound = [];
+  public Array<ChipRound|null> chipsRound = [];
   
-  Map<integer, ToolRound> toolsRound = [:];
-  Array<WeaponRound> weaponsRound = [];
-  Array<ChipRound|null> chipsRound = [];
-  Round roundObj;
-    
-  Array<ToolRound> categoryDamage = [];
-  Array<ToolRound> categoryProtection = [];
-  Array<ToolRound> categoryHeal = [];
-  Array<ToolRound> categoryMPBuff = [];
-  Array<ToolRound> categoryBuff = [];
-  Array<ToolRound> categoryDeBuff = [];
-  Array<ToolRound> categoryBulb = []; 
-  Array<ToolRound> categoryOther = [];
-  Array<ToolRound> categoryMove = [];
+  public Map<string,Array<ToolRound>> categories = [:];
   
   /**
    * constructor
+   * @param roundObj : le round auquel appartient le leekRound
+   * @param leek :
+   *   - si c est un leek : cree le leekround correspondant
+   *   - si c est un leekround : clone le leekround
    **/
-  constructor(Leek|LeekRound leek, Round roundObj) {
+  protected constructor(Round roundObj, Leek|LeekRound leek) {
   
     id = leek.id;
     this.roundObj = roundObj;
@@ -144,10 +140,8 @@ class LeekRound extends Objects {
       weaponId = (leek as LeekRound).weaponId
       
       currentCellId = (leek as LeekRound).currentCellId
-      CellRound cellRound = roundObj.cellsRound[currentCellId];
-      cellRound.leekOnCell = this;
-      
       currentCell = roundObj.cellsRound[currentCellId];
+      currentCell.leekOnCell = this;
       
       effects = clone((leek as LeekRound).effects,3) as Map<integer,Array<Array<integer|boolean>>>
       
@@ -158,7 +152,7 @@ class LeekRound extends Objects {
           categoriseTool(new WeaponRound(toolRound, this));
         }
       }
-      if(weaponId) weapon = toolsRound[weaponId!];
+      if(weaponId != null) weapon = toolsRound[weaponId!];
         
     } else {
       
@@ -166,6 +160,7 @@ class LeekRound extends Objects {
       // cas normal
       //
       this.leek = leek as Leek;
+      for(string category in CATEGORIES) categories[category] = [];
 
       minTP = maxTP = midTP = getTP(id)!;
       maxTotalLife = minTotalLife = midTotalLife = getTotalLife(id)!;
@@ -218,36 +213,37 @@ class LeekRound extends Objects {
 
   /**
    * update
-   * @param full : voir Round
+   * mets a jour le leekround par rapport aux actions qui viennent d etre executer :
+   * - met a jour la liste des chip dispo
+   * - met a jour les valeurs caracteristique du leek
+   * le leekOnCell et le setWeapon son deja mis a jour par l execution des actions 
    **/
-  update(boolean full = true) {
+  public update() {
       
-    if(full) {
-      minTP = maxTP = midTP = getTP(id)!;
-      maxTotalLife = minTotalLife = midTotalLife = getTotalLife(id)!;
-      maxLife = midLife = minLife = getLife(id)!;
-      minResistance = maxResistance = midResistance = getResistance(id)!;
-      minAgility = maxAgility = midAgility = getAgility(id)!;
-      minStrength = maxStrength = midStrength = getStrength(id)!;
-      minMagic = maxMagic = midMagic = getMagic(id)!;
-      minScience = maxScience = midScience = getScience(id)!;
-      minWisdom = maxWisdom = midWisdom = getWisdom(id)!;
-      minAbsoluteShield = maxAbsoluteShield = midAbsoluteShield = getAbsoluteShield(id)!;
-      minRelativeShield = maxRelativeShield = midRelativeShield = getRelativeShield(id)!;
-      minDmgReturn = maxDmgReturn = midDmgReturn = getDamageReturn(id)!;
-      minMP = maxMP = midMP = getMP(id)!;
-      minPower = maxPower = midPower = getPower(id)!;
+    minTP = maxTP = midTP = getTP(id)!;
+    maxTotalLife = minTotalLife = midTotalLife = getTotalLife(id)!;
+    maxLife = midLife = minLife = getLife(id)!;
+    minResistance = maxResistance = midResistance = getResistance(id)!;
+    minAgility = maxAgility = midAgility = getAgility(id)!;
+    minStrength = maxStrength = midStrength = getStrength(id)!;
+    minMagic = maxMagic = midMagic = getMagic(id)!;
+    minScience = maxScience = midScience = getScience(id)!;
+    minWisdom = maxWisdom = midWisdom = getWisdom(id)!;
+    minAbsoluteShield = maxAbsoluteShield = midAbsoluteShield = getAbsoluteShield(id)!;
+    minRelativeShield = maxRelativeShield = midRelativeShield = getRelativeShield(id)!;
+    minDmgReturn = maxDmgReturn = midDmgReturn = getDamageReturn(id)!;
+    minMP = maxMP = midMP = getMP(id)!;
+    minPower = maxPower = midPower = getPower(id)!;
 
-      maxInjury = midInjury = minInjury = 0;
-      
-      Array<Array<integer | boolean>> effects = getEffects(id)!;
-      this.effects = [:];
-      for(Array<integer | boolean> effect in effects) {
-        if (mapContainsKey(this.effects,effect[0])) {
-          push(this.effects[effect[0] as integer]!, effect);
-        } else {
-          this.effects[effect[0] as integer] = [effect];
-        }
+    maxInjury = midInjury = minInjury = 0;
+    
+    Array<Array<integer | boolean>> effects = getEffects(id)!;
+    this.effects = [:];
+    for(Array<integer | boolean> effect in effects) {
+      if (mapContainsKey(this.effects,effect[0])) {
+        push(this.effects[effect[0] as integer]!, effect);
+      } else {
+        this.effects[effect[0] as integer] = [effect];
       }
     }
         
@@ -261,35 +257,36 @@ class LeekRound extends Objects {
 
   }
     
-   /**
+  /**
    * categoriseTool
    **/
-  categoriseTool(ToolRound toolRound) {
+  private categoriseTool(ToolRound toolRound) {
     toolsRound[toolRound.id] = toolRound;
     Tool tool = toolRound.tool;
-    for(string category in tool.categories) push(this[category] as Array<ToolRound>, toolRound);
-    (tool.categories["categoryDamage"]) and
+    for(string category in tool.categories) push(categories[category], toolRound);
+    (tool.categories[CATEGORY_DAMAGE]) and
       (tool.maxAOERange > maxAOERange) and (maxAOERange = tool.maxAOERange);
   }
   
   /**
    * simulateSetWeapon
+   * @param weaponId : l id du weapon a set
    **/
-  void simulateSetWeapon(integer weaponId) {
+  public void simulateSetWeapon(integer weaponId) {
     minTP -= SET_WEAPON_COST;
     maxTP -= SET_WEAPON_COST;
     midTP -= SET_WEAPON_COST;
-    if(minTP < 0) debugC("LeekRound=>simulateSetWeapon=>ERREUR !!!!",COLOR_RED);
     this.weaponId = weaponId;
     this.weapon = toolsRound[weaponId];
   }
 
   /**
    * simulateMoveToCell
-   * s approche de cellId, on ne verifie pas qu on a assez de MP
-   * @return new currentCellId
+   * se place sur cellId, on ne verifie pas qu on a assez de MP
+   * @param cellId : l id de la cell ou on place le leekround
+   * @param usingMP : nombre de MP a deduire du leekRound
    **/
-  integer simulateMoveToCell(integer cellId, integer usingMP) {
+  public void simulateMoveToCell(integer cellId, integer usingMP) {
     minMP -= usingMP;
     maxMP -= usingMP;
     midMP -= usingMP;
@@ -297,19 +294,19 @@ class LeekRound extends Objects {
     currentCellId = cellId;
     currentCell = roundObj.cellsRound[cellId];
     currentCell.leekOnCell = this;
-    return currentCellId;
   }
   
   /**
-   * parcour
-   * parcour tous les chemins possible en partant de startCell avec remainingMP sans se regarder lui meme.
-   * @return Array[cellId] = remainingMP
+   * route
+   * parcour tous les chemins possible en partant de la position courante avec remainingMP.
+   * @param remaingMP : nombre de MP qui peuvent etre utilise
+   * @return Map[cellId] = remainingMP
    **/
-  Map<integer,integer> parcour(Cell startCell, integer remainingMP) {
+  public Map<integer,integer> route(integer remainingMP) {
     Cell voisin;
     Array<CellRound> referenceBoard = roundObj.cellsRound;
-    Map<integer,Array<Cell>> reachableCells = [remainingMP:[startCell]] //reachableCells[remainingMP][] = cell
-    Map<integer,integer> flatReachableCells = [startCell.id:remainingMP];
+    Map<integer,Array<Cell>> reachableCells = [remainingMP:[currentCell.cell]] //reachableCells[remainingMP][] = cell
+    Map<integer,integer> flatReachableCells = [currentCellId:remainingMP];
     for(integer i = remainingMP; i > 0; i--) {
       integer futurMP = i-1
       reachableCells[futurMP] = [];
@@ -337,9 +334,13 @@ class AllieRound extends LeekRound {
   
   /**
    * constructor
+   * @param roundObj : le round auquel appartient le leekRound
+   * @param leek :
+   *   - si c est un leek : cree le AllieRound correspondant
+   *   - si c est un AllieRound : clone le AllieRound
    **/
-  constructor(Leek|AllieRound leek, Round roundObj) {
-    super(leek, roundObj);
+  public constructor(Round roundObj, Leek|AllieRound leek) {
+    super(roundObj, leek);
   }
   
 }
@@ -349,19 +350,29 @@ class AllieRound extends LeekRound {
  ******************************************************************************/
 class EnemyRound extends LeekRound {
 
-  string state = LeekRound.STATE_UNKNOWN;
+  public string state = LeekRound.STATE_UNKNOWN; // comportement de l enemy
     
   /**
    * constructor
+   * @param roundObj : le round auquel appartient le leekRound
+   * @param leek :
+   *   - si c est un leek : cree le EnemyRound correspondant
+   *   - si c est un EnemyRound : clone le EnemyRound
    **/
-  constructor(EnemyRound|Leek leek, Round roundObj) {
-    super(leek, roundObj);
+  public constructor(Round roundObj, EnemyRound|Leek leek) {
+    super(roundObj, leek);
+    if(leek.class.name == "EnemyRound") {
+      state = leek.state;
+    }
   }
  
   /**
    * updateState
+   * met a jour le comportement de l enemy a partir de son etat precedant
+   * @param previousEnemyRound : le EnemyRound du round precedant
+   * @param myInter : le tableau d intercell qui correspond a la currentCell de Me
    **/
-  void updateState(EnemyRound previousEnemyRound, Array<InterCellInfo> myInter) {
+  public void updateState(EnemyRound previousEnemyRound, Array<InterCellInfo> myInter) {
       integer d1 = myInter[currentCellId].range;
       integer d2 = myInter[previousEnemyRound.currentCellId].range;
       if(d1 > d2) {
@@ -379,36 +390,29 @@ class EnemyRound extends LeekRound {
  ******************************************************************************/
 class MeRound extends LeekRound {
   
-  integer relativeCenterCellId = -1;
-  Array<integer>|null pathToCenter;
+  public integer relativeCenterCellId = -1;
+  public Array<integer>|null pathToCenter;
   
   /**
    * constructor
+   * @param roundObj : le round auquel appartient le leekRound
+   * @param clone : clone le MeRound
    **/
-  constructor(Round roundObj, MeRound|null clone = null) {
+  public constructor(Round roundObj, MeRound|null clone = null) {
     if(clone != null) {
-      super(clone!, roundObj);
+      super(roundObj, clone!);
     } else {
-      super(Board.me, roundObj);
+      super(roundObj, Board.me);
     }
   }
   
   /**
-   * getHistoricalRelativeCenter
-   *
-   * @return cellId
-   **/
-  integer getHistoricalRelativeCenter() {
-    if((leek as Me).historicalRelativeCenterCellId == -1) return getRelativeCenter();
-    return (leek as Me).historicalRelativeCenterCellId;
-  }
-  
-  /**
    * getRelativeCenter
-   *
-   * @return cellId
+   * calcul le chemin le plus court pour aller au centre de la map
+   * peuple relativeCenterCellId et pathToCenter
+   * @return la position du centre relatif (la case ateignable la plus au centre)
    **/
-  integer getRelativeCenter() {
+  public integer getRelativeCenter() {
     if(relativeCenterCellId > -1) return relativeCenterCellId;
     (!Board.centerCell.isDeadEnd) and (pathToCenter = getPath(currentCellId, CENTER_CELL_ID));
     if (pathToCenter) {
