@@ -80,7 +80,8 @@ class RealRound extends Round {
    * - met a jour la liste des leek vivant
    * - met a jour la liste des chip dispo de chaque leek
    * - met a jour les valeurs caracteristique des leek
-   * le leekOnCell et le setWeapon son deja mis a jour par l execution des actions 
+   * - met a jour les leekOnCell
+   * - met a jour le setWeapon
    **/
   public update() {
     for(integer id : LeekRound leek in leeksRound) {
@@ -89,7 +90,7 @@ class RealRound extends Round {
         if(leek.leek.isEnemy) removeElement(enemiesRound,leek);
         else if(leek.leek.isAllie) removeElement(alliesRound,leek);
       } else {
-        leek.update(full);
+        leek.update();
       }  
     }
   }

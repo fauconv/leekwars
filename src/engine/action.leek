@@ -3,16 +3,6 @@
  ******************************************************************************/
 class Action extends Objects {
   
-  protected integer ownerId;
-
-  /**
-   * simulateUse
-   * @param roundObj : le round sur lequel simuler l action
-   **/
-  EffectResult simulate(Round roundObj) {
-    return new EffectResult();
-  }
-    
   /**
    * execute
    **/
@@ -31,25 +21,15 @@ class SetWeaponAction extends Action {
   /**
    * constructor
    **/
-  constructor(integer ownerId, integer toolId) {
+  constructor(integer toolId) {
     this.toolId = toolId;
-    this.ownerId = ownerId;
-  }
-
-  /**
-   * simulate
-   * @param roundObj : le round sur lequel simuler l action
-   **/
-  EffectResult simulate(Round roundObj) {
-    roundObj.leeksRound[ownerId]!.simulateSetWeapon(toolId);
-    return new EffectResult();
   }
 
   /**
    * execute
    **/
   void execute() {
-    Board.currentRound.meRound.setWeaponRound(toolId);
+    setWeapon(weaponId);
   }
     
   /**
@@ -70,31 +50,19 @@ class SetWeaponAction extends Action {
 class MoveAction extends Action {
 
   private integer cellId;
-  private integer usedMP;
 
   /**
    * constructor
    **/
-  constructor(integer cellId, integer ownerId, integer usedMP) {
+  constructor(integer cellId) {
     this.cellId = cellId;
-    this.ownerId = ownerId;
-    this.usedMP = usedMP;
-  }
-
-  /**
-   * simulate
-   * @param roundObj : le round sur lequel simuler l action
-   **/
-  EffectResult simulate(Round roundObj) {
-    roundObj.leeksRound[ownerId]!.simulateMoveToCell(cellId, usedMP)
-    return new EffectResult();
   }
 
   /**
    * execute
    **/
   void execute() {
-    Board.currentRound.meRound.moveToCell(cellId);
+    moveTowardCell(cellId);
   }
     
   /**
@@ -120,23 +88,14 @@ class ToolAction extends Action {
   /**
    * constructor
    **/
-  constructor(integer ownerId, integer toolId, integer targetCell) {
+  constructor(integer toolId, integer targetCell) {
     this.toolId = toolId;
     this.targetCell = targetCell;
-    this.ownerId = ownerId;
-  }
-
-  /**
-   * simulate
-   * @param roundObj : le round sur lequel simuler l action
-   **/
-  EffectResult simulate(Round roundObj) {
-    return roundObj.leeksRound[ownerId]!.toolsRound[toolId]!.simulateUseOnCell(targetCell);
   }
 
   /**
    * execute
-  * Attention: ne fait pas l update du round
+   * Attention: ne fait pas l update du round
    * on ne fait un update du round qu apres avoir executer toutes les actions
    * pour economiser des operations
    **/

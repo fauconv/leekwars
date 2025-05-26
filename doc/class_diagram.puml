@@ -1,36 +1,33 @@
 @startuml
 
 abstract class Action {
-  #integer ownerId;
-  EffectResult simulate(Round roundObj)
   void execute()
 }
 class SetWeaponAction {
   -integer toolId
-  constructor(integer ownerId, integer toolId)
+  +constructor(integer toolId)
+  +execute()
 }
 class MoveAction {
-  -integer cellId;
-  -integer usedMP
-  constructor(integer cellId, integer ownerId, integer usedMP)
+  -integer cellId
+  +constructor(integer cellId)
+  +execute()
 }
 class ToolAction {
   -integer toolId
   -integer targetCell
-  -boolean notUseInSim
-  -boolean repeat
-  constructor(integer ownerId, integer toolId, integer targetCell, boolean notUseInSim = false, boolean repeat = true)
+  +constructor(integer toolId, integer targetCell)
+  +execute()
 }
 entity Board {
   {static} +integer myId
   {static} +integer maxAOERange
-  {static} +Cell centerCell
   {static} +Me me
   {static} +RealRound currentRound
   {static} +RealRound previousRound
   {static} +Cell centerCell
-  {static} boolean init()
-  {static} void update()
+  {static} +boolean init()
+  {static} +void update()
 }
 abstract class Cell {
   +integer x
@@ -45,11 +42,12 @@ abstract class Cell {
   +Cell rightTop
   +Cell leftBottom
   +Cell rightBottom
-  Array<Integer> getTrajectory(Cell endCell)
-  Map<integer,RelativeCell> getRelativeCells(Array<Tool> tools)???
+  #constructor(integer idCell, InterCellInfo interCellNull)
 }
 class FreeCell {
-  constructor(integer idCell, InterCellInfo interCellNull)
+  +constructor(integer idCell, InterCellInfo interCellNull)
+  +Array<Integer> getTrajectory(FreeCell endCell)
+  +Map<integer,RelativeCell> getRelativeCells(Array<Tool> tools)???
 }
 class Wall {
   constructor(integer idCell, InterCellInfo interCellNull)
@@ -148,18 +146,40 @@ abstract class LeekRound {
   +Round roundObj
   +Map<integer,Array<Array<integer|boolean>>> effects
   #constructor(Round roundObj, Leek|LeekRound leek)
-  +update()
-  -categoriseTool(ToolRound toolRound)
-  +void simulateSetWeapon(integer weaponId)
-  +void simulateMoveToCell(integer cellId, integer usingMP)
+  +void update()
+  -void categoriseTool(ToolRound toolRound)
   +Map<integer,integer> route(integer remainingMP)
-  
+  +EffectResult addToolAction(integer toolId, integer targetCellId)
+  +void addMoveAction(integer cellId, integer usedMP)
+  +void addSetWeaponAction(integer weaponId)
+  +void execute()
+}
+abstract class ToolRound {
+ +Tool tool
+ +integer cooldown
+ +Round roundObj
+ +LeekRound owner
+ #constructor(Tool|ToolRound tool, LeekRound owner)
+ +EffectResult simulateUseOnCell(integer cellId)
+ #EffectResult simulateUse(Array<Integer> targets,integer cellId)
+ +void useOnCell(integer cellId)
+}
+class WeaponRound {
+ +constructor(Tool|ToolRound tool, LeekRound owner)
+ +void useOnCell(integer cellId)
+ +EffectResult simulateUseOnCell(integer cellId)
+}
+class ChipRound {
+ +constructor(Tool|ToolRound tool, LeekRound owner)
+ +void useOnCell(integer cellId)
+ +EffectResult simulateUseOnCell(integer cellId)
 }
 class MeRound {
  +integer relativeCenterCellId
  +Array<integer>|null pathToCenter
  +constructor(Round roundObj, MeRound|null clone = null)
  +integer getRelativeCenter()
+ +void execute()
 }
 class AllieRound {
   +constructor(Round roundObj, Leek|AllieRound leek)
@@ -218,5 +238,6 @@ LeekRound o-- WeaponRound : weaponsRound
 LeekRound o-- ChipRound : chipsRound
 ToolRound <|-- WeaponRound
 ToolRound <|-- ChipRound
+LeekRound o-- Action : actions
 
 @enduml

@@ -70,6 +70,8 @@ class LeekRound extends Objects {
   public Array<ChipRound|null> chipsRound = [];
   
   public Map<string,Array<ToolRound>> categories = [:];
+
+  public Array<Action> actions;
   
   /**
    * constructor
@@ -153,6 +155,10 @@ class LeekRound extends Objects {
         }
       }
       if(weaponId != null) weapon = toolsRound[weaponId!];
+
+      for(Action a in (leek as LeekRound).actions) {
+        push(actions, a);
+      }
         
     } else {
       
@@ -216,9 +222,10 @@ class LeekRound extends Objects {
    * mets a jour le leekround par rapport aux actions qui viennent d etre executer :
    * - met a jour la liste des chip dispo
    * - met a jour les valeurs caracteristique du leek
-   * le leekOnCell et le setWeapon son deja mis a jour par l execution des actions 
+   * - met a jour le leekOnCell
+   * - met a jour le setWeapon
    **/
-  public update() {
+  public void update() {
       
     minTP = maxTP = midTP = getTP(id)!;
     maxTotalLife = minTotalLife = midTotalLife = getTotalLife(id)!;
@@ -236,7 +243,13 @@ class LeekRound extends Objects {
     minPower = maxPower = midPower = getPower(id)!;
 
     maxInjury = midInjury = minInjury = 0;
+    if(weaponId = getWeapon(id)) weapon = toolsRound[weaponId!];
     
+    currentCell.leekOnCell = null;
+    currentCellId = getCell(id)!;
+    currentCell = roundObj.cellsRound[currentCellId];
+    currentCell.leekOnCell = this;
+
     Array<Array<integer | boolean>> effects = getEffects(id)!;
     this.effects = [:];
     for(Array<integer | boolean> effect in effects) {
@@ -259,43 +272,16 @@ class LeekRound extends Objects {
     
   /**
    * categoriseTool
+   * @param toolRound le toolround a ranger dans les categories
    **/
-  private categoriseTool(ToolRound toolRound) {
+  private void categoriseTool(ToolRound toolRound) {
     toolsRound[toolRound.id] = toolRound;
     Tool tool = toolRound.tool;
     for(string category in tool.categories) push(categories[category], toolRound);
     (tool.categories[CATEGORY_DAMAGE]) and
       (tool.maxAOERange > maxAOERange) and (maxAOERange = tool.maxAOERange);
   }
-  
-  /**
-   * simulateSetWeapon
-   * @param weaponId : l id du weapon a set
-   **/
-  public void simulateSetWeapon(integer weaponId) {
-    minTP -= SET_WEAPON_COST;
-    maxTP -= SET_WEAPON_COST;
-    midTP -= SET_WEAPON_COST;
-    this.weaponId = weaponId;
-    this.weapon = toolsRound[weaponId];
-  }
 
-  /**
-   * simulateMoveToCell
-   * se place sur cellId, on ne verifie pas qu on a assez de MP
-   * @param cellId : l id de la cell ou on place le leekround
-   * @param usingMP : nombre de MP a deduire du leekRound
-   **/
-  public void simulateMoveToCell(integer cellId, integer usingMP) {
-    minMP -= usingMP;
-    maxMP -= usingMP;
-    midMP -= usingMP;
-    currentCell.leekOnCell = null;
-    currentCellId = cellId;
-    currentCell = roundObj.cellsRound[cellId];
-    currentCell.leekOnCell = this;
-  }
-  
   /**
    * route
    * parcour tous les chemins possible en partant de la position courante avec remainingMP.
@@ -324,7 +310,50 @@ class LeekRound extends Objects {
     }
     return flatReachableCells
   }
+
+  /**
+   * ajoute une action de type ToolAction et la simule dans le round
+   * @param toolId l id du tool a utiliser
+   * @param targetCellId l id de la cell cible du tool
+   * @return les effets simuler de l action du tool
+   **/
+  public EffectResult addToolAction(integer toolId, integer targetCellId) {
+    ToolAction t = new ToolAction(toolId, targetCellId)
+    push(actions, t);
+    return toolsRound[toolId]!.simulateUseOnCell(targetCellId);
+  }
   
+  /**s
+   * addMoveAction
+   * @param cellId l id de la cell de destination
+   * @param usedMP le nombre de MP utiliser pour aller a cellId, attention aucune verification n est faite
+   **/
+  public void addMoveAction(integer cellId, integer usedMP) {
+    MoveAction t = new MoveAction(cellId);
+    push(actions, t);
+    minMP -= usingMP;s
+    maxMP -= usingMP;
+    midMP -= usingMP;
+    currentCell.leekOnCell = null;
+    currentCellId = cellId;
+    currentCell = roundObj.cellsRound[cellId];
+    currentCell.leekOnCell = this;
+  }
+
+  /**
+   * addSetWeaponAction
+   * ajoute une action setWeapon au leek et la simule
+   * @param weaponId l id du weapon a set
+   **/
+  public void addSetWeaponAction(integer weaponId) {
+    push(actions, new SetWeaponAction(weaponId));
+    minTP -= SET_WEAPON_COST;
+    maxTP -= SET_WEAPON_COST;
+    midTP -= SET_WEAPON_COST;
+    this.weaponId = weaponId;
+    this.weapon = toolsRound[weaponId];
+  }
+
 }
 
 /******************************************************************************
@@ -401,6 +430,8 @@ class MeRound extends LeekRound {
   public constructor(Round roundObj, MeRound|null clone = null) {
     if(clone != null) {
       super(roundObj, clone!);
+      relativeCenterCellId = clone.relativeCenterCellId
+      pathToCenter = clone.pathToCenter
     } else {
       super(roundObj, Board.me);
     }
@@ -440,34 +471,12 @@ class MeRound extends LeekRound {
   }
 
   /**
-   * setWeaponRound
+   * execute
+   * execute toutes les actions du leek et mets a jour le currentround
    **/
-  boolean setWeaponRound(integer weaponId) {
-    if(setWeapon(weaponId)) {
-      minTP = maxTP = midTP = getTP(id)!;
-      this.weaponId = weaponId;
-      this.weapon = this.toolsRound[weaponId];
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * moveToCell
-   * s approche de cellId
-   * @return new currentCellId
-   **/
-  integer moveToCell(integer cellId) {
-    GameDebug.add(LEEKROUND_DEBUG,cellId,"je veux aller a");
-    if(moveTowardCell(cellId)) {
-      minMP = maxMP = midMP = getMP(id)!;
-      currentCell.leekOnCell = null;
-      currentCellId = getCell(id)!;
-      currentCell = roundObj.cellsRound[currentCellId];
-      currentCell.leekOnCell = this;
-      return currentCellId;
-    }
-    return currentCellId;
+  public void execute() {
+    for(Action a in actions) a.execute();
+    Board.currentRound.update()
   }
 
 }

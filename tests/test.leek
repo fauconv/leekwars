@@ -1,4 +1,4 @@
-include("../v3/utils/gamedebug");
+include("../src/utils/gamedebug");
 
 integer opts, opts2;
 

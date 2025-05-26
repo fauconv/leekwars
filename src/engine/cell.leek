@@ -18,10 +18,12 @@ class Cell extends Objects {
   public Cell leftBottom;
   public Cell rightBottom;
   
-  Array<InterCellInfo> interCellInfo = []
+  public Array<InterCellInfo> interCellInfo = []
   
   /**
    * constructor
+   * @param idCell id de la cell a creer
+   * @param interCellNull l objet intercell unique pour les interecell non concerne
    **/
   protected constructor(integer idCell, InterCellInfo interCellNull) {
       
@@ -32,17 +34,43 @@ class Cell extends Objects {
     fill(interCellInfo, interCellNull, NB_CELLS);
       
   }
+    
+  /**
+   * toString
+   *
+   * @return string
+   **/
+  string string(string space = "") {
+    return this.class.name+":{ id:"+id+"\n  x:"+x+" y:"+y+" isWall:"+isWall+"}\n";
+  }
+}
+
+/******************************************************************************
+ * FreeCell
+ ******************************************************************************/
+class FreeCell extends Cell {
+  
+  /**
+   * constructor
+   * @param idCell id de la cell a creer
+   * @param interCellNull l objet intercell unique pour les interecell non concerne
+   **/
+  public constructor(integer idCell, InterCellInfo interCellNull) {
+    super(idCell, interCellNull);
+    isWall = false;
+    isDeadEnd = false;
+  }
   
   /**
    * getTrajectory
-   * equivalent de getPath mais en ligne droite
+   * equivalent de getPath mais en ligne droite entre this et endCell
    * calcule d interpolation lineaire pour obtenir le meme resultat que lineOfSight
-   * renvoi la liste des cellules en ligne droite entre la cellule courante et endCell
-   * La cellule de depart et d arrivee ne sont pas incluse dans la liste
+   * @param endCell la cellule objectif du chemin
+   * @return la liste des cellules en ligne droite entre la cellule courante et endCell. La cellule de depart et d arrivee ne sont pas incluse dans la liste
    * O(n) n = longueur de la liste
    *
    **/
-  Array<Integer> getTrajectory(Cell endCell) {
+  public Array<Integer> getTrajectory(FreeCell endCell) {
     integer x2 = endCell.x;
     integer y2 = endCell.y;
     integer dx = x2-x;
@@ -75,8 +103,11 @@ class Cell extends Objects {
    * getRelativeCells
    * determine les cellules que l on peut viser pour atteindre this grace a l AOE des tools
    * ne verifie pas que le tool peut atteindre la cellule vise
+   * @param tools la liste des tools dont on veut les relativeCell
+-------------------------------------------- TODO --------------------------------------------------------
+   * @return
    **/
-  Map<integer,RelativeCell> getRelativeCells(Array<Tool> tools) {
+  public Map<integer,RelativeCell> getRelativeCells(Array<Tool> tools) {
     Map<integer,RelativeCell> ret = [:];
     Cell|null reachableCell = this;
     for(Tool tool in tools) {
@@ -180,31 +211,7 @@ class Cell extends Objects {
     }
     return null;
   }
-    
-  /**
-   * toString
-   *
-   * @return string
-   **/
-  string string(string space = "") {
-    return this.class.name+":{ id:"+id+"\n  x:"+x+" y:"+y+" isWall:"+isWall+"}\n";
-  }
-}
 
-/******************************************************************************
- * FreeCell
- ******************************************************************************/
-class FreeCell extends Cell {
-  
-  /**
-   * constructor
-   **/
-  constructor(integer idCell, InterCellInfo interCellNull) {
-    super(idCell, interCellNull);
-    isWall = false;
-    isDeadEnd = false;
-  }
-  
 }
 
 /******************************************************************************

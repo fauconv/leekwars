@@ -1,20 +1,20 @@
 /******************************************************************************
  * ToolRound
- *
- * Exist only if cooldown == 0
  ******************************************************************************/
 class ToolRound extends Objects {
   
-  Tool tool;
-  integer cooldown; 
+  public Tool tool;
+  public integer cooldown; 
   // TODO: Ajout d une nombre d utilisation restant
-  Round roundObj;
-  LeekRound owner;
+  public Round roundObj;
+  public LeekRound owner;
   
   /**
    * constructor
+   * @param tool le tool correspondant au toolround
+   * @param owner le ower du tool
    **/
-  constructor(Tool|ToolRound tool, LeekRound owner) {
+  protected constructor(Tool|ToolRound tool, LeekRound owner) {
     this.owner = owner;
     roundObj = owner.roundObj;
     id = tool.id;
@@ -30,21 +30,26 @@ class ToolRound extends Objects {
   /**
    * simulateUseOnCell
    * abstract
+   * @param cellId l id de la cell cible du tool
    **/
-  EffectResult simulateUseOnCell(integer cellId) {
+  public EffectResult simulateUseOnCell(integer cellId) {
     return new EffectResult();
   }
 
   /**
    * simulateUse
-   * @return {integer minEffect, integer maxEffect, integer midEffect}
+   * @param targets la liste des cible atteinte par le tool
+   * @param AOE le multiplicateur d effet correspondant a la cible
+   * @return les effet combine du tool
    **/
-  EffectResult simulateUse(Array<Integer> targets = [this.owner.id], Array<real> AOEs = [1.0]) {
+  protected EffectResult simulateUse(Array<Integer> targets, integer cellId) {
+    Array<real> AOEs = [];
+    for(integer entity in entities)
+      push(AOEs, max(0.0,1.0-roundObj.leeksRound[entity]!.currentCell.cell.interCellInfo[cellId].range*AOE_DEC_LINE_FACTOR));
     integer cost = tool.cost;
     owner.minTP -= cost;
     owner.maxTP -= cost;
     owner.midTP -= cost;
-    if(owner.minTP < 0) debugC("ToolRound=>simulateUse=>ERREUR !!!!",COLOR_RED);
     cooldown = tool.cooldown;
     EffectResult delta = new EffectResult();
     real midCriticalLuck = owner.midAgility/1000.0;
@@ -71,8 +76,9 @@ class ToolRound extends Objects {
   /**
    * UseOnCell
    * abstract
+   * @cellId l id de la cell cible du tool
    **/
-  void useOnCell(integer cellId) {
+  public void useOnCell(integer cellId) {
   }
 
   /**
@@ -88,15 +94,15 @@ class ToolRound extends Objects {
 
 /******************************************************************************
  * WeaponRound
- *
- * Exist only if cooldown == 0
  ******************************************************************************/
 class WeaponRound extends ToolRound {
   
   /**
    * constructor
+   * @param tool le tool correspondant au toolround
+   * @param owner le owner du tool
    **/
-  constructor(Tool|ToolRound tool, LeekRound owner) {
+  public constructor(Tool|WeaponRound tool, LeekRound owner) {
     super(tool, owner);
   }
   
@@ -104,22 +110,20 @@ class WeaponRound extends ToolRound {
    * useOnCell
    * attention il ne degaine pas
    * Attention il faut faire un update du round apres
+   * @param cellId id de la cell cible du tir
    **/
-  void useOnCell(integer cellId) {
+  public void useOnCell(integer cellId) {
     useWeaponOnCell(cellId);
   }
 
   /**
    * simulateUseOnCell
+   * TODO: check si getWeaponTargets gere l enemi qui se tire sur lui meme
+   * @param cellId id de la cell cible du tir
+   * @return les effet combine du tool
    **/
-  EffectResult simulateUseOnCell(integer cellId) {
-    Array<integer> entities = getWeaponTargets(id, cellId)!; // ne gerer pas l enemi qui se tire sur lui meme
-    integer nbTarget = count(entities);
-    Array<real> AOEs = [];
-    for(integer entity in entities)
-      push(AOEs, max(0.0,1.0-
-                     roundObj.leeksRound[entity]!.currentCell.cell.interCellInfo[cellId].range*AOE_DEC_LINE_FACTOR));
-    return simulateUse(entities, AOEs);
+  public EffectResult simulateUseOnCell(integer cellId) {
+    return simulateUse(getWeaponTargets(id, cellId), cellId);
   }
     
 }
@@ -133,31 +137,30 @@ class ChipRound extends ToolRound {
   
   /**
    * constructor
+   * @param tool le tool correspondant au toolround
+   * @param owner le owner du tool
    **/
-  constructor(Tool|ToolRound tool, LeekRound owner) {
+  public constructor(Tool|ToolRound tool, LeekRound owner) {
     super(tool, owner);
   }
   
   /**
    * useOnCell
    * Attention il faut faire un update du round apres
+   * @param cellId id de la cell cible du tir
    **/
-  void useOnCell(integer cellId) {
+  public void useOnCell(integer cellId) {
     useChipOnCell(id, cellId);
   }
   
   /**
    * simulateUseOnCell
+   * TODO: check si getChipTargets gere l enemi qui se tire sur lui meme
+   * @param cellId id de la cell cible du tir
+   * @return les effet combine du tool
    **/
-  EffectResult simulateUseOnCell(integer cellId) {
-    Array<integer> entities = getChipTargets(id, cellId)!; // ne gerer pas l enemi qui se tire sur lui meme
-    if(owner.id != Board.myId && roundObj.leeksRound[owner.id]!.currentCellId == cellId) push(entities, owner.id); 
-    integer nbTarget = count(entities);
-    Array<real> AOEs = [];
-    for(integer entity in entities)
-      push(AOEs, max(0.0,1.0-
-					 roundObj.leeksRound[entity]!.currentCell.cell.interCellInfo[cellId].range*AOE_DEC_LINE_FACTOR));   
-    return simulateUse(entities, AOEs);
+  public EffectResult simulateUseOnCell(integer cellId) {
+    return simulateUse(getChipTargets(id, cellId), cellId);
   }
     
 }
