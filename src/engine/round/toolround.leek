@@ -1,5 +1,6 @@
 /******************************************************************************
  * ToolRound
+ * information d'un tool qui change a chaque tour weapon ou chip
  ******************************************************************************/
 class ToolRound extends Objects {
   
@@ -86,6 +87,9 @@ class ToolRound extends Objects {
    *
    * @return string
    **/
+  string string(string space = "") {
+    return shortString();
+  }
   string shortString(string space = "") {
     return this.class.name+"("+TOOL_NAME_TRANSLATOR[id]+")";
   }

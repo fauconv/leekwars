@@ -1,16 +1,14 @@
 include("const");
 include("cell");
-include("effect");
 include("leek");
 include("relativecell");
 include("round/round");
-include("tool");
 include("effectresult");
 include("effectfunctions");
-include("action");
 
 /******************************************************************************
  * Board
+ * plateau du jeu contiens toute la simulation
  * TODO : cas des summon
  ******************************************************************************/
 class Board extends Objects {

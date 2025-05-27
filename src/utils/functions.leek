@@ -8,7 +8,8 @@ global integer CHIP_EXASPERATION = 425;
 
 /***
  * first
- * Retourne le premier element d'une map
+ * @param map la map dont on veut un element
+ * @return un element de la map (les elements ne sont pas ordonnes)
  * 3 operations
  **/
 function mapFirst(Map<any,any> map) => any {
@@ -18,7 +19,8 @@ function mapFirst(Map<any,any> map) => any {
 
 /***
  * objectSize
- * Retourne le nombre d'element dans un objet anonyme
+ * @param obj un objet anonyme
+ * @return le nombre d'element de l objet
  * 3 operations
  **/
 function objectSize(Object obj) => integer {
@@ -28,6 +30,8 @@ function objectSize(Object obj) => integer {
 /**
  * arrayConcatOpti
  * Plus interessant que arrayConcat si count(tab1) > 2*count(tab2) + 2
+ * @param tab1 en entre un tableau, a la sortie un tableau contenant tab1+tab2
+ * @param tab2 un tableau
  * O(count(tab2))
  **/
 function arrayConcatOpti(Array<any> tab1, Array<any> tab2) => void {

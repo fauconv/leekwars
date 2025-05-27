@@ -4,6 +4,7 @@ include("functions");
 
 /*****************************************************************************
  * GameDebug
+ * permet un debugage plus fin 
  *****************************************************************************/
 class GameDebug {
   
@@ -12,7 +13,7 @@ class GameDebug {
   private static integer ram = 0;
  
   /**
-   * str
+   * display
    **/
   static void display() {
     addOperation(true, "( "+getTP()+" TP / "+getMP()+" MP left ) total operations, turn "+getTurn(), 0,0);

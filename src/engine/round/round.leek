@@ -1,9 +1,9 @@
-include("toolround");
 include("leekround");
 include("cellround");
 
 /******************************************************************************
  * Round
+ * information sur un tour  de jeu (simule ou reel)
  ******************************************************************************/
 class Round extends Objects {
   

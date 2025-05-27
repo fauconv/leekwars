@@ -1,5 +1,6 @@
 /******************************************************************************
  * Action (Abstract)
+ * action que doit realiser un leek en simulation en ou vrai
  ******************************************************************************/
 class Action extends Objects {
   

@@ -1,5 +1,6 @@
 /******************************************************************************
  * CellRound
+ * information d une cellule, qui change a chaque tour
  ******************************************************************************/
 class CellRound extends Objects {
   

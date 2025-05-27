@@ -10,6 +10,7 @@ package engine {
     class LeekRound
     class CellRound
     class ToolRound
+    class Action
   }
   class Board
   class Cell 
@@ -22,7 +23,6 @@ package engine {
   class InterCellInfo
   class RelativeCell
   class Strategy
-  class Action
   class Talk
 }
 
@@ -39,7 +39,7 @@ main -> GameDebug
 main --> Strategy
 Strategy --> Board
 Strategy -> Talk
-Board --> Action
+LeekRound --> Action
 Board --> effectfunctions
 Board --> EffectResult
 Board --> Round 
@@ -48,10 +48,10 @@ Round --> CellRound
 Round --> LeekRound
 Board --> Cell
 Cell --> InterCellInfo
-Round --> ToolRound
-Board --> Tool
+LeekRound --> ToolRound
+Leek --> Tool
 Board --> Leek
-Board --> Effect
+Tool --> Effect
 Board --> RelativeCell
 GameDebug --> Objects
 GameDebug --> Chain

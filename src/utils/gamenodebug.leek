@@ -4,11 +4,13 @@ include("functions");
 
 /*****************************************************************************
  * GameDebug
+ * empeche le calcul et l affichage des debugs
+ * la classe ne fait rien
  *****************************************************************************/
 class GameDebug {
   
   /**
-   * str
+   * display
    **/
   static void display() {
   }
