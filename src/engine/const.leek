@@ -280,6 +280,7 @@ global Array<string> CATEGORIES = [
 ];
 
 //
+// categorise les effets et donne la fonction qui calcul l effet
 // voir la liste des fonction dans effectfunctions
 //
 global Map<integer,Array<any>> EFFECT_TYPE_TRANSLATOR_CATEGORY = [

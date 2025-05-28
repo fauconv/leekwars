@@ -1,15 +1,20 @@
 /******************************************************************************
- * EffectResult
+ * RealEffectResult
+ * encapsule les calculs des effets
  ******************************************************************************/
-class EffectResult extends Objects {
-  integer minEffect;
-  integer maxEffect;
-  integer midEffect;
+class RealEffectResult extends Objects {
+
+  public real minEffect;  // valeur minimum
+  public real maxEffect;  // valeur maximum
+  public real midEffect;  // valeur probable
   
   /**
    * constructor
+   * @param minEffect valeur minimum
+   * @param maxEffect valeur maximum
+   * @param midEffect valeur probable
    **/
-  constructor(integer minEffect = 0, integer maxEffect = 0, integer midEffect = 0) {
+  public constructor(real minEffect = 0, real maxEffect = 0, real midEffect = 0) {
     this.minEffect = minEffect;
     this.maxEffect = maxEffect;
     this.midEffect = midEffect;
@@ -17,22 +22,33 @@ class EffectResult extends Objects {
 
   /**
    * add
+   * this = this + er
+   * @param er l effectResult a ajouter
    **/
-  EffectResult add(EffectResult er) {
+  public void add(RealEffectResult er) {
     minEffect += er.minEffect;
     maxEffect += er.maxEffect;
     midEffect += er.midEffect;
-    return this;
   }
     
   /**
    * subtract
+   * this = this - er
+   * @param er l effectResult a soustraire
    **/
-  EffectResult subtract(EffectResult er) {
+  public void subtract(RealEffectResult er) {
     minEffect -= er.minEffect;
     maxEffect -= er.maxEffect;
     midEffect -= er.midEffect;
-    return this;
+  }
+
+  /**
+   * RoundedDmg
+   * @param targetDmg : {real minEffect, real maxEffect, real midEffect}
+   * @return {integer minEffect, integer maxEffect, integer midEffect}
+   **/
+  IntegerEffectResult round() {
+    return new IntegerEffectResult(round(minEffect),round(maxEffect), round(midEffect));
   }
 
   /**
@@ -44,4 +60,60 @@ class EffectResult extends Objects {
   string shortString(string space = "") {
     return string(); 
   }
+}
+
+/******************************************************************************
+ * IntegerEffectResult
+ * encapsule les calculs des effets
+ ******************************************************************************/
+class IntegerEffectResult extends Objects {
+
+  public integer minEffect;  // valeur minimum
+  public integer maxEffect;  // valeur maximum
+  public integer midEffect;  // valeur probable
+  
+  /**
+   * constructor
+   * @param minEffect valeur minimum
+   * @param maxEffect valeur maximum
+   * @param midEffect valeur probable
+   **/
+  public constructor(integer minEffect = 0, integer maxEffect = 0, integer midEffect = 0) {
+    this.minEffect = minEffect;
+    this.maxEffect = maxEffect;
+    this.midEffect = midEffect;
+  }
+  
+  /**
+   * add
+   * this = this + er
+   * @param er l effectResult a ajouter
+   **/
+  public void add(IntegerEffectResult er) {
+    minEffect += er.minEffect;
+    maxEffect += er.maxEffect;
+    midEffect += er.midEffect;
+  }
+    
+  /**
+   * subtract
+   * this = this - er
+   * @param er l effectResult a soustraire
+   **/
+  public void subtract(IntegerEffectResult er) {
+    minEffect -= er.minEffect;
+    maxEffect -= er.maxEffect;
+    midEffect -= er.midEffect;
+  }
+  
+  /**
+   * string
+   **/
+  string string(string space = "") {
+    return "{minEffect:"+minEffect+", maxEffect:"+maxEffect+", midEffect:"+midEffect+"}";
+  }
+  string shortString(string space = "") {
+    return string(); 
+  }
+  
 }

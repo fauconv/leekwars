@@ -1,10 +1,8 @@
 include("const");
 include("cell");
 include("leek");
-include("relativecell");
 include("round/round");
 include("effectresult");
-include("effectfunctions");
 
 /******************************************************************************
  * Board

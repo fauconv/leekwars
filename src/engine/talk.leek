@@ -2,6 +2,8 @@
  * Talk
  * static
  *
+ * permet de faire parler le poireau automatiquement
+ *
  * contextType filter :
  *   1 = appel a l index courant
  *   2 = appel d un index random avec suppression des phrases utilises
@@ -17,24 +19,24 @@
  *
  *****************************************************************************/
 class Talk extends Objects {
-  static integer CURRENT      = 0b000001;
-  static integer RANDOM       = 0b000010;
-  static integer INC          = 0b000100;
-  static integer INC_REP      = 0b001000;
-  static integer UNI          = 0b010000;
-  static integer UNIQ         = 0b010001;
-  static integer UNI_RAND     = 0b010010;
-  static integer UNI_INC      = 0b010100;
-  static integer UNI_INC_REP  = 0b011000;
-  static integer MIX          = 0b100000;
-  static integer UNI_RAND_MIX = 0b100010;
-  static string CONT_START   = "start";
-  static string CONT_END     = "end";
-  static string CONT_NORMAL  = "normal";
-  static string context;
-  static Object iteration    = {start:0,normal:0,end:0}; // index du context
-  static Object contextType  = {start:RANDOM,normal:RANDOM,end:RANDOM};
-  static Object sentences    = {start:["Hello",
+  public static integer CURRENT      = 0b000001;
+  public static integer RANDOM       = 0b000010;
+  public static integer INC          = 0b000100;
+  public static integer INC_REP      = 0b001000;
+  public static integer UNI          = 0b010000;
+  public static integer UNIQ         = 0b010001;
+  public static integer UNI_RAND     = 0b010010;
+  public static integer UNI_INC      = 0b010100;
+  public static integer UNI_INC_REP  = 0b011000;
+  public static integer MIX          = 0b100000;
+  public static integer UNI_RAND_MIX = 0b100010;
+  public static string CONT_START   = "start";
+  public static string CONT_END     = "end";
+  public static string CONT_NORMAL  = "normal";
+  public static string context;
+  private static Object iteration    = {start:0,normal:0,end:0}; // index du context
+  public static Object contextType  = {start:RANDOM,normal:RANDOM,end:RANDOM};
+  public static Object sentences    = {start:["Hello",
                                        "Oh ! un autre poireau ! Salut !", 
                                        "Je poureautais dans l'coin, quand on m'a dit : toi tu seras un poireau de combat"],
                                 normal:["Hum... il me reste des PT, t'en veux ?", 
@@ -57,10 +59,13 @@ class Talk extends Objects {
                                      "Oups pardon", 
                                      "tu dis rien... t'es mort ?... ah oui !"]
                         }; // Object(Array(string))
-  static text = "";
+  public static text = "";
   
   /**
    * talk
+   * fait parler le poireau si il reste assez de TP.
+   * si il a quelque chose (dans text) a dire il le dit, sinon il choisi une phrase a dire en fonction du context 
+   * et du type dans le context
    **/
   static void talk() {
     if(getTP() > 0) {
@@ -92,6 +97,10 @@ class Talk extends Objects {
   
   /**
    * addContext
+   * permet d ajouter un nouveau context
+   * @param name nom du context
+   * @param type type dans le context
+   * @param list liste des phrases du context
    **/
   static void addContext(string name, integer type, Array<string> list) {
     iteration[name]   = 0;  

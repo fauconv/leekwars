@@ -1,5 +1,6 @@
 include("movecell");
 include("basicstrategytools");
+include("relativecell");
 
 /****************************************************************************
  * BasicStrategy
@@ -71,7 +72,7 @@ class BasicStrategy extends Strategy {
       
     GameDebug.add(BASIC_STRATEGY_DEBUG,myStrategy,"myStrategy");
     GameDebug.add(BASIC_STRATEGY_DEBUG,enemyRound.state,"enemyState");
-	GameDebug.add(BASIC_STRATEGY_DEBUG,myState,"myState");
+    GameDebug.add(BASIC_STRATEGY_DEBUG,myState,"myState");
       
     //
     // phase 1 : on determine les mouvements possibles de mon poireau et du poireau adverse

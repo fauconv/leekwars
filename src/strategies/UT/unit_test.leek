@@ -6,7 +6,6 @@ class UnitTest extends Strategy {
   static MeRound meRound;       // MeRound
   static EnemyRound enemyRound;    // EnemyRound
   static Round currentRound;  // Round
-  static Round oldRound;
   
   /**
    * isValide
@@ -38,13 +37,11 @@ class UnitTest extends Strategy {
       leek();
       leekRound();
       tool();
-      oldRound = currentRound;
       meRound.moveToCell(meRound.getRelativeCenter());
       return true;
     }
     roundTest();
     toolRound();
-    oldRound = currentRound;
     return true;
   }
   

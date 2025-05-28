@@ -33,8 +33,8 @@ class ToolRound extends Objects {
    * abstract
    * @param cellId l id de la cell cible du tool
    **/
-  public EffectResult simulateUseOnCell(integer cellId) {
-    return new EffectResult();
+  public IntegerEffectResult simulateUseOnCell(integer cellId) {
+    return new IntegerEffectResult();
   }
 
   /**
@@ -43,7 +43,7 @@ class ToolRound extends Objects {
    * @param AOE le multiplicateur d effet correspondant a la cible
    * @return les effet combine du tool
    **/
-  protected EffectResult simulateUse(Array<Integer> targets, integer cellId) {
+  protected IntegerEffectResult simulateUse(Array<Integer> targets, integer cellId) {
     Array<real> AOEs = [];
     for(integer entity in entities)
       push(AOEs, max(0.0,1.0-roundObj.leeksRound[entity]!.currentCell.cell.interCellInfo[cellId].range*AOE_DEC_LINE_FACTOR));
@@ -52,20 +52,20 @@ class ToolRound extends Objects {
     owner.maxTP -= cost;
     owner.midTP -= cost;
     cooldown = tool.cooldown;
-    EffectResult delta = new EffectResult();
+    IntegerEffectResult delta = new IntegerEffectResult();
     real midCriticalLuck = owner.midAgility/1000.0;
     real criticalFactor = CRITICAL_FACTOR;
     (owner.maxAgility <= 0) and (criticalFactor = 1.0);
     for(Effect effect in tool.effects) {
       if(effect.modOnCast) {
-        EffectResult delta2 = effect.simulateUse(owner, owner, 1.0, 1, midCriticalLuck, criticalFactor)
+        IntegerEffectResult delta2 = effect.simulateUse(owner, owner, 1.0, 1, midCriticalLuck, criticalFactor)
         GameDebug.add(EFFECT_DEBUG, delta2,"simulateUse (modOnCast)");
         delta.add(delta2);
       } else {
         integer nbTargets = count(targets);
         for(integer i : integer targetId in targets) {
           LeekRound target = roundObj.leeksRound[targetId]!;
-          EffectResult delta2 = effect.simulateUse(owner, target, AOEs[i], nbTargets, midCriticalLuck, criticalFactor)
+          IntegerEffectResult delta2 = effect.simulateUse(owner, target, AOEs[i], nbTargets, midCriticalLuck, criticalFactor)
           GameDebug.add(EFFECT_DEBUG, delta2,"simulateUse");
           delta.add(delta2);
         }

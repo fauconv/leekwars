@@ -27,7 +27,7 @@ if(!gBoardInit) {
  *************************************************************************/
 include("strategies/UT/unit_test");
 include("strategies/basicstrategy/basicstrategy");
-Strategy availableStrategie = new Strategy();       // selected strategy
+Strategy availableStrategie = new Strategy();
 if(UnitTest.isValide()) availableStrategie = new UnitTest();
 else if(BasicStrategy.isValide()) availableStrategie = new BasicStrategy();
 

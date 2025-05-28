@@ -1,5 +1,9 @@
+include("effectfunctions");
+
 /******************************************************************************
  * Effect
+ * modelise l effet d un weapon ou d un chip
+ *
  * [0:type, 1:min, 2:max, 3:turns, 4:targets, 5:modifiers]
  ******************************************************************************/
 class Effect extends Objects {
@@ -20,7 +24,7 @@ class Effect extends Objects {
   public boolean modNoRep;
   public boolean modOnCast;
   public boolean modStack;
-  public Function<Effect, LeekRound, LeekRound => EffectResult> simulateUseFunction; // function (Effect obj, LeekRound shooter, LeekRound target, real AOE, real midCriticalLuck) => EffectResult
+  public Function<Effect, LeekRound, LeekRound => IntegerEffectResult> simulateUseFunction; // function (Effect obj, LeekRound shooter, LeekRound target, real AOE, real midCriticalLuck) => IntegerEffectResult
   
   public Tool owner;
 
@@ -44,7 +48,7 @@ class Effect extends Objects {
       debugC("Effect=>constructor=>type("+type+")inconnu sur tool("+owner.id+")",COLOR_RED);
       category = "categoryOther";
       setRegister("error_Effect_category_"+type, "Effect=>constructor=>type("+type+")inconnu sur tool("+owner.id+")");
-      simulateUseFunction = EFFECT_TYPE_TRANSLATOR_CATEGORY[type]![2] as Function<Effect, LeekRound, LeekRound => EffectResult>;
+      simulateUseFunction = EFFECT_TYPE_TRANSLATOR_CATEGORY[type]![2] as Function<Effect, LeekRound, LeekRound => IntegerEffectResult>;
     } else {
       category = EFFECT_TYPE_TRANSLATOR_CATEGORY[type]![1] as string;
       simulateUseFunction = effect_default;
@@ -75,19 +79,19 @@ class Effect extends Objects {
    * le shooter et le target doivent etre du meme round
    * @return {integer minEffect, integer maxEffect, integer midEffect}
    **/
-  EffectResult simulateUse(LeekRound shooter, LeekRound target, real AOE, integer nbTargets, real midCriticalLuck, 
-                            real criticalFactor) {
+  IntegerEffectResult simulateUse(LeekRound shooter, LeekRound target, real AOE, integer nbTargets, real midCriticalLuck, 
+                                  real criticalFactor) {
     
     Leek targetLeek = target.leek;
-	Leek shooterLeek = shooter.leek;
+    Leek shooterLeek = shooter.leek;
     if((targetLeek.isAllie && shooterLeek.isAllie && !targetAllie) ||
-	   (targetLeek.isEnemy && shooterLeek.isEnemy && !targetAllie) ||
+       (targetLeek.isEnemy && shooterLeek.isEnemy && !targetAllie) ||
        (targetLeek.isEnemy && shooterLeek.isAllie && !targetEnemy) ||
-	   (targetLeek.isAllie && shooterLeek.isEnemy && !targetEnemy) ||
+       (targetLeek.isAllie && shooterLeek.isEnemy && !targetEnemy) ||
        (targetLeek.isSummon && !targetSummon) ||
        (!targetLeek.isSummon && !targetNonSummon) ||
        (modNoRep && mapContainsKey(target.effects, type)) ||
-       (shooter.id == target.id && !targetCaster)) return new EffectResult();
+       (shooter.id == target.id && !targetCaster)) return new IntegerEffectResult();
     
     (modMulti) and (AOE *= nbTargets);
     
@@ -103,14 +107,13 @@ class Effect extends Objects {
   /**
    * targetDmg
    * define damage to target
+   * on ne peut pas utiliser EffectResult car on veut des real
    * @return {real minEffect, real maxEffect, real midEffect}
    **/
-  Object targetDmg(integer minCarac, integer maxCarac, integer midCarac) {
-    return {
-      minEffect: max(0.0, tmpMinEffect*(1.0+(minCarac/100.0))),
-      maxEffect: max(0.0, tmpMaxEffect*(1.0+(maxCarac/100.0))),
-      midEffect: max(0.0, tmpMidEffect*(1.0+(midCarac/100.0)))
-    }
+  RealEffectResult targetDmg(integer minCarac, integer maxCarac, integer midCarac) {
+    return new RealEffectResult(max(0.0, tmpMinEffect*(1.0+(minCarac/100.0))),
+                                max(0.0, tmpMaxEffect*(1.0+(maxCarac/100.0))),
+                                max(0.0, tmpMidEffect*(1.0+(midCarac/100.0))))
   }
     
   /**
@@ -118,30 +121,20 @@ class Effect extends Objects {
    * @param targetDmg : {real minEffect, real maxEffect, real midEffect}
    * @return {integer minEffect, integer maxEffect, integer midEffect}
    **/
-  EffectResult dmgReturn(LeekRound target, Object targetDmg) {
-    return new EffectResult(round(targetDmg.minEffect * target.minDmgReturn / 100.0), 
-                            round(targetDmg.maxEffect * target.maxDmgReturn / 100.0),
-                            round(targetDmg.midEffect * target.midDmgReturn / 100.0));
+  IntegerEffectResult dmgReturn(LeekRound target, RealEffectResult targetDmg) {
+    return new IntegerEffectResult(round(targetDmg.minEffect * target.minDmgReturn / 100.0), 
+                                   round(targetDmg.maxEffect * target.maxDmgReturn / 100.0),
+                                   round(targetDmg.midEffect * target.midDmgReturn / 100.0));
   }
 
   /**
    * shield
    * @param targetDmg : {real minEffect, real maxEffect, real midEffect}
    **/
-  void shield(LeekRound target, Object targetDmg) {
-    targetDmg.minEffect = max(0.0, (targetDmg.minEffect as real*(1-(target.maxRelativeShield/100))-target.maxAbsoluteShield));
-    targetDmg.maxEffect = max(0.0, (targetDmg.maxEffect as real*(1-(target.minRelativeShield/100))-target.minAbsoluteShield));
-    targetDmg.midEffect = max(0.0, (targetDmg.midEffect as real*(1-(target.midRelativeShield/100))-target.midAbsoluteShield));
-  }
-
-  /**
-   * RoundedDmg
-   * @param targetDmg : {real minEffect, real maxEffect, real midEffect}
-   * @return {integer minEffect, integer maxEffect, integer midEffect}
-   **/
-  EffectResult roundedDmg(Object targetDmg) {
-    return new EffectResult(round(targetDmg.minEffect as real),round(targetDmg.maxEffect as real), 
-                            round(targetDmg.midEffect as real));
+  void shield(LeekRound target, RealEffectResult targetDmg) {
+    targetDmg.minEffect = max(0.0, (targetDmg.minEffect*(1-(target.maxRelativeShield/100))-target.maxAbsoluteShield));
+    targetDmg.maxEffect = max(0.0, (targetDmg.maxEffect*(1-(target.minRelativeShield/100))-target.minAbsoluteShield));
+    targetDmg.midEffect = max(0.0, (targetDmg.midEffect*(1-(target.midRelativeShield/100))-target.midAbsoluteShield));
   }
 
   /**
@@ -150,17 +143,17 @@ class Effect extends Objects {
    * @param targetDmg : {real minEffect, real maxEffect, real midEffect}
    * @return {integer minEffect, integer maxEffect, integer midEffect}
    **/
-  EffectResult applyDmg(LeekRound target, Object targetDmg) {
-    integer minDmg = round(targetDmg.minEffect as real);
-    integer maxDmg = round(targetDmg.maxEffect as real);
-    integer midDmg = round(targetDmg.midEffect as real);
+  IntegerEffectResult applyDmg(LeekRound target, RealEffectResult targetDmg) {
+    integer minDmg = round(targetDmg.minEffect);
+    integer maxDmg = round(targetDmg.maxEffect);
+    integer midDmg = round(targetDmg.midEffect);
     target.minInjury += minDmg; // injury target
     target.maxInjury += maxDmg;
     target.midInjury += midDmg;
     target.minLife -= maxDmg; // life target
     target.maxLife -= minDmg;
     target.midLife -= midDmg;
-    return new EffectResult(minDmg, maxDmg, midDmg);
+    return new IntegerEffectResult(minDmg, maxDmg, midDmg);
   }
   
   /**
@@ -168,7 +161,7 @@ class Effect extends Objects {
    * apply damage to target
    * @param roundedDmg : {integer minEffect, integer maxEffect, integer midEffect}
    **/
-  void applyHeal(LeekRound target, EffectResult roundedDmg) {
+  void applyHeal(LeekRound target, IntegerEffectResult roundedDmg) {
     roundedDmg.minEffect = min(roundedDmg.minEffect, target.minTotalLife-target.minLife);
     roundedDmg.maxEffect = min(roundedDmg.maxEffect, target.maxTotalLife-target.maxLife);
     roundedDmg.midEffect = min(roundedDmg.midEffect, target.midTotalLife-target.midLife);
@@ -185,7 +178,7 @@ class Effect extends Objects {
    * erosion ne peut pas etre inferieur a la vie courante
    * @param roundedDmg : {integer minEffect, integer maxEffect, integer midEffect}
    **/
-  void applyErosion(LeekRound target, real erosionFactor, EffectResult roundedDmg) {
+  void applyErosion(LeekRound target, real erosionFactor, IntegerEffectResult roundedDmg) {
     target.maxTotalLife = max(target.maxLife, target.maxTotalLife-round(erosionFactor * roundedDmg.minEffect));
     target.minTotalLife = max(target.minLife, target.minTotalLife-round((erosionFactor + CRITICAL_EROSION) *
                                                                         roundedDmg.maxEffect));
@@ -199,8 +192,8 @@ class Effect extends Objects {
    * @param dmgReturn : {integer minEffect, integer maxEffect, integer midEffect}
    * @return {integer minEffect, integer maxEffect, integer midEffect}
    **/
-  EffectResult lifeSteal(LeekRound shooter, EffectResult roundedDmg, EffectResult dmgReturn) {
-    return new EffectResult(
+  IntegerEffectResult lifeSteal(LeekRound shooter, IntegerEffectResult roundedDmg, IntegerEffectResult dmgReturn) {
+    return new IntegerEffectResult(
       max(dmgReturn.minEffect - round(roundedDmg.maxEffect * (shooter.maxWisdom / 1000)), 
           shooter.minLife - shooter.minTotalLife), // le vol de vie ne peut pas ramener plus de vie que la totallife
       max(dmgReturn.maxEffect - round(roundedDmg.minEffect * (shooter.minWisdom / 1000)), 
@@ -214,7 +207,7 @@ class Effect extends Objects {
    * applyLifeSteal
    * @param shooterDmg : {integer minEffect, integer maxEffect, integer midEffect}
    **/
-  void applyLifeStealAndDmgReturn(LeekRound shooter, EffectResult shooterDmg) {
+  void applyLifeStealAndDmgReturn(LeekRound shooter, IntegerEffectResult shooterDmg) {
     shooter.minInjury += shooterDmg.minEffect; // injury shooter
     shooter.maxInjury += shooterDmg.maxEffect;
     shooter.midInjury += shooterDmg.midEffect;

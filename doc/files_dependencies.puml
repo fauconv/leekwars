@@ -21,7 +21,6 @@ package engine {
   frame effectfunctions
   class EffectResult
   class InterCellInfo
-  class RelativeCell
   class Strategy
   class Talk
 }
@@ -40,7 +39,7 @@ main --> Strategy
 Strategy --> Board
 Strategy -> Talk
 LeekRound --> Action
-Board --> effectfunctions
+Effect --> effectfunctions
 Board --> EffectResult
 Board --> Round 
 Board --> const
@@ -52,7 +51,6 @@ LeekRound --> ToolRound
 Leek --> Tool
 Board --> Leek
 Tool --> Effect
-Board --> RelativeCell
 GameDebug --> Objects
 GameDebug --> Chain
 GameDebug --> functions

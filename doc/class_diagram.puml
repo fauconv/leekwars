@@ -19,6 +19,14 @@ class ToolAction {
   +constructor(integer toolId, integer targetCell)
   +execute()
 }
+entity Talk {
+  {static} +string context;
+  {static} -Object iteration
+  {static} +Object contextType
+  {static} +Object sentences
+  {static} +void talk()
+  {static} +void addContext(string name, integer type, Array<string> list)
+}
 entity Board {
   {static} +integer myId
   {static} +integer maxAOERange
@@ -43,21 +51,20 @@ abstract class Cell {
   +Cell leftBottom
   +Cell rightBottom
   #constructor(integer idCell, InterCellInfo interCellNull)
+  +Array<Integer> getTrajectory(Cell endCell)
 }
 class FreeCell {
   +constructor(integer idCell, InterCellInfo interCellNull)
-  +Array<Integer> getTrajectory(FreeCell endCell)
-  +Map<integer,RelativeCell> getRelativeCells(Array<Tool> tools)???
 }
 class Wall {
-  constructor(integer idCell, InterCellInfo interCellNull)
+  +constructor(integer idCell, InterCellInfo interCellNull)
 }
 class InterCellInfo {
   +integer range
   +boolean isInline
   +boolean isDiag
-  constructor()
-  constructor(Cell cellFrom, Cell cellTo)
+  +constructor()
+  +constructor(Cell cellFrom, Cell cellTo)
 }
 class CellRound {
   +Cell cell
@@ -67,7 +74,7 @@ class CellRound {
 }
 class Effect {
   +string category
-  +Enumeration type
+  +Enum type
   +integer minEffect
   +integer maxEffect
   +integer midEffect
@@ -83,14 +90,40 @@ class Effect {
   +boolean modOnCast
   +boolean modStack
   +Tool owner
-  +Function<Effect, LeekRound, LeekRound => EffectResult> simulateUseFunction???
-  +real tmpMidCriticalLuck???
-  +real tmpMinEffect???
-  +real tmpMaxEffect???
-  +real tmpMidEffect???
-  constructor(Array<integer|real> effectArray, Tool owner)
+  +Function<Effect, LeekRound, LeekRound => IntegerEffectResult> simulateUseFunction???
+  +real tmpMidCriticalLuck
+  +real tmpMinEffect
+  +real tmpMaxEffect
+  +real tmpMidEffect
+  +constructor(Array<integer|real> effectArray, Tool owner)
+  +IntegerEffectResult simulateUse(LeekRound shooter, LeekRound target, real AOE, integer nbTargets, real midCriticalLuck, real criticalFactor)
+  +RealEffectResult targetDmg(integer minCarac, integer maxCarac, integer midCarac)
+  +IntegerEffectResult dmgReturn(LeekRound target, RealEffectResult targetDmg)
+  +void shield(LeekRound target, RealEffectResult targetDmg)
+  +IntegerEffectResult applyDmg(LeekRound target, RealEffectResult targetDmg)
+  +void applyHeal(LeekRound target, IntegerEffectResult roundedDmg)
+  +void applyErosion(LeekRound target, real erosionFactor, IntegerEffectResult roundedDmg)
+  +IntegerEffectResult lifeSteal(LeekRound shooter, IntegerEffectResult roundedDmg, IntegerEffectResult dmgReturn)
+  +void applyLifeStealAndDmgReturn(LeekRound shooter, IntegerEffectResult shooterDmg)
+  
 }
-class EffectResult
+class RealEffectResult {
+  +real minEffect
+  +real maxEffect
+  +real midEffect
+  +constructor(real minEffect = 0, real maxEffect = 0, real midEffect = 0)
+  +void add(RealEffectResult er)
+  +void subtract(RealEffectResult er)
+  +IntegerEffectResult round()
+}
+class IntegerEffectResult {
+  +integer minEffect
+  +integer maxEffect
+  +integer midEffect
+  +constructor(integer minEffect = 0, integer maxEffect = 0, integer midEffect = 0)
+  +void add(IntegerEffectResult er)
+  +void subtract(IntegerEffectResult er)
+}
 abstract class LeekRound {
   +Leek leek
   +CellRound currentCell
@@ -155,31 +188,31 @@ abstract class LeekRound {
   +void execute()
 }
 abstract class ToolRound {
- +Tool tool
- +integer cooldown
- +Round roundObj
- +LeekRound owner
- #constructor(Tool|ToolRound tool, LeekRound owner)
- +EffectResult simulateUseOnCell(integer cellId)
- #EffectResult simulateUse(Array<Integer> targets,integer cellId)
- +void useOnCell(integer cellId)
+  +Tool tool
+  +integer cooldown
+  +Round roundObj
+  +LeekRound owner
+  #constructor(Tool|ToolRound tool, LeekRound owner)
+  +EffectResult simulateUseOnCell(integer cellId)
+  #EffectResult simulateUse(Array<Integer> targets,integer cellId)
+  +void useOnCell(integer cellId)
 }
 class WeaponRound {
- +constructor(Tool|ToolRound tool, LeekRound owner)
- +void useOnCell(integer cellId)
- +EffectResult simulateUseOnCell(integer cellId)
+  +constructor(Tool|ToolRound tool, LeekRound owner)
+  +void useOnCell(integer cellId)
+  +EffectResult simulateUseOnCell(integer cellId)
 }
 class ChipRound {
- +constructor(Tool|ToolRound tool, LeekRound owner)
- +void useOnCell(integer cellId)
- +EffectResult simulateUseOnCell(integer cellId)
+  +constructor(Tool|ToolRound tool, LeekRound owner)
+  +void useOnCell(integer cellId)
+  +EffectResult simulateUseOnCell(integer cellId)
 }
 class MeRound {
- +integer relativeCenterCellId
- +Array<integer>|null pathToCenter
- +constructor(Round roundObj, MeRound|null clone = null)
- +integer getRelativeCenter()
- +void execute()
+  +integer relativeCenterCellId
+  +Array<integer>|null pathToCenter
+  +constructor(Round roundObj, MeRound|null clone = null)
+  +integer getRelativeCenter()
+  +void execute()
 }
 class AllieRound {
   +constructor(Round roundObj, Leek|AllieRound leek)
@@ -189,10 +222,40 @@ class EnemyRound {
   +constructor(Round roundObj, EnemyRound|Leek leek)
   +void updateState(EnemyRound previousEnemyRound, Array<InterCellInfo> myInter)
 }
-class RelativeCell
-abstract class Tool
-class Weapon
-class Chip
+abstract class Tool {
+  +boolean needLos
+  +Enum areaType
+  +integer cost
+  +Enum launchType
+  +integer minRange
+  +integer maxRange
+  +integer minAOERange
+  +integer maxAOERange
+  +integer AOERange
+  +Enum AOELaunchType
+  +integer cooldown
+  +boolean isChip
+  +boolean isAOE
+  +boolean isLaser
+  +boolean targetAllie
+  +boolean targetSummon
+  +boolean targetNonSummon
+  +boolean targetEnemy
+  +boolean targetCaster
+  +Leek owner
+  +Map<string,string> categories
+  #constructor(integer id, Leek owner, Array<Array<integer|real>>effects)
+  +boolean canUseTool(integer range, boolean isInsight, boolean isInLine, boolean isDiag)
+  +Array<integer>|null getToolEffectiveArea(integer cellToId, integer | null cellFromId = null)
+}
+class Weapon {
+  +constructor(integer weaponId, Leek owner)
+  +Array<integer>|null getToolEffectiveArea(integer cellToId, integer | null cellFromId = null)
+}
+class Chip {
+  +constructor(integer chipId, Leek owner)
+  +Array<integer>|null getToolEffectiveArea(integer cellToId, integer | null cellFromId = null)
+}
 abstract class Round {
   +MeRound MeRound
   +updateState(Round previousRound)
@@ -204,10 +267,32 @@ class RealRound {
 class SimulatedRound {
   +constructor(Round clone)
 }
-abstract class Leek
-class Me
-class Enemy
-class Allie
+abstract class Leek {
+  +string name
+  +string farmer
+  +boolean isMe
+  +boolean isAllie
+  +boolean isEnemy
+  +boolean isSummon
+  +boolean needLos
+  +integer maxAOERange
+  #constructor(integer id)
+  -void categoriseTool(Tool tool)
+}
+class Me {
+  +constructor()
+}
+class Enemy {
+  +constructor(integer id)
+}
+class Allie {
+  +constructor(integer id)
+}
+class Strategy {
+  {static} +boolean isValide()
+  +constructor()
+  +boolean apply()
+}
 
 Action <|-- SetWeaponAction
 Action <|-- MoveAction
@@ -220,15 +305,20 @@ Board o-- Enemy : enemies
 Board o-- Allie : allies
 Board *-- Leek : leeks
 Round <|-- RealRound
-Round <|-- SimulatedRound
+Round <|-right- SimulatedRound
 Leek <|-- Me
 Leek <|-- Enemy
 Leek <|-- Allie
+Leek o-- Weapon : weapons
+Leek o-- Chip : chipsRound
+Leek *-- Tool : tools
+Leek *-- Tool : categories
 Tool <|-- Weapon
 Tool <|-- Chip
+Tool o-- Effect : effects
 LeekRound <|-- MeRound
 LeekRound <|-- AllieRound
-LeekRound <|-- EnemyRound
+LeekRound <|-left- EnemyRound
 Round *-- CellRound : cellsRound
 Round o-- AllieRound : alliesRound
 Round o-- EnemyRound : enemiesRound
@@ -239,5 +329,10 @@ LeekRound o-- ChipRound : chipsRound
 ToolRound <|-- WeaponRound
 ToolRound <|-- ChipRound
 LeekRound o-- Action : actions
-
+Strategy .right.> Talk : use
+Strategy ..> Board : use
+Strategy .left.> SimulatedRound : use
+Board .left.> RealRound : use
+Effect ..> RealEffectResult
+Effect ..> IntegerEffectResult
 @enduml

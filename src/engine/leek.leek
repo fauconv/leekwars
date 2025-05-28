@@ -22,8 +22,9 @@ class Leek extends Objects {
   
   /**
    * constructor
+   * @param id identifiant du leek
    **/
-  constructor(integer id) {
+  protected constructor(integer id) {
     this.id  = id
     name     = getName(id)!;
     farmer   = getFarmerName(id)!;
@@ -51,7 +52,7 @@ class Leek extends Objects {
   /**
    * categoriseTool
    **/
-  void categoriseTool(Tool tool) {
+  private void categoriseTool(Tool tool) {
     tools[tool.id] = tool;
     for(string category in tool.categories) push(this[category] as Array<Tool>, tool);
     ((tool.categories[CATEGORY_DAMAGE]) && (tool.maxAOERange > maxAOERange)) and (maxAOERange = tool.maxAOERange);
@@ -85,8 +86,9 @@ class Allie extends Leek {
   
   /**
    * constructor
+   * @param id identifiant du leek
    **/
-  constructor(integer id) {
+  public constructor(integer id) {
     isMe     = false;
     isAllie  = true;
     isEnemy  = false;
@@ -105,8 +107,9 @@ class Enemy extends Leek {
   
   /**
    * constructor
+   * @param id identifiant du leek
    **/
-  constructor(integer id) {
+  public constructor(integer id) {
     isMe     = false;
     isAllie  = false;
     isEnemy  = true;

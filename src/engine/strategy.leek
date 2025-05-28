@@ -7,16 +7,23 @@ class Strategy extends Objects {
   
   /**
    * isValide
-   *
+   * @return true si cette strategy peut etre utiliser ce tour
    **/
-  static boolean isValide() {
-    return false;
+  public static boolean isValide() {
+    return true;
   }
   
   /**
-   * apply
+   * constructor
    **/
-  boolean apply() {
+  public constructor() {
+  }
+
+  /**
+   * apply
+   * execute la strategy
+   **/
+  public boolean apply() {
     (gFirstRound) and (Talk.text = "Je n'ai pas été codé pour ce format de combat, donc je bouge pas et toc !");
   }
 }
