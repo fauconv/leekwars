@@ -2,39 +2,43 @@ include("effect");
 
 /******************************************************************************
  * Tool
+ * class abstraite generique pour les weapons et les chips
  ******************************************************************************/
 class Tool extends Objects {
   
-  boolean needLos;
-  integer areaType; // Enumeration
-  integer cost;
-  integer launchType;    // Enumeration
-  integer minRange;
-  integer maxRange;
-  integer minAOERange;
-  integer maxAOERange;
-  integer AOERange;
-  integer AOELaunchType; // Enumeration
-  integer cooldown;
+  public boolean needLos;
+  public integer areaType; // Enumeration
+  public integer cost;
+  public integer launchType;    // Enumeration
+  public integer minRange;
+  public integer maxRange;
+  public integer minAOERange;
+  public integer maxAOERange;
+  public integer AOERange;
+  public integer AOELaunchType; // Enumeration
+  public integer cooldown;
   // TODO: ajout d une nombre d utilisation par tour
-  boolean isChip;
-  boolean isAOE;
-  boolean isLaser;
-  boolean targetAllie     = false;
-  boolean targetSummon    = false;
-  boolean targetNonSummon = false;
-  boolean targetEnemy     = false;
-  boolean targetCaster    = false;
+  public boolean isChip;
+  public boolean isAOE;
+  public boolean isLaser;
+  public boolean targetAllie     = false;
+  public boolean targetSummon    = false;
+  public boolean targetNonSummon = false;
+  public boolean targetEnemy     = false;
+  public boolean targetCaster    = false;
   
-  Leek owner;
+  public Leek owner;
   
-  Array<Effect> effects = [];
-  Map<string,string> categories = [:];
+  public Array<Effect> effects = [];
+  public Map<string,string> categories = [:];
   
   /**
    * constructor
+   * @param id id du tool
+   * @param owner le leek qui possede  ce tool
+   * @param effects la liste des effets de ce tool [[0:type, 1:min, 2:max, 3:turns, 4:targets, 5:modifiers]]
    **/
-  constructor(integer id, Leek owner, Array<Array<integer|real>>effects) {
+  protected constructor(integer id, Leek owner, Array<Array<integer|real>>effects) {
     this.id = id;
     this.owner = owner;
     
@@ -99,14 +103,28 @@ class Tool extends Objects {
   
   /**
    * canUseTool
+   * verifie si les conditions sont rempli pour utiliser ce tool (ligne, diagonal, distance, en vue)
+   * @param range la distance a laquelle on veut tirer
+   * @param isInsight la target est en vue ?
+   * @param isInline la target  est en ligne ?
+   * @param isDiag la target est en diagonal ?
+   * @return true si les conditions de tir sont rempli pour ce tool
    **/
-  boolean canUseTool(integer range, boolean isInsight, boolean isInLine, boolean isDiag) {
+  public boolean canUseTool(integer range, boolean isInsight, boolean isInLine, boolean isDiag) {
     return (range <= maxRange && range >= minRange && (!needLos || isInsight) && 
             (launchType != LAUNCH_TYPE_LINE || isInLine) && (launchType != LAUNCH_TYPE_DIAGONAL || isDiag) && 
             (launchType != LAUNCH_TYPE_STAR || isDiag || isInLine) && 
             (launchType != LAUNCH_TYPE_STAR_INVERTED || isDiag && isInLine));
   }
-    
+  
+  /**
+   * getToolEffectiveArea
+   * encapsulation de getWeaponEffectiveArea et getChipEffectiveArea
+   **/
+  Array<integer>|null getToolEffectiveArea(integer cellToId, integer | null cellFromId = null) {
+    return null;
+  }
+
   /**
    * toString
    *
@@ -130,13 +148,16 @@ class Tool extends Objects {
 
 /******************************************************************************
  * Weapon
+ * represente un weapon
  ******************************************************************************/
 class Weapon extends Tool {
     
   /**
    * constructor
+   * @param weaponId ide de l arme
+   * @param ownet leek a qui appartient l arme
    **/
-  constructor(integer weaponId, Leek owner) {
+  public constructor(integer weaponId, Leek owner) {
     isChip     = false;
     areaType   = getWeaponArea(weaponId)!;
     needLos    = weaponNeedLos(weaponId);
@@ -151,6 +172,7 @@ class Weapon extends Tool {
 
   /**
    * getToolEffectiveArea
+   * encapsulation de getWeaponEffectiveArea et getChipEffectiveArea
    **/
   Array<integer>|null getToolEffectiveArea(integer cellToId, integer | null cellFromId = null) {
     return getWeaponEffectiveArea(id, cellToId, cellFromId);
@@ -160,11 +182,14 @@ class Weapon extends Tool {
 
 /******************************************************************************
  * Chip
+ * represente une chip
  ******************************************************************************/
 class Chip extends Tool {
   
   /**
    * constructor
+   * @param weaponId ide de l arme
+   * @param ownet leek a qui appartient de la chip
    **/
   constructor(integer chipId, Leek owner) {
     isChip   = true;
@@ -181,6 +206,7 @@ class Chip extends Tool {
 
   /**
    * getToolEffectiveArea
+   * encapsulation de getWeaponEffectiveArea et getChipEffectiveArea
    **/
   Array<integer>|null getToolEffectiveArea(integer cellToId, integer | null cellFromId = null) {
     return getChipEffectiveArea(id, cellToId, cellFromId);

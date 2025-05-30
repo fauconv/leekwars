@@ -2,24 +2,6 @@
 
 Refaire le moteur en integrant les actions dans le round et supprimer les simulations et terminer le diagramme de classes
 creer des RealRound et des SimulatedRound
-
-- file const : ok
-- file cellround : ok
-- file round : ok
-- file leekround : ok
-- file toolround : ok
-- file action : ok
-- file board : ok
-- file cell : ok
-- file effectfunctions : ok
-- file effectresult : ok
-- file intercellinfo : ok
-- file strategy : ok
-- file talk : ok
-- file leek : ok
-
-... TODO:
-- effect
-- tool
+TODO: effect file
 
 **/

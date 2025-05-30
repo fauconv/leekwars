@@ -2,7 +2,7 @@ include("effectfunctions");
 
 /******************************************************************************
  * Effect
- * modelise l effet d un weapon ou d un chip
+ * modelise un effet d un weapon ou d un chip
  *
  * [0:type, 1:min, 2:max, 3:turns, 4:targets, 5:modifiers]
  ******************************************************************************/
@@ -24,7 +24,7 @@ class Effect extends Objects {
   public boolean modNoRep;
   public boolean modOnCast;
   public boolean modStack;
-  public Function<Effect, LeekRound, LeekRound => IntegerEffectResult> simulateUseFunction; // function (Effect obj, LeekRound shooter, LeekRound target, real AOE, real midCriticalLuck) => IntegerEffectResult
+  public Function<Effect, LeekRound, LeekRound => IntegerEffectResult> simulateUseFunction; // calcul les degats de l effet voir effectfunctions
   
   public Tool owner;
 
@@ -46,12 +46,12 @@ class Effect extends Objects {
     type = effectArray[0] as integer;
     if(EFFECT_TYPE_TRANSLATOR_CATEGORY[type] == null) {
       debugC("Effect=>constructor=>type("+type+")inconnu sur tool("+owner.id+")",COLOR_RED);
-      category = "categoryOther";
       setRegister("error_Effect_category_"+type, "Effect=>constructor=>type("+type+")inconnu sur tool("+owner.id+")");
-      simulateUseFunction = EFFECT_TYPE_TRANSLATOR_CATEGORY[type]![2] as Function<Effect, LeekRound, LeekRound => IntegerEffectResult>;
+      category = "categoryOther";
+      simulateUseFunction = effect_default;
     } else {
       category = EFFECT_TYPE_TRANSLATOR_CATEGORY[type]![1] as string;
-      simulateUseFunction = effect_default;
+      simulateUseFunction = EFFECT_TYPE_TRANSLATOR_CATEGORY[type]![2] as Function<Effect, LeekRound, LeekRound => IntegerEffectResult>;
     }
     minEffect = round(effectArray[1] as real);
     maxEffect = round(effectArray[2] as real);
@@ -107,7 +107,6 @@ class Effect extends Objects {
   /**
    * targetDmg
    * define damage to target
-   * on ne peut pas utiliser EffectResult car on veut des real
    * @return {real minEffect, real maxEffect, real midEffect}
    **/
   RealEffectResult targetDmg(integer minCarac, integer maxCarac, integer midCarac) {
@@ -158,7 +157,7 @@ class Effect extends Objects {
   
   /**
    * applyHeal
-   * apply damage to target
+   * apply heal to target
    * @param roundedDmg : {integer minEffect, integer maxEffect, integer midEffect}
    **/
   void applyHeal(LeekRound target, IntegerEffectResult roundedDmg) {
