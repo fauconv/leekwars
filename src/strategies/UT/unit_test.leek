@@ -5,7 +5,7 @@ class UnitTest extends Strategy {
   
   static MeRound meRound;       // MeRound
   static EnemyRound enemyRound;    // EnemyRound
-  static Round currentRound;  // Round
+  static RealRound currentRound;  // Round
   
   /**
    * isValide
@@ -26,7 +26,10 @@ class UnitTest extends Strategy {
     
     if(gFirstRound) {
       Talk.text = "UnitTest mode";
-      if(meRound.weaponsRound[0]) meRound.setWeaponRound(meRound.weaponsRound[0].id);
+      if(meRound.weaponsRound[0]) {
+        meRound.addSetWeaponAction(meRound.weaponsRound[0].id);
+        meRound.execute();
+      }
       else debugC("no weapon", COLOR_RED);
       board();
       cell();
@@ -37,7 +40,7 @@ class UnitTest extends Strategy {
       leek();
       leekRound();
       tool();
-      meRound.moveToCell(meRound.getRelativeCenter());
+      moveTowardCell(meRound.getRelativeCenter());
       return true;
     }
     roundTest();
@@ -51,7 +54,9 @@ class UnitTest extends Strategy {
   boolean board() {
     debug("Board.maxAOERange:"+Board.maxAOERange);
     debug("Legend: deadend = brown");
-    GameDebug.addBackground(true, Board.deadEnds,COLOR_BROWN); // marron
+    for(Cell cell in Board.cells) {
+      GameDebug.addBackground(cell.isDeadEnd, cell,COLOR_BROWN); // marron
+    }
     if(Board.cells[306].right.id == 324 && Board.cells[10].rightTop.id == 11) debugC("Board OK",COLOR_GREEN);
     else debugC("Board KO", COLOR_RED);
     return true;
@@ -149,9 +154,9 @@ class UnitTest extends Strategy {
    **/
   boolean roundTest() {
     GameDebug.addOperation(true, "avant clonage");
-    Round newRound = new Round(currentRound);
+    SimulatedRound newRound = new SimulatedRound(currentRound);
     GameDebug.addOperation(true,"cout clonage");
-    newRound.update();
+    currentRound.update();
     GameDebug.addOperation(true,"cout update");
     return true;
   }
@@ -167,13 +172,14 @@ class UnitTest extends Strategy {
    * toolRound
    **/
   boolean toolRound() {
-    meRound.moveToCell(enemyRound.currentCellId);
+    moveTowardCell(enemyRound.currentCellId);
+    currentRound.update();
     if(canUseWeaponOnCell(enemyRound.currentCellId)) {
-      Round simulation = new Round(currentRound);
-      Round oldRound = new Round(currentRound);
+      Round simulation = new SimulatedRound(currentRound);
+      Round oldRound = new SimulatedRound(currentRound);
       MeRound meSim = simulation.meRound;
-      if(meSim.toolsRound[CHIP_PROTEIN]) meSim.toolsRound[CHIP_PROTEIN]!.simulateUse();
-      EffectResult simValues = meSim.weapon!.simulateUse([enemyRound.id],[1.0]);
+      if(meSim.toolsRound[CHIP_PROTEIN]) meSim.toolsRound[CHIP_PROTEIN]!.simulateUseOnCell(meSim.currentCellId);
+      IntegerEffectResult simValues = meSim.weapon!.simulateUseOnCell(enemyRound.currentCellId);
       GameDebug.add(true,simValues,"simulation des degats du tir");
       Object simErosion = { 
         maxErosion: (oldRound.enemiesRound[0].minTotalLife-simulation.enemiesRound[0].minTotalLife),

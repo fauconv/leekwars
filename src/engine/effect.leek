@@ -140,19 +140,14 @@ class Effect extends Objects {
    * applyDmg
    * apply damage to target
    * @param targetDmg : {real minEffect, real maxEffect, real midEffect}
-   * @return {integer minEffect, integer maxEffect, integer midEffect}
    **/
-  IntegerEffectResult applyDmg(LeekRound target, RealEffectResult targetDmg) {
-    integer minDmg = round(targetDmg.minEffect);
-    integer maxDmg = round(targetDmg.maxEffect);
-    integer midDmg = round(targetDmg.midEffect);
-    target.minInjury += minDmg; // injury target
-    target.maxInjury += maxDmg;
-    target.midInjury += midDmg;
-    target.minLife -= maxDmg; // life target
-    target.maxLife -= minDmg;
-    target.midLife -= midDmg;
-    return new IntegerEffectResult(minDmg, maxDmg, midDmg);
+  void applyDmg(LeekRound target, IntegerEffectResult targetDmg) {
+    target.minInjury += targetDmg.minEffect; // injury target
+    target.maxInjury += targetDmg.maxEffect;
+    target.midInjury += targetDmg.midEffect;
+    target.minLife -= targetDmg.maxEffect; // life target
+    target.maxLife -= targetDmg.minEffect;
+    target.midLife -= targetDmg.midEffect;
   }
   
   /**

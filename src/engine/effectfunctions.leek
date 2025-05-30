@@ -29,8 +29,8 @@ function effect_absolute_vulnerability(Effect obj, LeekRound shooter, LeekRound 
  * effect_aftereffect
  **/
 function effect_aftereffect(Effect obj, LeekRound shooter, LeekRound target) => IntegerEffectResult {
-  RealEffectResult targetDmg = obj.targetDmg( shooter.minScience, shooter.maxScience, shooter.midScience);
-  IntegerEffectResult roundedDmg = obj.applyDmg(target, targetDmg); 
+  IntegerEffectResult roundedDmg = obj.targetDmg( shooter.minScience, shooter.maxScience, shooter.midScience).round();
+  obj.applyDmg(target, roundedDmg); 
   obj.applyErosion(target, PHYSICAL_EROSION, roundedDmg);
   return roundedDmg;
 }
@@ -125,7 +125,8 @@ function effect_damage(Effect obj, LeekRound shooter, LeekRound target) => Integ
   GameDebug.add(EFFECT_DEBUG && UNIT_TEST_DEBUG, dmgReturn, "dmgReturn");
   obj.shield(target, targetDmg);
   GameDebug.add(EFFECT_DEBUG && UNIT_TEST_DEBUG, targetDmg, "shield");
-  IntegerEffectResult roundedDmg = obj.applyDmg(target, targetDmg);
+  IntegerEffectResult roundedDmg = targetDmg.round()
+  obj.applyDmg(target, roundedDmg);
   obj.applyErosion(target, PHYSICAL_EROSION, roundedDmg);
   GameDebug.add(EFFECT_DEBUG && UNIT_TEST_DEBUG,{max:target.maxTotalLife,min:target.minTotalLife,mid:target.midTotalLife},"target totalLife");
   if(target.id != shooter.id) {
@@ -133,7 +134,8 @@ function effect_damage(Effect obj, LeekRound shooter, LeekRound target) => Integ
     GameDebug.add(EFFECT_DEBUG && UNIT_TEST_DEBUG, shooterDmg, "shooterDmg");
     obj.applyLifeStealAndDmgReturn(shooter, shooterDmg);
     obj.applyErosion(shooter, PHYSICAL_EROSION, dmgReturn);
-    return roundedDmg.subtract(shooterDmg);
+    roundedDmg.subtract(shooterDmg);
+    return roundedDmg
   }
   return roundedDmg;
 }
@@ -162,7 +164,9 @@ function effect_heal(Effect obj, LeekRound shooter, LeekRound target) => Integer
  * effect_kill
  **/
 function effect_kill(Effect obj, LeekRound shooter, LeekRound target) => IntegerEffectResult {
-  return obj.applyDmg(target, new RealEffectResult(target.minLife, target.maxLife, target.midLife));
+  IntegerEffectResult roundedDmg = new IntegerEffectResult(target.minLife, target.maxLife, target.midLife);
+  obj.applyDmg(target, roundedDmg);
+  return roundedDmg;
 }
 
 /**
@@ -176,12 +180,14 @@ function effect_life_damage(Effect obj, LeekRound shooter, LeekRound target) => 
   IntegerEffectResult dmgReturn = new IntegerEffectResult();
   (target.id != shooter.id) and (dmgReturn = obj.dmgReturn(target, targetDmg));
   obj.shield(target, targetDmg);
-  IntegerEffectResult roundedDmg = obj.applyDmg(target, targetDmg);
+  IntegerEffectResult roundedDmg = targetDmg.round()
+  obj.applyDmg(target, roundedDmg);
   obj.applyErosion(target, PHYSICAL_EROSION, roundedDmg);
   if(target.id != shooter.id) {
     obj.applyLifeStealAndDmgReturn(shooter, dmgReturn);
     obj.applyErosion(shooter, PHYSICAL_EROSION, dmgReturn);
-    return roundedDmg.subtract(dmgReturn);
+    roundedDmg.subtract(dmgReturn);
+    return roundedDmg;
   }
   return roundedDmg;
 }
@@ -213,9 +219,9 @@ function effect_nova_vitality(Effect obj, LeekRound shooter, LeekRound target) =
  * TODO: prendre en compte tous les tours
  **/
 function effect_poison(Effect obj, LeekRound shooter, LeekRound target) => IntegerEffectResult {
-  RealEffectResult targetDmg = obj.targetDmg( shooter.minMagic, shooter.maxMagic, shooter.midMagic);
+  IntegerEffectResult roundedDmg = obj.targetDmg( shooter.minMagic, shooter.maxMagic, shooter.midMagic).round();
   // TODO: puissance
-  IntegerEffectResult roundedDmg = obj.applyDmg(target, targetDmg);
+  obj.applyDmg(target, roundedDmg);
   obj.applyErosion(target, POISON_EROSION, roundedDmg);
   if(mapContainsKey(target.effects, obj.type)) push(target.effects[obj.type]!, [obj.type]);
   else target.effects[obj.type] = [[obj.type]] // TODO: gerer le coup suivant comme il faut

@@ -75,7 +75,7 @@ class LeekRound extends Objects {
   
   public Map<string,Array<ToolRound>> categories = [:];
 
-  public Array<Action> actions;
+  public Array<Action> actions = [];
   
   /**
    * constructor
@@ -228,6 +228,7 @@ class LeekRound extends Objects {
    * - met a jour les valeurs caracteristique du leek
    * - met a jour le leekOnCell
    * - met a jour le setWeapon
+   * - clear les actions
    **/
   public void update() {
       
@@ -272,6 +273,8 @@ class LeekRound extends Objects {
       }
     }
 
+    actions = [];
+
   }
     
   /**
@@ -281,7 +284,7 @@ class LeekRound extends Objects {
   private void categoriseTool(ToolRound toolRound) {
     toolsRound[toolRound.id] = toolRound;
     Tool tool = toolRound.tool;
-    for(string category in tool.categories) push(categories[category], toolRound);
+    for(string category in tool.categories) push(categories[category]!, toolRound);
     (tool.categories[CATEGORY_DAMAGE]) and
       (tool.maxAOERange > maxAOERange) and (maxAOERange = tool.maxAOERange);
   }
@@ -335,9 +338,9 @@ class LeekRound extends Objects {
   public void addMoveAction(integer cellId, integer usedMP) {
     MoveAction t = new MoveAction(cellId);
     push(actions, t);
-    minMP -= usingMP;s
-    maxMP -= usingMP;
-    midMP -= usingMP;
+    minMP -= usedMP;
+    maxMP -= usedMP;
+    midMP -= usedMP;
     currentCell.leekOnCell = null;
     currentCellId = cellId;
     currentCell = roundObj.cellsRound[cellId];
@@ -395,7 +398,7 @@ class EnemyRound extends LeekRound {
   public constructor(Round roundObj, EnemyRound|Leek leek) {
     super(roundObj, leek);
     if(leek.class.name == "EnemyRound") {
-      state = leek.state;
+      state = (leek as EnemyRound).state;
     }
   }
  
@@ -434,8 +437,8 @@ class MeRound extends LeekRound {
   public constructor(Round roundObj, MeRound|null clone = null) {
     if(clone != null) {
       super(roundObj, clone!);
-      relativeCenterCellId = clone.relativeCenterCellId
-      pathToCenter = clone.pathToCenter
+      relativeCenterCellId = clone!.relativeCenterCellId
+      pathToCenter = clone!.pathToCenter
     } else {
       super(roundObj, Board.me);
     }
@@ -452,7 +455,6 @@ class MeRound extends LeekRound {
     (!Board.centerCell.isDeadEnd) and (pathToCenter = getPath(currentCellId, CENTER_CELL_ID));
     if (pathToCenter) {
       relativeCenterCellId    = CENTER_CELL_ID;
-      (leek as Me).historicalRelativeCenterCellId = relativeCenterCellId;
       return relativeCenterCellId;
     }
     Array<integer> trajectoryToCenter = currentCell.cell.getTrajectory(Board.centerCell)
@@ -469,7 +471,6 @@ class MeRound extends LeekRound {
     }
     if(ok) {
       relativeCenterCellId    = finalCell.id;
-      (leek as Me).historicalRelativeCenterCellId = relativeCenterCellId;
     } // else relativeCenterCell = null
     return relativeCenterCellId;
   }

@@ -45,7 +45,7 @@ class ToolRound extends Objects {
    **/
   protected IntegerEffectResult simulateUse(Array<Integer> targets, integer cellId) {
     Array<real> AOEs = [];
-    for(integer entity in entities)
+    for(integer entity in targets)
       push(AOEs, max(0.0,1.0-roundObj.leeksRound[entity]!.currentCell.cell.interCellInfo[cellId].range*AOE_DEC_LINE_FACTOR));
     integer cost = tool.cost;
     owner.minTP -= cost;
@@ -106,7 +106,7 @@ class WeaponRound extends ToolRound {
    * @param tool le tool correspondant au toolround
    * @param owner le owner du tool
    **/
-  public constructor(Tool|WeaponRound tool, LeekRound owner) {
+  public constructor(Tool|ToolRound tool, LeekRound owner) {
     super(tool, owner);
   }
   
@@ -126,8 +126,8 @@ class WeaponRound extends ToolRound {
    * @param cellId id de la cell cible du tir
    * @return les effet combine du tool
    **/
-  public EffectResult simulateUseOnCell(integer cellId) {
-    return simulateUse(getWeaponTargets(id, cellId), cellId);
+  public IntegerEffectResult simulateUseOnCell(integer cellId) {
+    return simulateUse(getWeaponTargets(id, cellId)!, cellId);
   }
     
 }
@@ -163,8 +163,8 @@ class ChipRound extends ToolRound {
    * @param cellId id de la cell cible du tir
    * @return les effet combine du tool
    **/
-  public EffectResult simulateUseOnCell(integer cellId) {
-    return simulateUse(getChipTargets(id, cellId), cellId);
+  public IntegerEffectResult simulateUseOnCell(integer cellId) {
+    return simulateUse(getChipTargets(id, cellId)!, cellId);
   }
     
 }

@@ -30,7 +30,7 @@ class SetWeaponAction extends Action {
    * execute
    **/
   void execute() {
-    setWeapon(weaponId);
+    setWeapon(toolId);
   }
     
   /**
@@ -40,7 +40,7 @@ class SetWeaponAction extends Action {
     return shortString();
   }
   string shortString(string space = "") {
-    return this.class.name+": "+Board.leeks[ownerId]!.name+" set "+TOOL_NAME_TRANSLATOR[toolId]!;
+    return "SetWeaponAction: "+TOOL_NAME_TRANSLATOR[toolId]!;
   }
 
 }
@@ -73,7 +73,7 @@ class MoveAction extends Action {
     return shortString();
   }
   string shortString(string space = "") {
-    return this.class.name+": "+Board.leeks[ownerId]!.name+" go to "+cellId;
+    return "MoveAction: "+cellId;
   }
 
 }
@@ -111,7 +111,7 @@ class ToolAction extends Action {
     return shortString();
   }
   string shortString(string space = "") {
-    return this.class.name+": "+Board.leeks[ownerId]!.name+" use "+TOOL_NAME_TRANSLATOR[toolId]!+" on "+targetCell;
+    return "ToolAction: use "+TOOL_NAME_TRANSLATOR[toolId]!+" on "+targetCell;
   }
 
 }

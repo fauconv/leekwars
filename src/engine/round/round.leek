@@ -82,6 +82,7 @@ class RealRound extends Round {
    * - met a jour les valeurs caracteristique des leek
    * - met a jour les leekOnCell
    * - met a jour le setWeapon
+   * - clear les actions
    **/
   public update() {
     for(integer id : LeekRound leek in leeksRound) {
