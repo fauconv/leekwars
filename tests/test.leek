@@ -1,14 +1,13 @@
 include("../src/utils/gamedebug");
 
-integer opts, opts2;
 
-Map c1 = ["1":1];
 
-opts = getOperations();
-mapFirst(c1)
-opts2 = getOperations();
-debug((opts2 - opts - 2) + " clear");
-GameDebug.add(true,c1);
+function effect_aftereffect(integer add) => integer {
+    return 2
+}
 
-GameDebug.display();
-pause();
+Map<integer,Array<any>> EFFECT_TYPE_TRANSLATOR_CATEGORY = [
+  EFFECT_AFTEREFFECT:["effect_aftereffect",effect_aftereffect]
+]
+debug((EFFECT_TYPE_TRANSLATOR_CATEGORY[EFFECT_AFTEREFFECT]![1] as Function<integer => integer>)(3));
+pause()
