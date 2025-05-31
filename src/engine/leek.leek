@@ -52,7 +52,7 @@ class Leek extends Objects {
    **/
   private void categoriseTool(Tool tool) {
     tools[tool.id] = tool;
-    for(string category in tool.categories) push(this[category] as Array<Tool>, tool);
+    for(string category in tool.categories) push(categories[category]!, tool);
     ((tool.categories[CATEGORY_DAMAGE]) && (tool.maxAOERange > maxAOERange)) and (maxAOERange = tool.maxAOERange);
   }
     

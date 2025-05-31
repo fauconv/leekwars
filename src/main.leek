@@ -12,7 +12,7 @@ include("utils/gamedebug");
  * init
  **************************************************************************/
 include("engine/strategy");
-/*
+
 if(!gBoardInit) {
   if(!(gBoardInit = Board.init())) {
     debugC("Initialisation en 2 temps",COLOR_BLUE);
@@ -26,7 +26,6 @@ if(!gBoardInit) {
 /*************************************************************************
  * include strategy files
  *************************************************************************/
-/*
 include("strategies/UT/unit_test");
 //include("strategies/basicstrategy/basicstrategy");
 Strategy availableStrategie = new Strategy();
@@ -36,14 +35,12 @@ if(UnitTest.isValide()) availableStrategie = new UnitTest();
 /*******************************************************
  * main
  *******************************************************/
-/*
 availableStrategie.apply();
 end();
 
 /*********************************************************
  * end
  *********************************************************/
- /*
 function end() => void {
   Talk.talk();
   GameDebug.display();
@@ -54,4 +51,3 @@ function end() => void {
     gSecondRound = false;
   }
 }
-*/
