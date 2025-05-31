@@ -1,12 +1,12 @@
 /******************************************************************************
- * RealEffectResult
+ * IntegerEffectResult
  * encapsule les calculs des effets
  ******************************************************************************/
-class RealEffectResult extends Objects {
+class IntegerEffectResult extends Objects {
 
-  public real minEffect;  // valeur minimum
-  public real maxEffect;  // valeur maximum
-  public real midEffect;  // valeur probable
+  integer minEffect;  // valeur minimum
+  integer maxEffect;  // valeur maximum
+  integer midEffect;  // valeur probable
   
   /**
    * constructor
@@ -14,18 +14,18 @@ class RealEffectResult extends Objects {
    * @param maxEffect valeur maximum
    * @param midEffect valeur probable
    **/
-  public constructor(real minEffect = 0, real maxEffect = 0, real midEffect = 0) {
+  constructor(integer minEffect = 0, integer maxEffect = 0, integer midEffect = 0) {
     this.minEffect = minEffect;
     this.maxEffect = maxEffect;
     this.midEffect = midEffect;
   }
-
+  
   /**
    * add
    * this = this + er
    * @param er l effectResult a ajouter
    **/
-  public void add(RealEffectResult er) {
+  void add(IntegerEffectResult er) {
     minEffect += er.minEffect;
     maxEffect += er.maxEffect;
     midEffect += er.midEffect;
@@ -36,7 +36,63 @@ class RealEffectResult extends Objects {
    * this = this - er
    * @param er l effectResult a soustraire
    **/
-  public void subtract(RealEffectResult er) {
+  void subtract(IntegerEffectResult er) {
+    minEffect -= er.minEffect;
+    maxEffect -= er.maxEffect;
+    midEffect -= er.midEffect;
+  }
+  
+  /**
+   * string
+   **/
+  string string(string space = "") {
+    return "{minEffect:"+minEffect+", maxEffect:"+maxEffect+", midEffect:"+midEffect+"}";
+  }
+  string shortString(string space = "") {
+    return string(); 
+  }
+
+}
+
+/******************************************************************************
+ * RealEffectResult
+ * encapsule les calculs des effets
+ ******************************************************************************/
+class RealEffectResult extends Objects {
+
+  real minEffect;  // valeur minimum
+  real maxEffect;  // valeur maximum
+  real midEffect;  // valeur probable
+  
+  /**
+   * constructor
+   * @param minEffect valeur minimum
+   * @param maxEffect valeur maximum
+   * @param midEffect valeur probable
+   **/
+  constructor(real minEffect = 0.0, real maxEffect = 0.0, real midEffect = 0.0) {
+    this.minEffect = minEffect;
+    this.maxEffect = maxEffect;
+    this.midEffect = midEffect;
+  }
+
+  /**
+   * add
+   * this = this + ers
+   * @param er l effectResult a ajouter
+   **/
+  void add(RealEffectResult er) {
+    minEffect += er.minEffect;
+    maxEffect += er.maxEffect;
+    midEffect += er.midEffect;
+  }
+    
+  /**
+   * subtract
+   * this = this - er
+   * @param er l effectResult a soustraire
+   **/
+  void subtract(RealEffectResult er) {
     minEffect -= er.minEffect;
     maxEffect -= er.maxEffect;
     midEffect -= er.midEffect;
@@ -60,60 +116,5 @@ class RealEffectResult extends Objects {
   string shortString(string space = "") {
     return string(); 
   }
-}
 
-/******************************************************************************
- * IntegerEffectResult
- * encapsule les calculs des effets
- ******************************************************************************/
-class IntegerEffectResult extends Objects {
-
-  public integer minEffect;  // valeur minimum
-  public integer maxEffect;  // valeur maximum
-  public integer midEffect;  // valeur probable
-  
-  /**
-   * constructor
-   * @param minEffect valeur minimum
-   * @param maxEffect valeur maximum
-   * @param midEffect valeur probable
-   **/
-  public constructor(integer minEffect = 0, integer maxEffect = 0, integer midEffect = 0) {
-    this.minEffect = minEffect;
-    this.maxEffect = maxEffect;
-    this.midEffect = midEffect;
-  }
-  
-  /**
-   * add
-   * this = this + er
-   * @param er l effectResult a ajouter
-   **/
-  public void add(IntegerEffectResult er) {
-    minEffect += er.minEffect;
-    maxEffect += er.maxEffect;
-    midEffect += er.midEffect;
-  }
-    
-  /**
-   * subtract
-   * this = this - er
-   * @param er l effectResult a soustraire
-   **/
-  public void subtract(IntegerEffectResult er) {
-    minEffect -= er.minEffect;
-    maxEffect -= er.maxEffect;
-    midEffect -= er.midEffect;
-  }
-  
-  /**
-   * string
-   **/
-  string string(string space = "") {
-    return "{minEffect:"+minEffect+", maxEffect:"+maxEffect+", midEffect:"+midEffect+"}";
-  }
-  string shortString(string space = "") {
-    return string(); 
-  }
-  
 }

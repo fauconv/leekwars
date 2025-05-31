@@ -1,5 +1,18 @@
+include("effectresult")
+include("const");
+include("intercellinfo")
+include("cell")
 include("board");
-include("talk");
+include("leek");
+include("tool");
+include("talk")
+include("effect");
+include("round/round");
+include("round/cellround")
+include("round/leekround");
+include("round/toolround");
+include("round/action");
+include("effectfunctions")
 /****************************************************************************
  * Strategy
  ****************************************************************************/

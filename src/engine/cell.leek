@@ -1,5 +1,3 @@
-include("intercellinfo");
-
 /******************************************************************************
  * Cell
  * modelise une cellule du plateau

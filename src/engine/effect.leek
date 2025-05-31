@@ -1,5 +1,3 @@
-include("effectfunctions");
-
 /******************************************************************************
  * Effect
  * modelise un effet d un weapon ou d un chip

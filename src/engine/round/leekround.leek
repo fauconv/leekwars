@@ -1,6 +1,3 @@
-include("action");
-include("toolround");
-
 /******************************************************************************
  * LeekRound
  * information d un leek, qui change a chaque tour
@@ -84,7 +81,7 @@ class LeekRound extends Objects {
    *   - si c est un leek : cree le leekround correspondant
    *   - si c est un leekround : clone le leekround
    **/
-  protected constructor(Round roundObj, Leek|LeekRound leek) {
+  constructor(Round roundObj, Leek|LeekRound leek) {
   
     id = leek.id;
     this.roundObj = roundObj;
@@ -330,7 +327,7 @@ class LeekRound extends Objects {
     return toolsRound[toolId]!.simulateUseOnCell(targetCellId);
   }
   
-  /**s
+  /**
    * addMoveAction
    * @param cellId l id de la cell de destination
    * @param usedMP le nombre de MP utiliser pour aller a cellId, attention aucune verification n est faite
@@ -409,16 +406,17 @@ class EnemyRound extends LeekRound {
    * @param myInter : le tableau d intercell qui correspond a la currentCell de Me
    **/
   public void updateState(EnemyRound previousEnemyRound, Array<InterCellInfo> myInter) {
-      integer d1 = myInter[currentCellId].range;
-      integer d2 = myInter[previousEnemyRound.currentCellId].range;
-      if(d1 > d2) {
-        state = LeekRound.STATE_ESCAPE;
-      } else if(d1 < d2) {
-        state = LeekRound.STATE_APPROACH;
-      } else {
+    integer d1 = myInter[currentCellId].range;
+    integer d2 = myInter[previousEnemyRound.currentCellId].range;
+    if(d1 > d2) {
+      state = LeekRound.STATE_ESCAPE;
+    } else if(d1 < d2) {
+      state = LeekRound.STATE_APPROACH;
+    } else {
         state = LeekRound.STATE_UNKNOWN;
-      }
+    }
   }
+
 }
 
 /******************************************************************************

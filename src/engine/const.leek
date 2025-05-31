@@ -104,11 +104,11 @@ global Map<integer,string> TOOL_LAUNCHTYPE_TRANSLATOR = [
   LAUNCH_TYPE_LINE:"line",
   LAUNCH_TYPE_DIAGONAL:"diag",
   LAUNCH_TYPE_STAR:"star",
-  LAUNCH_TYPE_SQUARE:"square",
-  LAUNCH_TYPE_CIRCLE:"circle",
+  LAUNCH_TYPE_STAR_INVERTED:"star_inv"
   LAUNCH_TYPE_DIAGONAL_INVERTED:"diag_inv",
   LAUNCH_TYPE_LINE_INVERTED:"line_inv",
-  LAUNCH_TYPE_STAR_INVERTED:"star_inv"
+  LAUNCH_TYPE_CIRCLE:"circle",
+  LAUNCH_TYPE_SQUARE:"square",
 ]
 
 global Map<integer,string> TOOL_NAME_TRANSLATOR = [
@@ -283,7 +283,8 @@ global Array<string> CATEGORIES = [
 // categorise les effets et donne la fonction qui calcul l effet
 // voir la liste des fonction dans effectfunctions
 //
-global Map<integer,Array<any>> EFFECT_TYPE_TRANSLATOR_CATEGORY = [
+global Map<integer,Array<any>> EFFECT_TYPE_TRANSLATOR_CATEGORY = [:
+/*
   EFFECT_AFTEREFFECT:["effect_aftereffect",CATEGORY_DAMAGE,effect_aftereffect],
   EFFECT_DAMAGE:["effect_damage",CATEGORY_DAMAGE,effect_damage],
   EFFECT_KILL:["effect_kill",CATEGORY_DAMAGE,effect_kill],
@@ -353,5 +354,6 @@ global Map<integer,Array<any>> EFFECT_TYPE_TRANSLATOR_CATEGORY = [
   EFFECT_ATTRACT:["effect_attract",CATEGORY_MOVE,effect_default],
   EFFECT_INVERT:["effect_invert",CATEGORY_MOVE,effect_default],
   EFFECT_PUSH:["effect_push",CATEGORY_MOVE,effect_default],
-  EFFECT_TELEPORT:["effect_teleport",CATEGORY_MOVE,effect_default],
+  EFFECT_TELEPORT:["effect_teleport",CATEGORY_MOVE,effect_default]
+  */
 ]

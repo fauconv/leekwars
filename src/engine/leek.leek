@@ -1,25 +1,23 @@
-include("tool");
-
 /******************************************************************************
  * Leek
  ******************************************************************************/
 class Leek extends Objects {
   
-  string name;
-  string farmer;
-  boolean isMe;
-  boolean isAllie;
-  boolean isEnemy;
-  boolean isSummon;
-  boolean needLos = true;
-  integer maxAOERange;
+  public string name;
+  public string farmer;
+  public boolean isMe;
+  public boolean isAllie;
+  public boolean isEnemy;
+  public boolean isSummon;
+  public boolean needLos = true;
+  public integer maxAOERange;
   
-  Array<Weapon> weapons = [];
-  Array<Chip> chips = [];
-  Map<integer,Tool> tools = [:];
+  public Array<Weapon> weapons = [];
+  public Array<Chip> chips = [];
+  public Map<integer,Tool> tools = [:];
   
-  Map<string,Array<Tool>> categories = [:];
-  
+  public Map<string,Array<Tool>> categories = [:];
+
   /**
    * constructor
    * @param id identifiant du leek

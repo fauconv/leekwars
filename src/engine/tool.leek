@@ -1,5 +1,3 @@
-include("effect");
-
 /******************************************************************************
  * Tool
  * class abstraite generique pour les weapons et les chips
@@ -28,7 +26,6 @@ class Tool extends Objects {
   public boolean targetCaster    = false;
   
   public Leek owner;
-  
   public Array<Effect> effects = [];
   public Map<string,string> categories = [:];
   
@@ -39,6 +36,7 @@ class Tool extends Objects {
    * @param effects la liste des effets de ce tool [[0:type, 1:min, 2:max, 3:turns, 4:targets, 5:modifiers]]
    **/
   protected constructor(integer id, Leek owner, Array<Array<integer|real>>effects) {
+    
     this.id = id;
     this.owner = owner;
     
@@ -98,7 +96,7 @@ class Tool extends Objects {
       maxAOERange = maxRange+AOERange;
       minAOERange = max(minRange-AOERange,1);
     }
-    
+  
   }
   
   /**
