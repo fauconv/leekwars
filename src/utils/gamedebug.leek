@@ -149,7 +149,11 @@ class GameDebug {
       depth--;
       for(any value in keys) {
         str += space2+value+": ";
-        add(true, (obj as Object)[value], "", depth, limit, start, revers, debugFunction, space2);
+        if(obj instanceof Object) {
+          add(true, (obj as Object)[value], "", depth, limit, start, revers, debugFunction, space2);
+        } else {
+          add(true, (obj as Objects)[value], "", depth, limit, start, revers, debugFunction, space2);
+        }
       }
       str += space+"}";
     } else {

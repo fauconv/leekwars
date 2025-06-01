@@ -31,22 +31,15 @@ class UnitTest extends Strategy {
         meRound.execute();
       }
       else debugC("no weapon", COLOR_RED);
-      /*
       board();
       cell();
-      cellRound();
-      chain();
       effect();
-      functions();
       leek();
-      leekRound();
-      tool();
-      */
       moveTowardCell(meRound.getRelativeCenter());
       return true;
     }
-    //roundTest();
-    //toolRound();
+    roundTest();
+    toolRound();
     return true;
   }
   
@@ -68,17 +61,19 @@ class UnitTest extends Strategy {
    * cell
    **/
   boolean cell() {
-    InterCellInfo inter = Board.cells[306].interCellInfo[300];
-    if(inter.range == 12 && inter.isDiag && !inter.isInline || Board.cells[306].isWall && inter.range == (Board.maxAOERange+1) || Board.cells[300].isWall && inter.range == (Board.maxAOERange+1)) 
+    integer TEST_CELL = 303;
+    integer TEST_CELL_RANGE = 6;
+    InterCellInfo inter = Board.cells[306].interCellInfo[TEST_CELL];
+    if(inter.range == TEST_CELL_RANGE && inter.isDiag && !inter.isInline || Board.cells[306].isWall && inter.range == (Board.maxAOERange+1) || Board.cells[TEST_CELL].isWall && inter.range == (Board.maxAOERange+1)) 
       debugC("Cell OK",COLOR_GREEN);
     else {
-      if(inter.range != 12) debugC("Cell KO: 300-306 range(12) = "+ inter.range, COLOR_RED);
-      if(!inter.isDiag) debugC("Cell KO: 300-306 not is diag", COLOR_RED);
-      if(!inter.isInline) debugC("Cell KO: 300-306 is inline", COLOR_RED);
+      if(inter.range != TEST_CELL_RANGE) debugC("Cell KO: "+TEST_CELL+"-306 range("+TEST_CELL_RANGE+") = "+ inter.range, COLOR_RED);
+      if(!inter.isDiag) debugC("Cell KO: "+TEST_CELL+"-306 not is diag", COLOR_RED);
+      if(inter.isInline) debugC("Cell KO: "+TEST_CELL+"-306 is inline", COLOR_RED);
     }
-    debug("Legend: 300 and 306 = blue");
+    debug("Legend: "+TEST_CELL+" and 306 = blue");
     GameDebug.addBackground(true, 306, COLOR_BLUE);
-    GameDebug.addBackground(true, 300, COLOR_BLUE);
+    GameDebug.addBackground(true, TEST_CELL, COLOR_BLUE);
     debug("Legend: trajectory 306-> 241, 288->163, 305->531 = green");
     GameDebug.addOperation(true);
     Array<integer> listCells = Board.cells[306].getTrajectory(Board.cells[241]);
@@ -88,39 +83,16 @@ class UnitTest extends Strategy {
     GameDebug.addBackground(true, Board.cells[305].getTrajectory(Board.cells[531]), COLOR_GREEN);
     return true;
   }
-  
-  /**
-   * cellRound
-   **/
-  boolean cellRound() {
-    return true;
-  }
 
-  /**
-   * chain
-   * TODO: chain test
-   **/
-  boolean chain() {
-    return true;
-  }
-  
   /**
    * effect
    **/
   boolean effect() {
-    if(meRound.weapon!.tool.effects[0].owner.shortString() == "Weapon(magnum)" && meRound.weapon!.tool.effects[0].minEffect == 25) 
+    if(meRound.weapon!.tool.effects[0].owner.shortString() == "Weapon(magnum)(8)" && meRound.weapon!.tool.effects[0].minEffect == 25) 
       debugC("Effect OK", COLOR_GREEN);
     else 
-      debugC("Effect on setWepon (magnum) KO", COLOR_RED);
+      debugC("Effect on setWepon (magnum) KO: "+ meRound.weapon!.tool.shortString() + "- (25) "+meRound.weapon!.tool.effects[0].minEffect, COLOR_RED);
     //GameDebug.add(true, meRound.weapon!.tool.effects,"current weapon effects",2);
-    return true;
-  }
-  
-  /**
-   * functions
-   * TODO: function test
-   **/
-  boolean functions() {
     return true;
   }
   
@@ -129,25 +101,10 @@ class UnitTest extends Strategy {
    **/
   boolean leek() {
     //GameDebug.add(true, Board.me,"me",2);
-    if(Board.me.categories["categoryDamage"]![1].shortString() == "Chip(chip ice)" && Board.me.categories["categoryProtection"]![0].shortString() == "Chip(chip helmet)")
+    if(Board.me.categories[CATEGORY_DAMAGE]![1].shortString() == "Chip(chip ice)(8)" && Board.me.categories[CATEGORY_PROTECTION]![0].shortString() == "Chip(chip helmet)(4)")
       debugC("Leek OK", COLOR_GREEN);
     else 
-      debugC("Leek me KO", COLOR_RED);
-    return true;
-  }
-  
-  /**s
-   * leekRound
-   **/
-  boolean leekRound() {
-    meRound.getRelativeCenter()
-    //GameDebug.add(true, enemyRound,"enemyRound",2);
-    debug("Legend: path to relative center = red");
-    GameDebug.addBackground(true, meRound.pathToCenter as Array<integer>, COLOR_RED);
-    if(enemyRound.minTP == 10 && enemyRound.maxAOERange == 10 && enemyRound.currentCell.cell.id == enemyRound.currentCellId)
-      debugC("LeekRound OK", COLOR_GREEN);
-    else 
-      debugC("LeekRound enemyRound KO", COLOR_RED);    
+      debugC("Leek me KO: " + Board.me.categories[CATEGORY_DAMAGE]![1].shortString() + " - " + Board.me.categories[CATEGORY_PROTECTION]![0].shortString(), COLOR_RED);
     return true;
   }
   
@@ -164,13 +121,6 @@ class UnitTest extends Strategy {
   }
   
   /**
-   * tool
-   **/
-  boolean tool() {
-    return true;
-  }
-  
-  /**
    * toolRound
    **/
   boolean toolRound() {
@@ -180,18 +130,10 @@ class UnitTest extends Strategy {
       Round simulation = new SimulatedRound(currentRound);
       Round oldRound = new SimulatedRound(currentRound);
       MeRound meSim = simulation.meRound;
-      if(meSim.toolsRound[CHIP_PROTEIN]) meSim.toolsRound[CHIP_PROTEIN]!.simulateUseOnCell(meSim.currentCellId);
-      IntegerEffectResult simValues = meSim.weapon!.simulateUseOnCell(enemyRound.currentCellId);
-      GameDebug.add(true,simValues,"simulation des degats du tir");
-      Object simErosion = { 
-        maxErosion: (oldRound.enemiesRound[0].minTotalLife-simulation.enemiesRound[0].minTotalLife),
-        minErosion: (oldRound.enemiesRound[0].maxTotalLife-simulation.enemiesRound[0].maxTotalLife),
-        midErosion: (oldRound.enemiesRound[0].midTotalLife-simulation.enemiesRound[0].midTotalLife)
-      }
-      GameDebug.add(true, simErosion, "simulation de l erosion")
-      if(meRound.toolsRound[CHIP_PROTEIN]) useChip(CHIP_PROTEIN);
-      useWeaponOnCell(enemyRound.currentCellId);
-      currentRound.update();
+      if(meSim.toolsRound[CHIP_PROTEIN]) meSim.addToolAction(CHIP_PROTEIN,meSim.currentCellId)
+      IntegerEffectResult simValues = meSim.addToolAction(meSim.weaponId!,enemyRound.currentCellId);
+      GameDebug.add(true,simValues,"valeurs simulees");
+      meSim.execute()
       GameDebug.add(true, oldRound.enemiesRound[0].minLife+"-"+enemyRound.minLife+"="+(oldRound.enemiesRound[0].minLife-enemyRound.minLife), "degat reel par comparaison des rounds")
       GameDebug.add(true, oldRound.enemiesRound[0].minTotalLife+"-"+enemyRound.minTotalLife+"="+(oldRound.enemiesRound[0].minTotalLife-enemyRound.minTotalLife), "erosion reel par comparaison des rounds")
     }

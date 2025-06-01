@@ -85,7 +85,8 @@ class LeekRound extends Objects {
   
     id = leek.id;
     this.roundObj = roundObj;
-    
+    for(string category in CATEGORIES) categories[category] = [];
+
     if(leek.class.super.name == "LeekRound") {
       
       //
@@ -150,9 +151,15 @@ class LeekRound extends Objects {
       
       for(ToolRound toolRound in (leek as LeekRound).toolsRound) {
         if(toolRound.tool.isChip) {
-          categoriseTool(new ChipRound(toolRound, this)); 
+          if(getCooldown(toolRound.tool.id) == 0) {
+            ChipRound c = new ChipRound(toolRound, this);
+            categoriseTool(c);
+            push(chipsRound, c);
+          }
         } else {
-          categoriseTool(new WeaponRound(toolRound, this));
+          WeaponRound w = new WeaponRound(toolRound, this);
+          categoriseTool(w);
+          push(weaponsRound, w);
         }
       }
       if(weaponId != null) weapon = toolsRound[weaponId!];
@@ -167,7 +174,6 @@ class LeekRound extends Objects {
       // cas normal
       //
       this.leek = leek as Leek;
-      for(string category in CATEGORIES) categories[category] = [];
 
       minTP = maxTP = midTP = getTP(id)!;
       maxTotalLife = minTotalLife = midTotalLife = getTotalLife(id)!;
@@ -321,7 +327,7 @@ class LeekRound extends Objects {
    * @param targetCellId l id de la cell cible du tool
    * @return les effets simuler de l action du tool
    **/
-  public EffectResult addToolAction(integer toolId, integer targetCellId) {
+  public IntegerEffectResult addToolAction(integer toolId, integer targetCellId) {
     ToolAction t = new ToolAction(toolId, targetCellId)
     push(actions, t);
     return toolsRound[toolId]!.simulateUseOnCell(targetCellId);
