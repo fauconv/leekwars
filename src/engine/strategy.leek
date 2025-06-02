@@ -25,12 +25,6 @@ class Strategy extends Objects {
   public static boolean isValide() {
     return true;
   }
-  
-  /**
-   * constructor
-   **/
-  public constructor() {
-  }
 
   /**
    * apply

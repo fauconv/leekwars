@@ -1,6 +1,6 @@
-include("movecell");
-include("basicstrategytools");
-include("relativecell");
+//include("movecell");
+//include("basicstrategytools");
+//include("relativecell");
 
 /****************************************************************************
  * BasicStrategy
@@ -47,6 +47,9 @@ class BasicStrategy extends Strategy {
   static boolean isValide() {
     if(count(Board.enemies) > 1) return false;
     enemy = Board.enemies[0];
+    me = Board.me;
+    myId = me.id;
+    enemyId = enemy.id;
     return isEmpty(enemy.categories[CATEGORY_BULB]!);
   }
   
@@ -54,10 +57,7 @@ class BasicStrategy extends Strategy {
    * apply
    **/
   boolean apply() {
-      
-    me = Board.me;
-    myId = me.id;
-    enemyId = enemy.id;
+
     currentRound = Board.currentRound;
     meRound = currentRound.meRound;
     enemyRound = currentRound.enemiesRound[0];
@@ -77,6 +77,7 @@ class BasicStrategy extends Strategy {
     //
     // phase 1 : on determine les mouvements possibles de mon poireau et du poireau adverse
     //
+    /*
     Array<Simulation> MPToolList = MPConditions(meRound);
     myMaxMP = 0;
     for(Simulation sim in MPToolList) myMaxMP = max(myMaxMP, sim.roundObj.leeksRound[myId]!.minMP);
@@ -172,7 +173,7 @@ class BasicStrategy extends Strategy {
     if(mapSize(myMoveCellsNeutral) > 0) return neutral(myMoveCellsNeutral, myMoveCellsAnnihilation, myMoveCellsBad);
     if(mapSize(myMoveCellsAnnihilation) > 0) return annihilation(myMoveCellsAnnihilation);
     return bad(myMoveCellsBad);
-    
+    */
   }
 
 // ----------------------------------------------- strategy ----------------------------------------------------
@@ -181,6 +182,7 @@ class BasicStrategy extends Strategy {
    * heal
    * TODO: remplacer les constantes
    **/
+   /*
   static void heal() {
     if(meRound.minTotalLife - meRound.maxLife > 46) { // 46 = max CHIP_CURE
       useChip(CHIP_STRETCHING) // 3
@@ -197,6 +199,7 @@ class BasicStrategy extends Strategy {
   /**
    * protect
    **/
+   /*
   static void protect() {
     useChip(CHIP_WALL) // 3
     useChip(CHIP_HELMET); // 3  
@@ -206,6 +209,7 @@ class BasicStrategy extends Strategy {
    * conclude
    * TODO: remplacer les constantes
    **/
+   /*
   static void conclude() {
     if(myStrategy == STRATEGY_LONG_RANGE) {
       useChip(CHIP_STRETCHING) // 3
@@ -239,20 +243,20 @@ class BasicStrategy extends Strategy {
     else if(!me.needLos && enemy.needLos) myStrategy = STRATEGY_HIDDEN;
     else myStrategy = STRATEGY_SHORT_RANGE;
     Map<integer,Tool> weapons = me.tools;
-    if(mapContainsKey(weapons, WEAPON_SHOTGUN)) meRound.setWeaponRound(WEAPON_SHOTGUN);
-    else if(mapContainsKey(weapons, WEAPON_NEUTRINO)) meRound.setWeaponRound(WEAPON_NEUTRINO);
-    else if(mapContainsKey(weapons, WEAPON_MAGNUM)) meRound.setWeaponRound(WEAPON_MAGNUM);
-    else if(mapContainsKey(weapons, WEAPON_MACHINE_GUN)) meRound.setWeaponRound(WEAPON_MACHINE_GUN);
-    else if(mapContainsKey(weapons, WEAPON_PISTOL)) meRound.setWeaponRound(WEAPON_PISTOL);
+    if(mapContainsKey(weapons, WEAPON_SHOTGUN)) meRound.setWeaponUpdate(WEAPON_SHOTGUN);
+    else if(mapContainsKey(weapons, WEAPON_NEUTRINO)) meRound.setWeaponUpdate(WEAPON_NEUTRINO);
+    else if(mapContainsKey(weapons, WEAPON_MAGNUM)) meRound.setWeaponUpdate(WEAPON_MAGNUM);
+    else if(mapContainsKey(weapons, WEAPON_MACHINE_GUN)) meRound.setWeaponUpdate(WEAPON_MACHINE_GUN);
+    else if(mapContainsKey(weapons, WEAPON_PISTOL)) meRound.setWeaponUpdate(WEAPON_PISTOL);
     else {
       if(count(me.weapons) > 0) {
-        meRound.setWeaponRound(me.weapons[0].id);
+        meRound.setWeaponUpdate(me.weapons[0].id);
         debugC("BasicStrategy=>neutral=>aucune arme connu", COLOR_RED);
         debugC(Board.me.tools, COLOR_RED);
       } // else j ai pas d arme
     }
     GameDebug.add(BASIC_STRATEGY_DEBUG,me.maxAOERange+"/"+enemy.maxAOERange,"my/him AOERange");
-	GameDebug.add(BASIC_STRATEGY_DEBUG,enemy.tools,"enemy tools");
+    GameDebug.add(BASIC_STRATEGY_DEBUG,enemy.tools,"enemy tools");
   }
 
   /**
@@ -267,6 +271,7 @@ class BasicStrategy extends Strategy {
   /**
    * good
    **/
+  /*
   static boolean good(Map<integer,MoveCell> myGoods, Map<integer,MoveCell> myAnnihilations) {
 	if(BasicStrategyTools.instaKill(myAnnihilations)) return true;
 	boolean farestEscape = (myState == STATE_ESCAPE || myStrategy == STRATEGY_LONG_RANGE || 
@@ -279,10 +284,11 @@ class BasicStrategy extends Strategy {
     myState = STATE_ATTACK;
     return true;
   }
-	
+	*/
   /**
    * annihilation
    **/
+   /*
   static boolean annihilation(Map<integer,MoveCell> myAnnihilations) {
     boolean farestEscape = (myState == STATE_ESCAPE || myStrategy == STRATEGY_LONG_RANGE || 
 							myStrategy == STRATEGY_HIDDEN);
@@ -294,10 +300,11 @@ class BasicStrategy extends Strategy {
     myState = STATE_ATTACK;
     return true;
   }
-
+*/
   /**
    * neutral
    **/
+   /*
   static boolean neutral(Map<integer,MoveCell> myMoveCellsNeutral, Map<integer,MoveCell> myMoveCellsAnnihilation, 
                          Map<integer,MoveCell> myMoveCellsBad) {
     if(BasicStrategyTools.instaKill(myMoveCellsAnnihilation)) return true;
@@ -348,10 +355,11 @@ class BasicStrategy extends Strategy {
 	
     return true;
   }
-    
+    */
   /**
    * bad
    **/
+   /*
   static boolean bad(Map<integer,MoveCell> moveCellsList) {
     boolean farestEscape = (myState == STATE_ESCAPE || myStrategy == STRATEGY_LONG_RANGE || 
 							myStrategy == STRATEGY_HIDDEN);
@@ -363,7 +371,7 @@ class BasicStrategy extends Strategy {
 	conclude();
     return true;
   }
-    
+    */
   /**
    * condition d utilisation des chips lors de la phase de prediction des mouvements
    * une simuation par combinaison de chip
@@ -371,6 +379,7 @@ class BasicStrategy extends Strategy {
    * 1- CHIP_LEATHER_BOOTS
    * TODO: chip de saut
    **/
+   /*
   static Array<Simulation> MPConditions(LeekRound owner) {
     Simulation sim = new Simulation(owner, 0);
     Array<Simulation> ret = [sim]; // cas sans chip
@@ -394,6 +403,7 @@ class BasicStrategy extends Strategy {
    * 9- CHIP_SHOCK
    * @return {score:integer, simulation: Simulation}
    **/
+   /*
   static Object computeAttack(Simulation simu, RelativeCell rel, integer shooterCurrentCell) {
 	Simulation sim = new Simulation(simu, simu.id);
 	Array<Simulation> ret = [sim]; // cas sans chip
@@ -432,6 +442,7 @@ class BasicStrategy extends Strategy {
    * ici on calcul la defence a partir du currentRound au lieu de le faire a partir des sim du mc
    * c est pour simplifier le travail
    **/
+   /*
   static integer computeDefence(Map<real,Map<integer,Tool>> enemyTools, integer shooterId) {
 	for(real AOE = 1.0; AOE > 0.0; AOE = AOE - AOE_DEC_LINE_FACTOR) {
 	  if(!mapContainsKey(enemyTools, AOE)) continue;
@@ -471,5 +482,6 @@ class BasicStrategy extends Strategy {
 	}
 	return 0;
   }
+  */
 }
 

@@ -1,13 +1,12 @@
-include("../src/utils/gamedebug");
+class test {
 
-
-
-function effect_aftereffect(integer add) => integer {
-    return 2
+}
+class toto extends test{
+  constructor() {
+    debug("oui")
+  }
 }
 
-Map<integer,Array<any>> EFFECT_TYPE_TRANSLATOR_CATEGORY = [
-  EFFECT_AFTEREFFECT:["effect_aftereffect",effect_aftereffect]
-]
-debug((EFFECT_TYPE_TRANSLATOR_CATEGORY[EFFECT_AFTEREFFECT]![1] as Function<integer => integer>)(3));
-pause()
+Array<Class> a = [toto]
+
+Class t = a[0]

@@ -488,4 +488,16 @@ class MeRound extends LeekRound {
     Board.currentRound.update()
   }
 
+  /**
+   * setWeapon
+   * racourcis pour setWeapon + update round
+   **/
+  public void setWeaponUpdate(integer weaponId) {
+    setWeapon(weaponId);
+    minTP -= SET_WEAPON_COST;
+    maxTP -= SET_WEAPON_COST;
+    midTP -= SET_WEAPON_COST;
+    this.weaponId = weaponId;
+    this.weapon = toolsRound[weaponId];
+  }
 }
