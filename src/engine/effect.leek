@@ -42,15 +42,9 @@ class Effect extends Objects {
   constructor(Array<integer|real> effectArray, Tool owner) {
     this.owner = owner;
     type = effectArray[0] as integer;
-    if(EFFECT_TYPE_TRANSLATOR_CATEGORY[type] == null) {
-      debugC("Effect=>constructor=>type("+type+")inconnu sur tool("+owner.id+")",COLOR_RED);
-      setRegister("error_Effect_category_"+type, "Effect=>constructor=>type("+type+")inconnu sur tool("+owner.id+")");
-      category = "categoryOther";
-      simulateUseFunction = effect_default;
-    } else {
-      category = EFFECT_TYPE_TRANSLATOR_CATEGORY[type]![1] as string;
-      simulateUseFunction = EFFECT_TYPE_TRANSLATOR_CATEGORY[type]![2] as Function<Effect, LeekRound, LeekRound => IntegerEffectResult>;
-    }
+    Array<any> infos = getEffectsInfo(type);
+    category = infos[1] as string;
+    simulateUseFunction = infos[2] as Function<Effect, LeekRound, LeekRound => IntegerEffectResult>;
     minEffect = round(effectArray[1] as real);
     maxEffect = round(effectArray[2] as real);
     midEffect = round((minEffect+maxEffect)/2);
@@ -88,7 +82,7 @@ class Effect extends Objects {
        (targetLeek.isAllie && shooterLeek.isEnemy && !targetEnemy) ||
        (targetLeek.isSummon && !targetSummon) ||
        (!targetLeek.isSummon && !targetNonSummon) ||
-       (modNoRep && mapContainsKey(target.effects, type)) ||
+       (modNoRep && mapContainsKey(target.applied_effect_categories[category]!, type)) ||
        (shooter.id == target.id && !targetCaster)) return new IntegerEffectResult();
     
     (modMulti) and (AOE *= nbTargets);

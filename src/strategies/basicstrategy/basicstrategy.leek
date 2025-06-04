@@ -8,6 +8,7 @@
 class BasicStrategy extends Strategy {
   
   static Me me;
+  static Enemy enemy;    
   static integer myId;
   static integer enemyId;
   static Round currentRound;
@@ -15,7 +16,7 @@ class BasicStrategy extends Strategy {
   static EnemyRound enemyRound;
   static integer myCurrentCellId;
   static integer enemyCurrentCellId;
-  static Enemy enemy;          
+       
   static integer myMaxMP;
   static integer enemyMaxMP;
 	
@@ -23,14 +24,7 @@ class BasicStrategy extends Strategy {
   static boolean badLifeRatio = false;
   static integer runCompare; // 0 = same MP, <0 he has more MP, >0 he has less MP
   static string myState = "center";
-  static string myStrategy = "unknown";
-	
-  static string STATE_UNKNOWN = "unknown";
-  static string STATE_ESCAPE = "escape";
-  static string STATE_APPROACH = "approach";
-  static string STATE_ATTACK = "attack";
-  static string STATE_FORCE  = "force";
-  static string STATE_CENTER = "center";
+  static string myStrategy = STRATEGY_UNKNOWN;
   
   static string STRATEGY_UNKNOWN = "unknown";
   static string STRATEGY_HIDDEN = "hidden";
@@ -64,7 +58,7 @@ class BasicStrategy extends Strategy {
     myCurrentCellId = meRound.currentCellId;
     enemyCurrentCellId = enemyRound.currentCellId;
     
-    GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"init");
+    GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"init board");
     GameDebug.add(BASIC_STRATEGY_DEBUG,Board.maxAOERange,"maxAOERange");
       
     if(gFirstRound) init();
@@ -72,7 +66,7 @@ class BasicStrategy extends Strategy {
       
     GameDebug.add(BASIC_STRATEGY_DEBUG,myStrategy,"myStrategy");
     GameDebug.add(BASIC_STRATEGY_DEBUG,enemyRound.state,"enemyState");
-    GameDebug.add(BASIC_STRATEGY_DEBUG,myState,"myState");
+    GameDebug.add(BASIC_STRATEGY_DEBUG,meRound.state,"myState");
       
     //
     // phase 1 : on determine les mouvements possibles de mon poireau et du poireau adverse
@@ -265,7 +259,7 @@ class BasicStrategy extends Strategy {
   void update() {
     badLifeRatio = ((meRound.maxLife/meRound.maxTotalLife) < (enemyRound.maxLife/enemyRound.maxTotalLife));
 	lowLife = ((meRound.maxLife/meRound.maxTotalLife) < 0.5);
-	(lowLife && badLifeRatio) and (myState = STATE_ESCAPE);
+	(lowLife && badLifeRatio) and (meRound.state = LeekRound.STATE_ESCAPE);
   }
 	
   /**

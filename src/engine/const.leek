@@ -284,6 +284,7 @@ global Array<string> CATEGORIES = [
 // voir la liste des fonction dans effectfunctions
 //
 global Map<integer,Array<any>> EFFECT_TYPE_TRANSLATOR_CATEGORY = [
+  0:["effect_unknown",CATEGORY_OTHER,effect_default],
   EFFECT_AFTEREFFECT:["effect_aftereffect",CATEGORY_DAMAGE,effect_aftereffect],
   EFFECT_DAMAGE:["effect_damage",CATEGORY_DAMAGE,effect_damage],
   EFFECT_KILL:["effect_kill",CATEGORY_DAMAGE,effect_kill],
@@ -355,3 +356,15 @@ global Map<integer,Array<any>> EFFECT_TYPE_TRANSLATOR_CATEGORY = [
   EFFECT_PUSH:["effect_push",CATEGORY_MOVE,effect_default],
   EFFECT_TELEPORT:["effect_teleport",CATEGORY_MOVE,effect_default]
 ]
+
+/**
+ * getEffectsInfo
+**/
+function getEffectsInfo(integer type) => Array<any> {
+  if(!mapContainsKey(EFFECT_TYPE_TRANSLATOR_CATEGORY,type)) {
+    debugC("getEffectsInfo->type("+type+")inconnu",COLOR_RED);
+    setRegister("getEffectsInfo_"+type, "getEffectsInfo->type("+type+")inconnu");
+    return EFFECT_TYPE_TRANSLATOR_CATEGORY[0]!;
+  }
+  return EFFECT_TYPE_TRANSLATOR_CATEGORY[type]!;
+}

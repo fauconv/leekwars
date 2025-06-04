@@ -178,6 +178,7 @@ abstract class LeekRound {
   +integer weaponId
   +Round roundObj
   +Map<integer,Array<Array<integer|boolean>>> effects
+  +enum state
   #constructor(Round roundObj, Leek|LeekRound leek)
   +void update()
   -void categoriseTool(ToolRound toolRound)
@@ -218,7 +219,6 @@ class AllieRound {
   +constructor(Round roundObj, Leek|AllieRound leek)
 }
 class EnemyRound {
-  +string state
   +constructor(Round roundObj, EnemyRound|Leek leek)
   +void updateState(EnemyRound previousEnemyRound, Array<InterCellInfo> myInter)
 }

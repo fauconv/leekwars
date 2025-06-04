@@ -3,11 +3,18 @@
  * information d un leek, qui change a chaque tour
  ******************************************************************************/
 class LeekRound extends Objects {
+  
+  public static integer STATE_UNKNOWN  = 0b0000000001;
+  public static integer STATE_APPROACH = 0b0000000010;
+  public static integer STATE_ESCAPE   = 0b0000000100;
+  public static integer STATE_CENTER   = 0b0000001000;
+  public static integer STATE_NO_MOVE  = 0b0000010000;
+  public static integer STATE_ATTACK   = 0b0000100000;
+  public static integer STATE_HEAL     = 0b0001000000;
+  public static integer STATE_PROTECT  = 0b0010000000;
+  public static integer STATE_BUFF     = 0b0100000000;
+  public static integer STATE_DEBUFF   = 0b1000000000;
 
-  public static string STATE_APPROACH = "Approaching";
-  public static string STATE_UNKNOWN  = "Unknown";
-  public static string STATE_ESCAPE   = "Escaping";
-    
   public Leek leek;
   public CellRound currentCell;
   public integer currentCellId;
@@ -64,15 +71,17 @@ class LeekRound extends Objects {
   public integer|null weaponId;
   public Round roundObj;
 
-  public Map<integer,Array<Array<integer|boolean>>> effects = [:];
+  public Map<string,Map<integer,Array<Array<integer|boolean>>>> applied_effect_categories = [:];
   
   public Map<integer, ToolRound> toolsRound = [:];
   public Array<WeaponRound> weaponsRound = [];
   public Array<ChipRound|null> chipsRound = [];
   
-  public Map<string,Array<ToolRound>> categories = [:];
+  public Map<string,Array<ToolRound>> tool_categories = [:];
 
   public Array<Action> actions = [];
+
+  public integer state = LeekRound.STATE_UNKNOWN; // comportement predictif du leek
   
   /**
    * constructor
@@ -85,13 +94,17 @@ class LeekRound extends Objects {
   
     id = leek.id;
     this.roundObj = roundObj;
-    for(string category in CATEGORIES) categories[category] = [];
 
     if(leek.class.super.name == "LeekRound") {
       
       //
       // clonage
       //
+      for(string category in CATEGORIES) {
+        tool_categories[category] = [];
+        applied_effect_categories[category] = [:];
+      }
+
       this.leek = (leek as LeekRound).leek;
       
       minTP = (leek as LeekRound).minTP
@@ -147,20 +160,19 @@ class LeekRound extends Objects {
       currentCell = roundObj.cellsRound[currentCellId];
       currentCell.leekOnCell = this;
       
-      effects = clone((leek as LeekRound).effects,3) as Map<integer,Array<Array<integer|boolean>>>
+      applied_effect_categories = clone((leek as LeekRound).applied_effect_categories,4) as Map<string,Map<integer,Array<Array<integer|boolean>>>>
       
-      for(ToolRound toolRound in (leek as LeekRound).toolsRound) {
-        if(toolRound.tool.isChip) {
-          if(getCooldown(toolRound.tool.id) == 0) {
-            ChipRound c = new ChipRound(toolRound, this);
-            categoriseTool(c);
-            push(chipsRound, c);
-          }
-        } else {
-          WeaponRound w = new WeaponRound(toolRound, this);
-          categoriseTool(w);
-          push(weaponsRound, w);
+      for(ChipRound toolRound in (leek as LeekRound).chipsRound) {
+        if(getCooldown(toolRound.id) == 0) {
+          ChipRound c = new ChipRound(toolRound, this);
+          categoriseTool(c);
+          push(chipsRound, c);
         }
+      }
+      for(WeaponRound toolRound in (leek as LeekRound).weaponsRound) {
+        WeaponRound w = new WeaponRound(toolRound, this);
+        categoriseTool(w);
+        push(weaponsRound, w);
       }
       if(weaponId != null) weapon = toolsRound[weaponId!];
 
@@ -175,51 +187,8 @@ class LeekRound extends Objects {
       //
       this.leek = leek as Leek;
 
-      minTP = maxTP = midTP = getTP(id)!;
-      maxTotalLife = minTotalLife = midTotalLife = getTotalLife(id)!;
-      maxLife = midLife = minLife = getLife(id)!;
-      minResistance = maxResistance = midResistance = getResistance(id)!;
-      minAgility = maxAgility = midAgility = getAgility(id)!;
-      minStrength = maxStrength = midStrength = getStrength(id)!;
-      minMagic = maxMagic = midMagic = getMagic(id)!;
-      minScience = maxScience = midScience = getScience(id)!;
-      minWisdom = maxWisdom = midWisdom = getWisdom(id)!;
-      minAbsoluteShield = maxAbsoluteShield = midAbsoluteShield = getAbsoluteShield(id)!;
-      minRelativeShield = maxRelativeShield = midRelativeShield = getRelativeShield(id)!;
-      minDmgReturn = maxDmgReturn = midDmgReturn = getDamageReturn(id)!;
-      minMP = maxMP = midMP = getMP(id)!;
-      minPower = maxPower = midPower = getPower(id)!;
-
-      maxInjury = midInjury = minInjury = 0;
-
-      currentCellId = getCell(id)!;
-      currentCell = roundObj.cellsRound[currentCellId];
-      currentCell.leekOnCell = this;
-
-      for(Tool tool in (leek as Leek).tools) {
-        if(tool.isChip) {
-          if(getCooldown(tool.id) == 0) {
-            ChipRound c = new ChipRound(tool, this);
-            categoriseTool(c);
-            push(chipsRound, c);
-          }
-        } else {
-          WeaponRound w = new WeaponRound(tool, this);
-          categoriseTool(w);
-          push(weaponsRound, w);
-        }
-      }
-
-      if(weaponId = getWeapon(id)) weapon = toolsRound[weaponId!];
-
-      Array<Array<integer | boolean>> effects = getEffects(id)!;
-      for(Array<integer | boolean> effect in effects) {
-        if (mapContainsKey(this.effects,effect[0])) {
-          push(this.effects[effect[0] as integer]!, effect);
-        } else {
-          this.effects[effect[0] as integer] = [effect];
-        }
-      }
+      init()
+      
     }
     
   }
@@ -234,7 +203,28 @@ class LeekRound extends Objects {
    * - clear les actions
    **/
   public void update() {
-      
+    
+    currentCell.leekOnCell = null;
+    toolsRound = [:];
+    weaponsRound = [];
+    chipsRound = [];
+    actions = [];
+   
+    init();
+
+  }
+  
+  /**
+   * init
+   **/
+  private void init() {
+    
+    maxAOERange = 0;
+    for(string category in CATEGORIES) {
+      tool_categories[category] = [];
+      applied_effect_categories[category] = [:];
+    }
+
     minTP = maxTP = midTP = getTP(id)!;
     maxTotalLife = minTotalLife = midTotalLife = getTotalLife(id)!;
     maxLife = midLife = minLife = getLife(id)!;
@@ -251,35 +241,40 @@ class LeekRound extends Objects {
     minPower = maxPower = midPower = getPower(id)!;
 
     maxInjury = midInjury = minInjury = 0;
-    if(weaponId = getWeapon(id)) weapon = toolsRound[weaponId!];
-    
-    currentCell.leekOnCell = null;
+
     currentCellId = getCell(id)!;
     currentCell = roundObj.cellsRound[currentCellId];
     currentCell.leekOnCell = this;
 
     Array<Array<integer | boolean>> effects = getEffects(id)!;
-    this.effects = [:];
-    for(Array<integer | boolean> effect in effects) {
-      if (mapContainsKey(this.effects,effect[0])) {
-        push(this.effects[effect[0] as integer]!, effect);
+    for(Array<integer | boolean> effectArray in effects) {
+      integer type = effectArray[0] as integer;
+      string category = getEffectsInfo(type)[1] as string;
+      if(mapContainsKey(applied_effect_categories[category]!,type)) {
+        push(applied_effect_categories[category]![type]!, effectArray);
       } else {
-        this.effects[effect[0] as integer] = [effect];
+        applied_effect_categories[category]![type] = [effectArray];
       }
     }
-        
-    Array<ChipRound|null> tmp = chipsRound;
-    for(integer index : ChipRound|null chipRound in tmp) {
-      if(chipRound != null && getCooldown(chipRound!.id) == 0) {
-        chipsRound[index] = null;
-        mapRemove(toolsRound, chipRound!.id);
+    
+    for(Chip tool in leek.chips) {
+      if(getCooldown(tool.id) == 0) {
+        ChipRound c = new ChipRound(tool, this);
+        categoriseTool(c);
+        push(chipsRound, c);
       }
+    }
+    for(Weapon tool in leek.weapons) {
+      WeaponRound w = new WeaponRound(tool, this);
+      categoriseTool(w);
+      push(weaponsRound, w);
     }
 
-    actions = [];
+    if(weaponId = getWeapon(id)) weapon = toolsRound[weaponId!];
+    else weapon = null;
 
   }
-    
+
   /**
    * categoriseTool
    * @param toolRound le toolround a ranger dans les categories
@@ -287,7 +282,7 @@ class LeekRound extends Objects {
   private void categoriseTool(ToolRound toolRound) {
     toolsRound[toolRound.id] = toolRound;
     Tool tool = toolRound.tool;
-    for(string category in tool.categories) push(categories[category]!, toolRound);
+    for(string category in tool.categories) push(tool_categories[category]!, toolRound);
     (tool.categories[CATEGORY_DAMAGE]) and
       (tool.maxAOERange > maxAOERange) and (maxAOERange = tool.maxAOERange);
   }
@@ -388,8 +383,6 @@ class AllieRound extends LeekRound {
  * EnemyRound
  ******************************************************************************/
 class EnemyRound extends LeekRound {
-
-  public string state = LeekRound.STATE_UNKNOWN; // comportement de l enemy
     
   /**
    * constructor
@@ -397,29 +390,37 @@ class EnemyRound extends LeekRound {
    * @param leek :
    *   - si c est un leek : cree le EnemyRound correspondant
    *   - si c est un EnemyRound : clone le EnemyRound
+   * @param myInter : le tableau d intercell qui correspond a la currentCell de Me
+   * @param previousEnemyRound : le enemyRound precedant si il existe
    **/
-  public constructor(Round roundObj, EnemyRound|Leek leek) {
+  public constructor(Round roundObj, EnemyRound|Leek leek, Array<InterCellInfo> myInter = null, 
+                     EnemyRound|null previousEnemyRound = null) {
     super(roundObj, leek);
     if(leek.class.name == "EnemyRound") {
       state = (leek as EnemyRound).state;
-    }
-  }
- 
-  /**
-   * updateState
-   * met a jour le comportement de l enemy a partir de son etat precedant
-   * @param previousEnemyRound : le EnemyRound du round precedant
-   * @param myInter : le tableau d intercell qui correspond a la currentCell de Me
-   **/
-  public void updateState(EnemyRound previousEnemyRound, Array<InterCellInfo> myInter) {
-    integer d1 = myInter[currentCellId].range;
-    integer d2 = myInter[previousEnemyRound.currentCellId].range;
-    if(d1 > d2) {
-      state = LeekRound.STATE_ESCAPE;
-    } else if(d1 < d2) {
-      state = LeekRound.STATE_APPROACH;
-    } else {
-        state = LeekRound.STATE_UNKNOWN;
+    } else if(previousEnemyRound != null) {
+
+      //
+      // met a jour le comportement de l enemy a partir de son etat precedant
+      //
+      if(previousEnemyRound!.currentCellId == currentCellId) {
+        state = LeekRound.STATE_NO_MOVE;
+      } else {
+        integer d1 = myInter[currentCellId].range;
+        integer d2 = myInter[previousEnemyRound!.currentCellId].range;
+        if(d1 > d2) {
+          state = LeekRound.STATE_ESCAPE;
+        } else if(d1 < d2) {
+          state = LeekRound.STATE_APPROACH;
+        } else {
+          state = LeekRound.STATE_UNKNOWN;
+        }
+      }
+      if(previousEnemyRound!.midLife < midLife) state += STATE_HEAL;
+      if(!mapIsEmpty(applied_effect_categories[CATEGORY_PROTECTION]!)) state += STATE_PROTECT;
+      if(!mapIsEmpty(applied_effect_categories[CATEGORY_BUFF]!)) state += STATE_BUFF;
+      if(!mapIsEmpty(applied_effect_categories[CATEGORY_DEBUFF]!) || 
+        !mapIsEmpty(applied_effect_categories[CATEGORY_DEBUFF_DEFAULT]!)) state += STATE_DEBUFF;
     }
   }
 

@@ -121,20 +121,8 @@ class Board extends Objects {
    * update
    **/
   public static void update() {
-  
-    //
-    // remove dead leek
-    //
-    for(integer id : Leek leek in leeks) {
-      if(!isAlive(id)) {
-        mapRemove(leeks,id);
-        if(leek.isEnemy) removeElement(enemies,leek);
-        else (leek.isAllie) and (removeElement(allies,leek));
-      }
-    }
     previousRound = currentRound;
-    currentRound = new RealRound();
-    currentRound.updateState(previousRound);
+    currentRound = new RealRound(previousRound);
   }
   
 }

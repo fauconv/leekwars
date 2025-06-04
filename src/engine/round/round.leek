@@ -13,17 +13,6 @@ class Round extends Objects {
   
   public Map<integer, LeekRound> leeksRound = [:];
 
-  /**
-   * updateState
-   * mets a jour les variables des enemyleek qui indique la tendance de l ennemy entre la round
-   * precedent et this
-   * @param previousRound : le round precedent this 
-   **/
-  public updateState(Round previousRound) {
-    Array<InterCellInfo> myInter = meRound.currentCell.cell.interCellInfo;
-    for(EnemyRound enemy in enemiesRound) enemy.updateState(previousRound.leeksRound[enemy.id] as EnemyRound, myInter);
-  }
-
 }
 
 /******************************************************************************
@@ -33,8 +22,9 @@ class RealRound extends Round {
 
   /**
    * constructor
+   * @param previousRound : le round precedant si il existe
    **/
-  public constructor() {
+  public constructor(Round|null previousRound = null) {
     
     //
     // cells creations
@@ -54,16 +44,28 @@ class RealRound extends Round {
     //
     // add enemies
     //
-    for(Leek enemy in Board.enemies) {
-      EnemyRound en = new EnemyRound(this, enemy);
-      push(enemiesRound, en);
-      leeksRound[en.id] = en;
+    if(previousRound != null) {
+      Array<InterCellInfo> myInter = meRound.currentCell.cell.interCellInfo;
+      for(Leek enemy in Board.enemies) {
+        if(!isAlive(enemy.id)) continue
+        EnemyRound en = new EnemyRound(this, enemy, myInter, previousRound!.leeksRound[enemy.id] as EnemyRound);
+        push(enemiesRound, en);
+        leeksRound[en.id] = en;
+      }
+    } else {
+      for(Leek enemy in Board.enemies) {
+        if(!isAlive(enemy.id)) continue
+        EnemyRound en = new EnemyRound(this, enemy);
+        push(enemiesRound, en);
+        leeksRound[en.id] = en;
+      }
     }
 
     //
     // add allies
     //
     for(Leek enemy in Board.allies) {
+      if(!isAlive(enemy.id)) continue
       AllieRound en = new AllieRound(this, enemy);
       push(alliesRound, en);
       leeksRound[en.id] = en;
