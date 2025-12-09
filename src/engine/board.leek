@@ -7,14 +7,14 @@ class Board extends Objects {
   
   public static integer myId;
   public static integer maxAOERange;
-  public static Me me;  
+  public static Me me;
   public static RealRound currentRound;
   public static RealRound previousRound;
   public static Cell centerCell;
   
-  public static Array<Enemy> enemies = []; 
+  public static Array<Enemy> enemies = [];
   public static Array<Allie> allies  = [];
-  public static Map<integer, Leek> leeks;    
+  public static Map<integer, Leek> leeks;
   public static Array<Cell> cells = [];    // Array(Cell) par consequent Map  
   
   /**

@@ -1,6 +1,7 @@
 //include("movecell");
 //include("basicstrategytools");
 //include("relativecell");
+include("strat")
 
 /****************************************************************************
  * BasicStrategy
@@ -17,21 +18,20 @@ class BasicStrategy extends Strategy {
   static integer myCurrentCellId;
   static integer enemyCurrentCellId;
        
-  static integer myMaxMP;
-  static integer enemyMaxMP;
+  //static integer myMaxMP;
+  //static integer enemyMaxMP;
 	
   static boolean lowLife = false;
   static boolean badLifeRatio = false;
-  static integer runCompare; // 0 = same MP, <0 he has more MP, >0 he has less MP
-  static string myState = "center";
-  static string myStrategy = STRATEGY_UNKNOWN;
+  //static integer runCompare; // 0 = same MP, <0 he has more MP, >0 he has less MP
   
-  static string STRATEGY_UNKNOWN = "unknown";
-  static string STRATEGY_HIDDEN = "hidden";
-  static string STRATEGY_LONG_RANGE = "long_range";
-  static string STRATEGY_SHORT_RANGE = "short_range";
-  static string STRATEGY_MELEE = "melee"; // not used
+  static integer STRATEGY_UNKNOWN = 0
+  static integer STRATEGY_HIDDEN      = 0b0001
+  static integer STRATEGY_LONG_RANGE  = 0b0010
+  static integer STRATEGY_SHORT_RANGE = 0b0100
+  static integer STRATEGY_MELEE       = 0b1000
   
+  static integer myAvailableStrategies = STRATEGY_UNKNOWN;
   
   /**
    * isValide
@@ -47,7 +47,7 @@ class BasicStrategy extends Strategy {
     return isEmpty(enemy.categories[CATEGORY_BULB]!);
   }
   
-  /**s
+  /**
    * apply
    **/
   boolean apply() {
@@ -64,7 +64,7 @@ class BasicStrategy extends Strategy {
     if(gFirstRound) init();
     else update();
       
-    GameDebug.add(BASIC_STRATEGY_DEBUG,myStrategy,"myStrategy");
+    GameDebug.add(BASIC_STRATEGY_DEBUG,myAvailableStrategies,"myAvailableStrategies");
     GameDebug.add(BASIC_STRATEGY_DEBUG,enemyRound.state,"enemyState");
     GameDebug.add(BASIC_STRATEGY_DEBUG,meRound.state,"myState");
       
@@ -232,22 +232,16 @@ class BasicStrategy extends Strategy {
   * 4 - WEAPON_MACHINE_GUN
   * 5 - WEAPON_PISTOL
   **/
-  static void init() {
-    if(me.maxAOERange > enemy.maxAOERange) myStrategy = STRATEGY_LONG_RANGE;
-    else if(!me.needLos && enemy.needLos) myStrategy = STRATEGY_HIDDEN;
-    else myStrategy = STRATEGY_SHORT_RANGE;
-    Map<integer,Tool> weapons = me.tools;
-    if(mapContainsKey(weapons, WEAPON_SHOTGUN)) meRound.setWeaponUpdate(WEAPON_SHOTGUN);
-    else if(mapContainsKey(weapons, WEAPON_NEUTRINO)) meRound.setWeaponUpdate(WEAPON_NEUTRINO);
-    else if(mapContainsKey(weapons, WEAPON_MAGNUM)) meRound.setWeaponUpdate(WEAPON_MAGNUM);
-    else if(mapContainsKey(weapons, WEAPON_MACHINE_GUN)) meRound.setWeaponUpdate(WEAPON_MACHINE_GUN);
-    else if(mapContainsKey(weapons, WEAPON_PISTOL)) meRound.setWeaponUpdate(WEAPON_PISTOL);
-    else {
-      if(count(me.weapons) > 0) {
-        meRound.setWeaponUpdate(me.weapons[0].id);
-        debugC("BasicStrategy=>neutral=>aucune arme connu", COLOR_RED);
-        debugC(Board.me.tools, COLOR_RED);
-      } // else j ai pas d arme
+  void init() {
+    myAvailableStrategies = defineInitialStrategies()
+    integer weaponId = setWeaponInit()
+    if(mapContainsKey(me.tools, weaponId)) {
+      meRound.setWeaponUpdate(weaponId);
+    } else {
+      (count(me.weapons) > 0) and meRound.setWeaponUpdate(me.weapons[0].id)
+      debugC("BasicStrategy=>init=>aucune arme connu", COLOR_RED);
+      setRegister("BasicStrategy=>init=>aucune arme connu", me.weapons);
+      debugC(me.weapons, COLOR_RED);
     }
     GameDebug.add(BASIC_STRATEGY_DEBUG,me.maxAOERange+"/"+enemy.maxAOERange,"my/him AOERange");
     GameDebug.add(BASIC_STRATEGY_DEBUG,enemy.tools,"enemy tools");
@@ -258,8 +252,8 @@ class BasicStrategy extends Strategy {
    **/
   void update() {
     badLifeRatio = ((meRound.maxLife/meRound.maxTotalLife) < (enemyRound.maxLife/enemyRound.maxTotalLife));
-	lowLife = ((meRound.maxLife/meRound.maxTotalLife) < 0.5);
-	(lowLife && badLifeRatio) and (meRound.state = LeekRound.STATE_ESCAPE);
+    lowLife = ((meRound.maxLife/meRound.maxTotalLife) < 0.5);
+    (lowLife && badLifeRatio) and (meRound.state = LeekRound.STATE_ESCAPE);
   }
 	
   /**

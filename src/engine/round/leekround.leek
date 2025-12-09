@@ -4,7 +4,8 @@
  ******************************************************************************/
 class LeekRound extends Objects {
   
-  public static integer STATE_UNKNOWN  = 0b0000000001;
+  public static integer STATE_UNKNOWN  = 0;
+  public static integer STATE_SAME_DIST= 0b0000000001;
   public static integer STATE_APPROACH = 0b0000000010;
   public static integer STATE_ESCAPE   = 0b0000000100;
   public static integer STATE_CENTER   = 0b0000001000;
@@ -152,6 +153,8 @@ class LeekRound extends Objects {
       maxInjury = (leek as LeekRound).maxInjury
       midInjury = (leek as LeekRound).midInjury
       minInjury = (leek as LeekRound).minInjury
+
+      state = (leek as LeekRound).state;
       
       maxAOERange = leek.maxAOERange
       weaponId = (leek as LeekRound).weaponId
@@ -201,6 +204,7 @@ class LeekRound extends Objects {
    * - met a jour le leekOnCell
    * - met a jour le setWeapon
    * - clear les actions
+   * ne mets pas a jour le state
    **/
   public void update() {
     
@@ -323,8 +327,7 @@ class LeekRound extends Objects {
    * @return les effets simuler de l action du tool
    **/
   public IntegerEffectResult addToolAction(integer toolId, integer targetCellId) {
-    ToolAction t = new ToolAction(toolId, targetCellId)
-    push(actions, t);
+    push(actions, new ToolAction(toolId, targetCellId));
     return toolsRound[toolId]!.simulateUseOnCell(targetCellId);
   }
   
@@ -334,8 +337,7 @@ class LeekRound extends Objects {
    * @param usedMP le nombre de MP utiliser pour aller a cellId, attention aucune verification n est faite
    **/
   public void addMoveAction(integer cellId, integer usedMP) {
-    MoveAction t = new MoveAction(cellId);
-    push(actions, t);
+    push(actions, new MoveAction(cellId));
     minMP -= usedMP;
     maxMP -= usedMP;
     midMP -= usedMP;
@@ -397,7 +399,7 @@ class EnemyRound extends LeekRound {
                      EnemyRound|null previousEnemyRound = null) {
     super(roundObj, leek);
     if(leek.class.name == "EnemyRound") {
-      state = (leek as EnemyRound).state;
+      
     } else if(previousEnemyRound != null) {
 
       //
@@ -413,7 +415,7 @@ class EnemyRound extends LeekRound {
         } else if(d1 < d2) {
           state = LeekRound.STATE_APPROACH;
         } else {
-          state = LeekRound.STATE_UNKNOWN;
+          state = LeekRound.STATE_SAME_DIST;
         }
       }
       if(previousEnemyRound!.midLife < midLife) state += STATE_HEAL;
@@ -439,13 +441,18 @@ class MeRound extends LeekRound {
    * @param roundObj : le round auquel appartient le leekRound
    * @param clone : clone le MeRound
    **/
-  public constructor(Round roundObj, MeRound|null clone = null) {
-    if(clone != null) {
-      super(roundObj, clone!);
-      relativeCenterCellId = clone!.relativeCenterCellId
-      pathToCenter = clone!.pathToCenter
-    } else {
-      super(roundObj, Board.me);
+  public constructor(Round roundObj, MeRound|Leek leek, MeRound|null previousMeRound = null) {
+    super(roundObj, leek);
+    if(leek.class.name == "MeRound") {
+      relativeCenterCellId = (leek as MeRound).relativeCenterCellId
+      pathToCenter = (leek as MeRound).pathToCenter
+    } if(previousMeRound != null) {
+      if(previousMeRound!.currentCellId == currentCellId) state = LeekRound.STATE_NO_MOVE;
+      if(previousMeRound!.midLife < midLife) state += STATE_HEAL;
+      if(!mapIsEmpty(applied_effect_categories[CATEGORY_PROTECTION]!)) state += STATE_PROTECT;
+      if(!mapIsEmpty(applied_effect_categories[CATEGORY_BUFF]!)) state += STATE_BUFF;
+      if(!mapIsEmpty(applied_effect_categories[CATEGORY_DEBUFF]!) || 
+         !mapIsEmpty(applied_effect_categories[CATEGORY_DEBUFF_DEFAULT]!)) state += STATE_DEBUFF;
     }
   }
   

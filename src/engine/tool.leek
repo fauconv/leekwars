@@ -7,6 +7,7 @@ class Tool extends Objects {
   public boolean needLos;
   public integer areaType; // Enumeration
   public integer cost;
+  public integer maxUse;
   public integer launchType;    // Enumeration
   public integer minRange;
   public integer maxRange;
@@ -95,6 +96,7 @@ class Tool extends Objects {
       }
       maxAOERange = maxRange+AOERange;
       minAOERange = max(minRange-AOERange,1);
+
     }
   
   }
@@ -160,6 +162,7 @@ class Weapon extends Tool {
     areaType   = getWeaponArea(weaponId)!;
     needLos    = weaponNeedLos(weaponId);
     cost       = getWeaponCost(weaponId);
+    maxUse     = getWeaponMaxUses(weaponId)
     launchType = getWeaponLaunchType(weaponId)!;
     minRange   = getWeaponMinRange(weaponId);
     maxRange   = getWeaponMaxRange(weaponId);
@@ -194,6 +197,7 @@ class Chip extends Tool {
     areaType = getChipArea(chipId)!;
     needLos  = chipNeedLos(chipId);
     cost     = getChipCost(chipId)!;
+    maxUse   = getChipMaxUses(chipId)
     launchType = getChipLaunchType(chipId)!;
     minRange = getChipMinRange(chipId)!;
     maxRange = getChipMaxRange(chipId)!;

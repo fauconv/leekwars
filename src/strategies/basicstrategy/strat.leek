@@ -1,0 +1,25 @@
+/**
+ * defineInitialStrategies
+ * @return la liste des strategies valables au premier tour
+ * TODO: definir mieux quand on peut utiliser STRATEGY_SHORT_RANGE
+ **/
+function defineInitialStrategies() => integer {
+  integer myAvailableStrategies = 0;
+  if(BasicStrategy.me.maxAOERange > BasicStrategy.enemy.maxAOERange) myAvailableStrategies += BasicStrategy.STRATEGY_LONG_RANGE;
+  if(!BasicStrategy.me.needLos && BasicStrategy.enemy.needLos) myAvailableStrategies += BasicStrategy.STRATEGY_HIDDEN;
+  myAvailableStrategies += BasicStrategy.STRATEGY_SHORT_RANGE;
+  return myAvailableStrategies;
+}
+/**
+ * setWeaponInit
+ * @return l id du weapon a utiliser au premier tour
+ **/
+function setWeaponInit() => integer {
+  if(BasicStrategy.myAvailableStrategies & BasicStrategy.STRATEGY_LONG_RANGE) {
+    if(BasicStrategy.enemy.maxAOERange < 5) return WEAPON_SHOTGUN;
+    if(BasicStrategy.enemy.maxAOERange < 6) return WEAPON_NEUTRINO;
+    return WEAPON_MAGNUM;
+  }
+  if(BasicStrategy.myAvailableStrategies & BasicStrategy.STRATEGY_SHORT_RANGE) return WEAPON_SHOTGUN;
+  return WEAPON_MAGNUM;
+}

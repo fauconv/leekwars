@@ -258,6 +258,8 @@ class Chip {
 }
 abstract class Round {
   +MeRound MeRound
+  +integer maxAOERange
+  +integer whoHasMaxAOERange
   +updateState(Round previousRound)
 }
 class RealRound {

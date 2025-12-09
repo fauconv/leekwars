@@ -12,6 +12,9 @@ class Round extends Objects {
   public Array<EnemyRound> enemiesRound = [];
   
   public Map<integer, LeekRound> leeksRound = [:];
+  
+  public integer maxAOERange;
+  public integer whoHasMaxAOERange = -1; // -1 = Me, 0 = both, 1  = enemy 
 
 }
 
@@ -33,31 +36,27 @@ class RealRound extends Round {
       push(cellsRound, new CellRound(this, Board.cells[i]));
     }
      
-    id = getTurn();
-     
-    //
-    // add me
-    //
-    meRound = new MeRound(this);
-    leeksRound[meRound.id] = meRound;
+    id = getTurn()
 
     //
-    // add enemies
+    // add me and enemies
     //
     if(previousRound != null) {
+      meRound = new MeRound(this, Board.me, previousRound!.meRound);
+      leeksRound[meRound.id] = meRound;
+      maxAOERange = meRound.maxAOERange;
       Array<InterCellInfo> myInter = meRound.currentCell.cell.interCellInfo;
       for(Leek enemy in Board.enemies) {
         if(!isAlive(enemy.id)) continue
-        EnemyRound en = new EnemyRound(this, enemy, myInter, previousRound!.leeksRound[enemy.id] as EnemyRound);
-        push(enemiesRound, en);
-        leeksRound[en.id] = en;
+        pushEnemy(new EnemyRound(this, enemy, myInter, previousRound!.leeksRound[enemy.id] as EnemyRound));
       }
     } else {
+      meRound = new MeRound(this, Board.me);
+      leeksRound[meRound.id] = meRound;
+      maxAOERange = meRound.maxAOERange;
       for(Leek enemy in Board.enemies) {
         if(!isAlive(enemy.id)) continue
-        EnemyRound en = new EnemyRound(this, enemy);
-        push(enemiesRound, en);
-        leeksRound[en.id] = en;
+        pushEnemy(new EnemyRound(this, enemy));
       }
     }
 
@@ -73,6 +72,21 @@ class RealRound extends Round {
     
   }
 
+  /**
+   * pushEnemy
+   * factorisation
+   **/
+  private pushEnemy(EnemyRound en) {
+    push(enemiesRound, en);
+    leeksRound[en.id] = en;
+    if(en.maxAOERange == maxAOERange) {
+      (whoHasMaxAOERange < 0) and (whoHasMaxAOERange = 0);
+    } else if(en.maxAOERange > maxAOERange) {
+      maxAOERange = en.maxAOERange;
+      whoHasMaxAOERange = 1;
+    }
+  }
+  
   /**
    * update
    * mets a jour le round par rapport aux actions qui viennent d etre executer :
