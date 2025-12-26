@@ -9,7 +9,7 @@ class Board extends Objects {
   public static integer maxAOERange;
   public static Me me;
   public static RealRound currentRound;
-  public static RealRound previousRound;
+  public static Array<Round> previousRounds = [];
   public static Cell centerCell;
   
   public static Array<Enemy> enemies = [];
@@ -112,8 +112,8 @@ class Board extends Objects {
     //
     // first round
     //
-    previousRound = currentRound = new RealRound();
-    
+    currentRound = new RealRound();
+    push(previousRounds, new SimulatedRound(currentRound)) // initialise le tour 0 avec les position de depart des leek
     return true;
   }
     
@@ -121,8 +121,8 @@ class Board extends Objects {
    * update
    **/
   public static void update() {
-    previousRound = currentRound;
-    currentRound = new RealRound(previousRound);
+    push(previousRounds, currentRound);
+    currentRound = new RealRound(currentRound);
   }
   
 }

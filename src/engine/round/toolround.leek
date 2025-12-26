@@ -5,10 +5,10 @@
 class ToolRound extends Objects {
   
   public Tool tool;
-  public integer cooldown; 
-  // TODO: Ajout d une nombre d utilisation restant
   public Round roundObj;
   public LeekRound owner;
+  private integer usable;
+  private integer cooldown; 
   
   /**
    * constructor
@@ -22,12 +22,17 @@ class ToolRound extends Objects {
     if(tool.class.super.name == "Tool") {
       this.tool = tool as Tool;
       cooldown = 0;
+      usable = this.tool.maxUse;
     } else {
       this.tool = (tool as ToolRound).tool;
       cooldown = tool.cooldown;
+      usable = (tool as ToolRound).usable;
     }
   }
   
+  public boolean isUsable() {
+    return cooldown == 0 && usable != 0;
+  }
   /**
    * simulateUseOnCell
    * abstract
@@ -53,6 +58,7 @@ class ToolRound extends Objects {
     owner.maxTP -= cost;
     owner.midTP -= cost;
     cooldown = tool.cooldown;
+    usable--;
     IntegerEffectResult delta = new IntegerEffectResult();
     real midCriticalLuck = owner.midAgility/1000.0;
     real criticalFactor = CRITICAL_FACTOR;

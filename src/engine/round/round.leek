@@ -132,7 +132,9 @@ class RealRound extends Round {
     }
     
     id = clone.id;
-      
+    maxAOERange = clone.maxAOERange
+    whoHasMaxAOERange = clone.whoHasMaxAOERange
+    
     //
     // add me
     //

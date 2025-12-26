@@ -8,37 +8,40 @@ include("strat")
  ****************************************************************************/
 class BasicStrategy extends Strategy {
   
-  static Me me;
-  static Enemy enemy;    
-  static integer myId;
-  static integer enemyId;
-  static Round currentRound;
-  static MeRound meRound;
-  static EnemyRound enemyRound;
-  static integer myCurrentCellId;
-  static integer enemyCurrentCellId;
+  public static Me me;
+  public static Enemy enemy;    
+  public static integer myId;
+  public static integer enemyId;
+  public static Round currentRound;
+  public static MeRound meRound;
+  public static EnemyRound enemyRound;
+  public static integer myCurrentCellId;
+  public static integer enemyCurrentCellId;
        
   //static integer myMaxMP;
   //static integer enemyMaxMP;
 	
-  static boolean lowLife = false;
-  static boolean badLifeRatio = false;
+  public static real myLifeRatio;
+  public static real enemyLifeRatio;
+  public static boolean lowLife = false;
+  public static boolean badLifeRatio = false;
   //static integer runCompare; // 0 = same MP, <0 he has more MP, >0 he has less MP
   
-  static integer STRATEGY_UNKNOWN = 0
-  static integer STRATEGY_HIDDEN      = 0b0001
-  static integer STRATEGY_LONG_RANGE  = 0b0010
-  static integer STRATEGY_SHORT_RANGE = 0b0100
-  static integer STRATEGY_MELEE       = 0b1000
+  public static integer STRATEGY_UNKNOWN = 0
+  public static integer STRATEGY_HIDDEN      = 0b0001
+  public static integer STRATEGY_LONG_RANGE  = 0b0010
+  public static integer STRATEGY_SHORT_RANGE = 0b0100
+  public static integer STRATEGY_MELEE       = 0b1000
   
-  static integer myAvailableStrategies = STRATEGY_UNKNOWN;
+  public static integer myAvailableStrategies = STRATEGY_UNKNOWN; // strategy global dont decoule les myToDoState
+  public static integer myToDoState; // state (action a accomplir) != meRound.state (action accompli au tour precedent)
   
   /**
    * isValide
    *
-   * refuse les match avec AOE, en groupe, ou avec bulb
+   * refuse les match avec en groupe, ou avec bulb
    **/
-  static boolean isValide() {
+  public static boolean isValide() {
     if(count(Board.enemies) > 1) return false;
     enemy = Board.enemies[0];
     me = Board.me;
@@ -50,23 +53,44 @@ class BasicStrategy extends Strategy {
   /**
    * apply
    **/
-  boolean apply() {
+  public boolean apply() {
 
     currentRound = Board.currentRound;
     meRound = currentRound.meRound;
     enemyRound = currentRound.enemiesRound[0];
     myCurrentCellId = meRound.currentCellId;
     enemyCurrentCellId = enemyRound.currentCellId;
+    myLifeRatio = meRound.maxLife / meRound.maxTotalLife
+    enemyLifeRatio = enemyRound.maxLife / enemyRound.maxTotalLife
     
     GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"init board");
-    GameDebug.add(BASIC_STRATEGY_DEBUG,Board.maxAOERange,"maxAOERange");
       
-    if(gFirstRound) init();
-    else update();
-      
+    if(gFirstRound) {
+      myAvailableStrategies = defineInitialStrategies()
+      myToDoState = defineInitialMyToDoState();
+      integer weaponId = setWeaponInit()
+      if(mapContainsKey(me.tools, weaponId)) {
+        meRound.setWeaponUpdate(weaponId);
+      } else {
+        (count(me.weapons) > 0) and meRound.setWeaponUpdate(me.weapons[0].id)
+        string error = "BasicStrategy=>apply=>aucune arme connu ("+weaponId+")"
+        debugC(error, COLOR_RED);
+        debugC(me.weapons, COLOR_RED);
+        setRegister(error, me.weapons);
+      }
+    } else {
+      badLifeRatio = (myLifeRatio < enemyLifeRatio);
+      lowLife = (myLifeRatio < 0.5);
+      myToDoState = updateMyToDoState();
+    }
+    
+    GameDebug.add(BASIC_STRATEGY_DEBUG,meRound.maxAOERange+"/"+enemyRound.maxAOERange,"my/him AOERange");
     GameDebug.add(BASIC_STRATEGY_DEBUG,myAvailableStrategies,"myAvailableStrategies");
-    GameDebug.add(BASIC_STRATEGY_DEBUG,enemyRound.state,"enemyState");
-    GameDebug.add(BASIC_STRATEGY_DEBUG,meRound.state,"myState");
+    GameDebug.add(BASIC_STRATEGY_DEBUG,enemyRound.moveState,"enemy moveState");
+    GameDebug.add(BASIC_STRATEGY_DEBUG,meRound.moveState,"my moveState");
+    GameDebug.add(BASIC_STRATEGY_DEBUG,enemyRound.combatState,"enemy combatState");
+    GameDebug.add(BASIC_STRATEGY_DEBUG,meRound.combatState,"my combatState");
+    GameDebug.add(BASIC_STRATEGY_DEBUG,meRound.applied_effect_categories, "applied effect",2)
       
     //
     // phase 1 : on determine les mouvements possibles de mon poireau et du poireau adverse
@@ -221,39 +245,6 @@ class BasicStrategy extends Strategy {
       protect(); // 3
     } else { // STRATEGY_MELEE
     }
-  }
-
- /**
-  * init
-  * choix de l arme a degainer au depart et de la strategie global
-  * 1 - WEAPON_SHOTGUN
-  * 2 - WEAPON_NEUTRINO
-  * 3 - WEAPON_MAGNUM
-  * 4 - WEAPON_MACHINE_GUN
-  * 5 - WEAPON_PISTOL
-  **/
-  void init() {
-    myAvailableStrategies = defineInitialStrategies()
-    integer weaponId = setWeaponInit()
-    if(mapContainsKey(me.tools, weaponId)) {
-      meRound.setWeaponUpdate(weaponId);
-    } else {
-      (count(me.weapons) > 0) and meRound.setWeaponUpdate(me.weapons[0].id)
-      debugC("BasicStrategy=>init=>aucune arme connu", COLOR_RED);
-      setRegister("BasicStrategy=>init=>aucune arme connu", me.weapons);
-      debugC(me.weapons, COLOR_RED);
-    }
-    GameDebug.add(BASIC_STRATEGY_DEBUG,me.maxAOERange+"/"+enemy.maxAOERange,"my/him AOERange");
-    GameDebug.add(BASIC_STRATEGY_DEBUG,enemy.tools,"enemy tools");
-  }
-
-  /**
-   * update
-   **/
-  void update() {
-    badLifeRatio = ((meRound.maxLife/meRound.maxTotalLife) < (enemyRound.maxLife/enemyRound.maxTotalLife));
-    lowLife = ((meRound.maxLife/meRound.maxTotalLife) < 0.5);
-    (lowLife && badLifeRatio) and (meRound.state = LeekRound.STATE_ESCAPE);
   }
 	
   /**

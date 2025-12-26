@@ -1,7 +1,7 @@
 /**
  * defineInitialStrategies
  * @return la liste des strategies valables au premier tour
- * TODO: definir mieux quand on peut utiliser STRATEGY_SHORT_RANGE
+ * TODO: definir mieux quand on peut utiliser STRATEGY_SHORT_RANGE 
  **/
 function defineInitialStrategies() => integer {
   integer myAvailableStrategies = 0;
@@ -10,6 +10,27 @@ function defineInitialStrategies() => integer {
   myAvailableStrategies += BasicStrategy.STRATEGY_SHORT_RANGE;
   return myAvailableStrategies;
 }
+
+/**
+ * defineInitialMyToDoState
+ * @return la list des STATE a realiser sous forme binaire dans un integer
+ **/
+function defineInitialMyToDoState() => integer {
+  return LeekRound.STATE_CENTER;
+}
+
+/**
+ * updateMyToDoStates
+ * @return la list des STATE a realiser sous forme binaire dans un integer
+ **/
+function updateMyToDoState() => integer {
+  integer myToDoState = 0; 
+  if (BasicStrategy.lowLife && BasicStrategy.badLifeRatio) myToDoState = LeekRound.STATE_ESCAPE + LeekRound.STATE_HEAL + LeekRound.STATE_PROTECT;
+  else if(BasicStrategy.lowLife) myToDoState = LeekRound.STATE_HEAL;
+  else if(BasicStrategy.badLifeRatio) myToDoState = LeekRound.STATE_PROTECT;
+  return myToDoState;
+}
+
 /**
  * setWeaponInit
  * @return l id du weapon a utiliser au premier tour

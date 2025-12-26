@@ -5,6 +5,7 @@ global boolean EFFECT_DEBUG = false;
 global boolean LEEKROUND_DEBUG = true;
 global boolean BASIC_STRATEGY_DEBUG = true;
 global boolean UNIT_TEST_DEBUG = false;
+global boolean TESTS_DEBUG = true;
 include("utils/gamedebug");
 //include("utils/gamenodebug");
 
@@ -13,6 +14,7 @@ include("utils/gamedebug");
  **************************************************************************/
 include("engine/strategy");
 include("strategies/UT/unit_test");
+include("strategies/testsingame/testsingame");
 include("strategies/basicstrategy/basicstrategy");
 
 /**************************************************************************
@@ -27,6 +29,7 @@ if(!gBoardInit) {
   }
   // strategies
   if(UnitTest.isValide()) gStrategy = new UnitTest();
+  else if(TestsInGame.isValide()) gStrategy = new TestsInGame();
   else if(BasicStrategy.isValide()) gStrategy = new BasicStrategy();
 } else {
   Board.update();
