@@ -46,6 +46,7 @@
                        |abstract|final|static               # - ...
                       )\s+)*                                # require a white-space separator
                       \K                                    # discard text matched so far
+                      ([a-zA-Z<>]+\s)?                      # return type
                       (?'VALID_ID'
                         \b(?!(?:                            # keywords not to be used as identifier
                             do
@@ -69,10 +70,6 @@
         mainExpr=    "(?x)                      # to be able to add comment in this partern
                       (?m-i)                    # ^ and $ match at line-breaks, case-sensitive
                       ^\h*                      # optional leading white-space at start-of-line
-                      (?:(?:                                # field modifiers
-                        p(?:r(?:ivate|otected)|ublic)       # - access modifiers
-                       |abstract|final|static               # - ...
-                      )\s+)*                                # require a white-space separator
                       (?-i:function)\s+
                       \K                                    # discard text matched so far
                       (?'VALID_ID'
@@ -86,7 +83,7 @@
                         \w+                                 # identifier used as function name
                       )
                       \s*\(                                 # start of function parameters
-                      [^\{\)]*\s*\)\s*\{                    # start of function body
+                      [^\{\)]*\s*\)\s*[^\{\)]*\s*\{                    # start of function body
                      "
       >
         <functionName>
