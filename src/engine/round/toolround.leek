@@ -25,7 +25,7 @@ class ToolRound extends Objects {
       usable = this.tool.maxUse;
     } else {
       this.tool = (tool as ToolRound).tool;
-      cooldown = tool.cooldown;
+      cooldown = (tool as ToolRound).cooldown;
       usable = (tool as ToolRound).usable;
     }
   }
@@ -38,17 +38,14 @@ class ToolRound extends Objects {
    * abstract
    * @param cellId l id de la cell cible du tool
    **/
-  public IntegerEffectResult simulateUseOnCell(integer cellId) {
-    return new IntegerEffectResult();
+  public void simulateUseOnCell(integer cellId) {
   }
 
   /**
    * simulateUse
    * @param targets la liste des cible atteinte par le tool
-   * @param AOE le multiplicateur d effet correspondant a la cible
-   * @return les effet combine du tool
    **/
-  protected IntegerEffectResult simulateUse(Array<Integer> targets, integer cellId) {
+  protected void simulateUse(Array<Integer> targets, integer cellId) {
     
     Array<real> AOEs = [];
     for(integer entity in targets)
@@ -59,26 +56,23 @@ class ToolRound extends Objects {
     owner.midTP -= cost;
     cooldown = tool.cooldown;
     usable--;
-    IntegerEffectResult delta = new IntegerEffectResult();
-    real midCriticalLuck = owner.midAgility/1000.0;
-    real criticalFactor = CRITICAL_FACTOR;
-    (owner.maxAgility <= 0) and (criticalFactor = 1.0);
+    real midCriticalLuck = owner.midAgility/1000.0; // probabilite de coup critique
+    if(owner.maxAgility <= 0) {
+      midCriticalLuck = 0.0
+    } else if (midCriticalLuck > 1.0) {
+      midCriticalLuck = 1.0
+    }
     for(Effect effect in tool.effects) {
       if(effect.modOnCast) {
-        IntegerEffectResult delta2 = effect.simulateUse(owner, owner, 1.0, 1, midCriticalLuck, criticalFactor)
-        GameDebug.add(EFFECT_DEBUG, delta2,"simulateUse (modOnCast)");
-        delta.add(delta2);
+        effect.simulateUse(owner, owner, 1.0, 1, midCriticalLuck)
       } else {
         integer nbTargets = count(targets);
         for(integer i : integer targetId in targets) {
           LeekRound target = roundObj.leeksRound[targetId]!;
-          IntegerEffectResult delta2 = effect.simulateUse(owner, target, AOEs[i], nbTargets, midCriticalLuck, criticalFactor)
-          GameDebug.add(EFFECT_DEBUG, delta2,"simulateUse");
-          delta.add(delta2);
+          effect.simulateUse(owner, target, AOEs[i], nbTargets, midCriticalLuck)
         }
       }
     }
-    return delta;
     
   }
   
@@ -132,10 +126,9 @@ class WeaponRound extends ToolRound {
    * simulateUseOnCell
    * TODO: check si getWeaponTargets gere l enemi qui se tire sur lui meme
    * @param cellId id de la cell cible du tir
-   * @return les effet combine du tool
    **/
-  public IntegerEffectResult simulateUseOnCell(integer cellId) {
-    return simulateUse(getWeaponTargets(id, cellId)!, cellId);
+  public void simulateUseOnCell(integer cellId) {
+    simulateUse(getWeaponTargets(id, cellId)!, cellId);
   }
     
 }
@@ -169,10 +162,9 @@ class ChipRound extends ToolRound {
    * simulateUseOnCell
    * TODO: check si getChipTargets gere l enemi qui se tire sur lui meme
    * @param cellId id de la cell cible du tir
-   * @return les effet combine du tool
    **/
-  public IntegerEffectResult simulateUseOnCell(integer cellId) {
-    return simulateUse(getChipTargets(id, cellId)!, cellId);
+  public void simulateUseOnCell(integer cellId) {
+    simulateUse(getChipTargets(id, cellId)!, cellId);
   }
     
 }

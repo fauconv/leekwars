@@ -34,9 +34,23 @@ class TestsInGame extends Strategy {
     myCurrentCellId = meRound.currentCellId;
     enemyCurrentCellId = enemyRound.currentCellId;
 
-    GameDebug.add(true, me.tools[CHIP_BANDAGE], "bandage")
-    GameDebug.add(true, me.tools[CHIP_ICE], "ice")
-    GameDebug.add(true, me.weapons[0], "weapon")
+    GameDebug.addOperation(true,"init");
+    
+    SimulatedRound simAvecBoots = new SimulatedRound(currentRound)
+    simAvecBoots.meRound.addToolAction(CHIP_LEATHER_BOOTS, myCurrentCellId);
+
+    GameDebug.addOperation(true,"simulate boots");
+
+    Map<integer,integer> list = meRound.route(meRound.minMP)
+
+    GameDebug.addOperation(true,"route");
+
+    Map<integer,SimulatedRound> listDeSim = [:]
+    for(integer cellId : integer remainingMP in list) {
+      listDeSim[cellId] = new SimulatedRound(currentRound)
+    }
+    
+    GameDebug.addOperation(true,"clonage");
   }
   
 }

@@ -32,6 +32,14 @@ class GameDebug {
   }
   
   /**
+   * addCellText
+   *
+   * ecrit le text (contenu dans cellsTexts) correspondant dans chacune des cases en index de cellsTexts
+   **/
+  static void addCellText(boolean condition, Map<integer, any> cellsTexts, integer color = 0) {
+  }
+
+  /**
    * addOperation
    * calcul les opt et la ram depuis le dernier addOperation et l affiche
    **/

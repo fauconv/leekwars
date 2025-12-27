@@ -22,7 +22,7 @@ class Effect extends Objects {
   public boolean modNoRep;
   public boolean modOnCast;
   public boolean modStack;
-  public Function<Effect, LeekRound, LeekRound => IntegerEffectResult> simulateUseFunction; // calcul les degats de l effet voir effectfunctions
+  public Function<Effect, LeekRound, LeekRound => void> simulateUseFunction; // calcul les degats de l effet voir effectfunctions
   
   public Tool owner;
 
@@ -44,7 +44,7 @@ class Effect extends Objects {
     type = effectArray[0] as integer;
     Array<any> infos = getEffectsInfo(type);
     category = infos[1] as string;
-    simulateUseFunction = infos[2] as Function<Effect, LeekRound, LeekRound => IntegerEffectResult>;
+    simulateUseFunction = infos[2] as Function<Effect, LeekRound, LeekRound => void>;
     minEffect = round(effectArray[1] as real);
     maxEffect = round(effectArray[2] as real);
     midEffect = round((minEffect+maxEffect)/2);
@@ -69,9 +69,8 @@ class Effect extends Objects {
    * TODO: ajouter les passif des armes oubliees
    * TODO: test des damage return
    * le shooter et le target doivent etre du meme round
-   * @return {integer minEffect, integer maxEffect, integer midEffect}
    **/
-  IntegerEffectResult simulateUse(LeekRound shooter, LeekRound target, real AOE, integer nbTargets, real midCriticalLuck) {
+  void simulateUse(LeekRound shooter, LeekRound target, real AOE, integer nbTargets, real midCriticalLuck) {
     
     Leek targetLeek = target.leek;
     Leek shooterLeek = shooter.leek;
@@ -82,7 +81,7 @@ class Effect extends Objects {
        (targetLeek.isSummon && !targetSummon) ||
        (!targetLeek.isSummon && !targetNonSummon) ||
        (modNoRep && mapContainsKey(target.applied_effect_categories[category]!, type)) ||
-       (shooter.id == target.id && !targetCaster)) return new IntegerEffectResult();
+       (shooter.id == target.id && !targetCaster)) return;
     
     (modMulti) and (AOE *= nbTargets);
     
@@ -102,7 +101,7 @@ class Effect extends Objects {
       tmpMaxEffect = maxEffect*AOE*CRITICAL_FACTOR;
       tmpMidEffect = midEffect*AOE*(1.0+CRITICAL_BONUS*midCriticalLuck);
     }
-    return simulateUseFunction(this, shooter, target);
+    simulateUseFunction(this, shooter, target);
   }
 
   /**

@@ -131,11 +131,10 @@ class UnitTest extends Strategy {
       Round oldRound = new SimulatedRound(currentRound);
       MeRound meSim = simulation.meRound;
       if(meSim.toolsRound[CHIP_PROTEIN]) meSim.addToolAction(CHIP_PROTEIN,meSim.currentCellId)
-      IntegerEffectResult simValues = meSim.addToolAction(meSim.weaponId!,enemyRound.currentCellId);
-      GameDebug.add(true,simValues,"valeurs simulees");
+      meSim.addToolAction(meSim.weaponId!,enemyRound.currentCellId);
+      GameDebug.add(true, enemyRound.maxLife + "/" + enemyRound.midLife + "/" + enemyRound.minLife, "vie simulee")
       meSim.execute()
-      GameDebug.add(true, oldRound.enemiesRound[0].minLife+"-"+enemyRound.minLife+"="+(oldRound.enemiesRound[0].minLife-enemyRound.minLife), "degat reel par comparaison des rounds")
-      GameDebug.add(true, oldRound.enemiesRound[0].minTotalLife+"-"+enemyRound.minTotalLife+"="+(oldRound.enemiesRound[0].minTotalLife-enemyRound.minTotalLife), "erosion reel par comparaison des rounds")
+      GameDebug.add(true, enemyRound.minLife, "vie reel")
     }
     return true;
   }

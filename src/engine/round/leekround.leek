@@ -333,9 +333,9 @@ class LeekRound extends Objects {
    * @param targetCellId l id de la cell cible du tool
    * @return les effets simuler de l action du tool
    **/
-  public IntegerEffectResult addToolAction(integer toolId, integer targetCellId) {
+  public void addToolAction(integer toolId, integer targetCellId) {
     push(actions, new ToolAction(toolId, targetCellId));
-    return toolsRound[toolId]!.simulateUseOnCell(targetCellId);
+    toolsRound[toolId]!.simulateUseOnCell(targetCellId);
   }
   
   /**

@@ -137,6 +137,7 @@ global Map<integer,string> TOOL_NAME_TRANSLATOR = [
   WEAPON_MYSTERIOUS_ELECTRISOR:"mysterious electrisor",
   WEAPON_NEUTRINO:"neutrino",
   WEAPON_PISTOL:"pistol",
+  WEAPON_QUANTUM_RIFLE:"quantum rifle"
   WEAPON_REVOKED_M_LASER:"revoked m-laser",
   WEAPON_RHINO:"rhino",
   WEAPON_RIFLE:"rifle",
@@ -362,8 +363,8 @@ global Map<integer,Array<any>> EFFECT_TYPE_TRANSLATOR_CATEGORY = [
 **/
 function getEffectsInfo(integer type) => Array<any> {
   if(!mapContainsKey(EFFECT_TYPE_TRANSLATOR_CATEGORY,type)) {
-    debugC("getEffectsInfo->type("+type+")inconnu",COLOR_RED);
-    setRegister("getEffectsInfo_"+type, "getEffectsInfo->type("+type+")inconnu");
+    debugC("getEffectsInfo-> type ("+type+") inconnu",COLOR_RED);
+    setRegister("getEffectsInfo_"+type, "getEffectsInfo-> type ("+type+") inconnu");
     return EFFECT_TYPE_TRANSLATOR_CATEGORY[0]!;
   }
   return EFFECT_TYPE_TRANSLATOR_CATEGORY[type]!;
