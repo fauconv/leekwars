@@ -71,8 +71,7 @@ class Effect extends Objects {
    * le shooter et le target doivent etre du meme round
    * @return {integer minEffect, integer maxEffect, integer midEffect}
    **/
-  IntegerEffectResult simulateUse(LeekRound shooter, LeekRound target, real AOE, integer nbTargets, real midCriticalLuck, 
-                                  real criticalFactor) {
+  IntegerEffectResult simulateUse(LeekRound shooter, LeekRound target, real AOE, integer nbTargets, real midCriticalLuck) {
     
     Leek targetLeek = target.leek;
     Leek shooterLeek = shooter.leek;
@@ -90,9 +89,19 @@ class Effect extends Objects {
     GameDebug.add(EFFECT_DEBUG, EFFECT_TYPE_TRANSLATOR_CATEGORY[type]![0]+" on "+target.leek.name+"(AOE:"+AOE+")","simulate use effect");
 
     tmpMidCriticalLuck = midCriticalLuck;
-    tmpMinEffect = minEffect*AOE;
-    tmpMaxEffect = maxEffect*AOE*criticalFactor;
-    tmpMidEffect = midEffect*(1.0+CRITICAL_BONUS*midCriticalLuck)*AOE;
+    if(midCriticalLuck == 1.0) { // le critique se declanche tout le temps
+      tmpMinEffect = minEffect*AOE*CRITICAL_FACTOR;
+      tmpMaxEffect = maxEffect*AOE*CRITICAL_FACTOR;
+      tmpMidEffect = midEffect*AOE*CRITICAL_FACTOR;
+    } else if (midCriticalLuck == 0.0) {
+      tmpMinEffect = minEffect*AOE;
+      tmpMaxEffect = maxEffect*AOE;
+      tmpMidEffect = midEffect*AOE;
+    } else {
+      tmpMinEffect = minEffect*AOE;
+      tmpMaxEffect = maxEffect*AOE*CRITICAL_FACTOR;
+      tmpMidEffect = midEffect*AOE*(1.0+CRITICAL_BONUS*midCriticalLuck);
+    }
     return simulateUseFunction(this, shooter, target);
   }
 

@@ -263,7 +263,7 @@ function effect_raw_buff_magic(Effect obj, LeekRound shooter, LeekRound target) 
 /**
  * effect_raw_buff_mp
  **/
-function effect_raw_buff_mp(Effect obj, LeekRound shooter, LeekRound target) => IntegerEffectResult {  
+function effect_raw_buff_mp(Effect obj, LeekRound shooter, LeekRound target) => IntegerEffectResult {
   target.minMP += round(obj.tmpMinEffect);
   target.maxMP += round(obj.tmpMaxEffect);
   target.midMP += round(obj.tmpMidEffect);
