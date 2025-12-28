@@ -1,6 +1,10 @@
 /******************************************************************************
  * Action (Abstract)
  * action que doit realiser un leek en simulation en ou vrai
+ * l id de Object est utiliser pour identifier le type d action
+ * -1 = setWeapon
+ *  0 = moveAction
+ *  1 = toolAction
  ******************************************************************************/
 class Action extends Objects {
   
@@ -24,6 +28,7 @@ class SetWeaponAction extends Action {
    **/
   constructor(integer toolId) {
     this.toolId = toolId;
+    id = -1
   }
 
   /**
@@ -57,6 +62,7 @@ class MoveAction extends Action {
    **/
   constructor(integer cellId) {
     this.cellId = cellId;
+    id = 0
   }
 
   /**
@@ -92,6 +98,7 @@ class ToolAction extends Action {
   constructor(integer toolId, integer targetCell) {
     this.toolId = toolId;
     this.targetCell = targetCell;
+    id = 1
   }
 
   /**
