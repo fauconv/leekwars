@@ -16,7 +16,6 @@ class Tool extends Objects {
   public integer AOERange;
   public integer AOELaunchType; // Enumeration
   public integer cooldown;
-  // TODO: ajout d une nombre d utilisation par tour
   public boolean isChip;
   public boolean isAOE;
   public boolean isLaser;

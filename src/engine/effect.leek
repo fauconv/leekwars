@@ -80,7 +80,7 @@ class Effect extends Objects {
        (targetLeek.isAllie && shooterLeek.isEnemy && !targetEnemy) ||
        (targetLeek.isSummon && !targetSummon) ||
        (!targetLeek.isSummon && !targetNonSummon) ||
-       (modNoRep && mapContainsKey(target.applied_effect_categories[category]!, type)) ||
+       (modNoRep && mapContainsKey(target.appliedEffectCategories[category]!, type)) ||
        (shooter.id == target.id && !targetCaster)) return;
     
     (modMulti) and (AOE *= nbTargets);

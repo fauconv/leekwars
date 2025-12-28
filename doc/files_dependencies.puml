@@ -15,6 +15,7 @@ package engine {
   class Board
   class Cell 
   class Leek
+  class RelativeCell
   class Effect
   class Tool
   frame const
@@ -37,20 +38,21 @@ package utils {
 main -> GameDebug
 main --> Strategy
 Strategy --> Board
-Strategy -> Talk
-LeekRound --> Action
-Effect --> effectfunctions
-Board --> EffectResult
-Board --> Round 
-Board --> const
-Round --> CellRound
-Round --> LeekRound
-Board --> Cell
-Cell --> InterCellInfo
-LeekRound --> ToolRound
-Leek --> Tool
-Board --> Leek
-Tool --> Effect
+Strategy --> Talk
+Strategy --> Action
+Strategy --> effectfunctions
+Strategy --> EffectResult
+Strategy --> Round 
+Strategy --> const
+Strategy --> CellRound
+Strategy --> LeekRound
+Strategy --> Cell
+Strategy --> InterCellInfo
+Strategy --> ToolRound
+Strategy --> Tool
+Strategy --> Leek
+Strategy --> Effect
+Strategy --> RelativeCell
 GameDebug --> Objects
 GameDebug --> Chain
 GameDebug --> functions

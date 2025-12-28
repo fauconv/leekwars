@@ -77,13 +77,13 @@ class LeekRound extends Objects {
   public integer|null weaponId;
   public Round roundObj;
 
-  public Map<string,Map<integer,Array<Array<integer|boolean>>>> applied_effect_categories = [:];
+  public Map<string,Map<integer,Array<Array<integer|boolean>>>> appliedEffectCategories = [:];
   
   public Map<integer, ToolRound> toolsRound = [:];
   public Array<WeaponRound> weaponsRound = [];
   public Array<ChipRound|null> chipsRound = [];
   
-  public Map<string,Array<ToolRound>> tool_categories = [:];
+  public Map<string,Array<ToolRound>> toolCategories = [:];
 
   public Array<Action> actions = [];
 
@@ -108,8 +108,8 @@ class LeekRound extends Objects {
       // clonage
       //
       for(string category in CATEGORIES) {
-        tool_categories[category] = [];
-        applied_effect_categories[category] = [:];
+        toolCategories[category] = [];
+        appliedEffectCategories[category] = [:];
       }
 
       this.leek = (leek as LeekRound).leek;
@@ -170,7 +170,7 @@ class LeekRound extends Objects {
       moveState = (leek as LeekRound).moveState;
       combatState = (leek as LeekRound).combatState;
       
-      applied_effect_categories = clone((leek as LeekRound).applied_effect_categories,4) as Map<string,Map<integer,Array<Array<integer|boolean>>>>
+      appliedEffectCategories = clone((leek as LeekRound).appliedEffectCategories,4) as Map<string,Map<integer,Array<Array<integer|boolean>>>>
       
       for(ChipRound toolRound in (leek as LeekRound).chipsRound) {
         if(getCooldown(toolRound.id) == 0) {
@@ -232,8 +232,8 @@ class LeekRound extends Objects {
     
     maxAOERange = 0;
     for(string category in CATEGORIES) {
-      tool_categories[category] = [];
-      applied_effect_categories[category] = [:];
+      toolCategories[category] = [];
+      appliedEffectCategories[category] = [:];
     }
 
     minTP = maxTP = midTP = getTP(id)!;
@@ -261,10 +261,10 @@ class LeekRound extends Objects {
     for(Array<integer | boolean> effectArray in effects) {
       integer type = effectArray[0] as integer;
       string category = getEffectsInfo(type)[1] as string;
-      if(mapContainsKey(applied_effect_categories[category]!,type)) {
-        push(applied_effect_categories[category]![type]!, effectArray);
+      if(mapContainsKey(appliedEffectCategories[category]!,type)) {
+        push(appliedEffectCategories[category]![type]!, effectArray);
       } else {
-        applied_effect_categories[category]![type] = [effectArray];
+        appliedEffectCategories[category]![type] = [effectArray];
       }
     }
     
@@ -293,7 +293,7 @@ class LeekRound extends Objects {
   private void categoriseTool(ToolRound toolRound) {
     toolsRound[toolRound.id] = toolRound;
     Tool tool = toolRound.tool;
-    for(string category in tool.categories) push(tool_categories[category]!, toolRound);
+    for(string category in tool.categories) push(toolCategories[category]!, toolRound);
     (tool.categories[CATEGORY_DAMAGE]) and
       (tool.maxAOERange > maxAOERange) and (maxAOERange = tool.maxAOERange);
   }
@@ -433,11 +433,11 @@ class EnemyRound extends LeekRound {
 
       if(previousEnemyRound!.midLife < midLife) combatState += STATE_HEAL;
       else if(previousEnemyRound!.midLife > midLife) combatState += STATE_ATTAKED;
-      if(!mapIsEmpty(applied_effect_categories[CATEGORY_PROTECTION]!)) combatState += STATE_PROTECT;
-      if(!mapIsEmpty(applied_effect_categories[CATEGORY_BUFF]!)) combatState += STATE_BUFF;
-      if(!mapIsEmpty(applied_effect_categories[CATEGORY_DAMAGE]!)) combatState += STATE_DAMAGED;
-      if(!mapIsEmpty(applied_effect_categories[CATEGORY_DEBUFF]!) || 
-         !mapIsEmpty(applied_effect_categories[CATEGORY_DEBUFF_DEFAULT]!)) combatState += STATE_DEBUFF;
+      if(!mapIsEmpty(appliedEffectCategories[CATEGORY_PROTECTION]!)) combatState += STATE_PROTECT;
+      if(!mapIsEmpty(appliedEffectCategories[CATEGORY_BUFF]!)) combatState += STATE_BUFF;
+      if(!mapIsEmpty(appliedEffectCategories[CATEGORY_DAMAGE]!)) combatState += STATE_DAMAGED;
+      if(!mapIsEmpty(appliedEffectCategories[CATEGORY_DEBUFF]!) || 
+         !mapIsEmpty(appliedEffectCategories[CATEGORY_DEBUFF_DEFAULT]!)) combatState += STATE_DEBUFF;
     }
   }
 
@@ -464,11 +464,11 @@ class MeRound extends LeekRound {
     } else if(previousMeRound != null) {
       if(previousMeRound!.midLife < midLife) combatState += STATE_HEAL
       else if(previousMeRound!.midLife > midLife) combatState += STATE_ATTAKED
-      if(!mapIsEmpty(applied_effect_categories[CATEGORY_PROTECTION]!)) combatState += STATE_PROTECT
-      if(!mapIsEmpty(applied_effect_categories[CATEGORY_BUFF]!)) combatState += STATE_BUFF
-      if(!mapIsEmpty(applied_effect_categories[CATEGORY_DAMAGE]!)) combatState += STATE_DAMAGED
-      if(!mapIsEmpty(applied_effect_categories[CATEGORY_DEBUFF]!) || 
-         !mapIsEmpty(applied_effect_categories[CATEGORY_DEBUFF_DEFAULT]!)) combatState += STATE_DEBUFF
+      if(!mapIsEmpty(appliedEffectCategories[CATEGORY_PROTECTION]!)) combatState += STATE_PROTECT
+      if(!mapIsEmpty(appliedEffectCategories[CATEGORY_BUFF]!)) combatState += STATE_BUFF
+      if(!mapIsEmpty(appliedEffectCategories[CATEGORY_DAMAGE]!)) combatState += STATE_DAMAGED
+      if(!mapIsEmpty(appliedEffectCategories[CATEGORY_DEBUFF]!) || 
+         !mapIsEmpty(appliedEffectCategories[CATEGORY_DEBUFF_DEFAULT]!)) combatState += STATE_DEBUFF
       
       integer turn = roundObj.id
       MeRound previousMeRoundStart = Board.previousRounds[turn-2].meRound // [turn] : n existe pas c est le tour actuel, 

@@ -87,13 +87,10 @@ class BasicStrategy extends Strategy {
     GameDebug.add(BASIC_STRATEGY_DEBUG,meRound.moveState,"my moveState");
     GameDebug.add(BASIC_STRATEGY_DEBUG,enemyRound.combatState,"enemy combatState");
     GameDebug.add(BASIC_STRATEGY_DEBUG,meRound.combatState,"my combatState");
-    GameDebug.add(BASIC_STRATEGY_DEBUG,meRound.applied_effect_categories, "applied effect",2)
+    GameDebug.add(BASIC_STRATEGY_DEBUG,meRound.appliedEffectCategories, "applied effect",2)
     
     //
     // phase 1 : on determine les mouvements possibles de mon poireau et du poireau adverse
-    //
-
-    //
     // phase 1.1 : on cree une simulation pour chaque combinaison de buff de MP
     //
     Map<integer,Round> myRoundsList = [:]
@@ -111,6 +108,7 @@ class BasicStrategy extends Strategy {
     // phase 1.3 : on cree une simulation pour chaque itineraire et chaque combinaison de buff de MP
     //
     Array<SimulatedRound> myMoveSimList = []
+    Array<SimulatedRound> enemyMoveSimList = []
     for(integer stop : Round sim in myRoundsList) {
       for(integer cellId : integer remainingMP in myRoutesList) {
         if(remainingMP >= stop) {
@@ -120,7 +118,6 @@ class BasicStrategy extends Strategy {
         }
       }
     }
-    Array<SimulatedRound> enemyMoveSimList = []
     for(integer stop : Round sim in enemyRoundsList) {
       for(integer cellId : integer remainingMP in enemyRoutesList) {
         if(remainingMP >= stop) {
@@ -130,33 +127,9 @@ class BasicStrategy extends Strategy {
         }
       }
     }
-    
-    GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"phase 1");
 
-    /*
-    //
-    // phase 1 : on determine les mouvements possibles de mon poireau et du poireau adverse
-    //
-    Array<Simulation> MPToolList = MPConditions(meRound);
-    myMaxMP = 0;
-    for(Simulation sim in MPToolList) myMaxMP = max(myMaxMP, sim.roundObj.leeksRound[myId]!.minMP);
-    Map<integer,MoveCell> myMoveCells = BasicStrategyTools.route(meRound, "minMP", MPToolList, myMaxMP);
-    MPToolList = MPConditions(enemyRound);
-    enemyMaxMP = 0;
-    for(Simulation sim in MPToolList) enemyMaxMP = max(enemyMaxMP, sim.roundObj.leeksRound[enemyId]!.maxMP);
-    Map<integer,MoveCell> enemyMoveCells = BasicStrategyTools.route(enemyRound, "maxMP", MPToolList, enemyMaxMP);
-    runCompare = myMaxMP - enemyMaxMP;  
-    if(BASIC_STRATEGY_DEBUG) {
-      GameDebug.add(true, "avalaible simulations:");
-      for(integer index : Simulation sim in myMoveCells[myCurrentCellId]!.moveSim) {
-        GameDebug.add(true, sim.actions,"sim #"+ index +"(MP:"+sim.roundObj.leeksRound[myId]!.minMP+")");
-	  }
-	   GameDebug.add(true, "avalaible simulations enemy:");
-      for(integer index : Simulation sim in enemyMoveCells[enemyCurrentCellId]!.moveSim) {
-        GameDebug.add(true, sim.actions,"sim #"+ index +"(MP:"+sim.roundObj.leeksRound[enemyId]!.maxMP+")");
-	  }
-    }
-      
+    GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"phase 1");
+    
     //
     // phase 2 : on determine les tire que je peux faire
     // phase 2.1: on determine pour chaque arme les relativeCell possible
@@ -164,16 +137,18 @@ class BasicStrategy extends Strategy {
     Array<Tool> tools = [];
     for(ToolRound toolR in meRound.categoryDamage) push(tools,toolR.tool);
     Map<integer, RelativeCell> enemyRelativeCells = enemyRound.currentCell.cell.getRelativeCells(tools);
+
+    /*
       
     if(BASIC_STRATEGY_DEBUG) {
       for(RelativeCell mc in enemyRelativeCells) {
         mark(mc.id,COLOR_PINK,1);
         markText(mc.id,mapSize(mc.toolsList),0,1);
       }
-	  for(MoveCell mc in enemyMoveCells) {
-	    mark(mc.id,COLOR_RED,1);
+	    for(MoveCell mc in enemyMoveCells) {
+	      mark(mc.id,COLOR_RED,1);
         markText(mc.id,mapSize(mc.moveSim),0,1);
-	  }
+	    }
     }
     
     //
@@ -233,7 +208,7 @@ class BasicStrategy extends Strategy {
     if(mapSize(myMoveCellsAnnihilation) > 0) return annihilation(myMoveCellsAnnihilation);
     return bad(myMoveCellsBad);
     */
-  }
+  } // apply
 
 // ----------------------------------------------- strategy ----------------------------------------------------
 

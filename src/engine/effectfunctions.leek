@@ -204,8 +204,8 @@ function effect_poison(Effect obj, LeekRound shooter, LeekRound target) => void 
   obj.applyErosion(target, POISON_EROSION, roundedDmg);
   string category = EFFECT_TYPE_TRANSLATOR_CATEGORY[obj.type]![1] as string;
   Array<boolean|integer> applied_effect = [obj.type,roundedDmg.midEffect,shooter.id,getTurn(),false,obj.owner.id,target.id,0]
-  if(mapContainsKey(target.applied_effect_categories[category]!, obj.type)) push(target.applied_effect_categories[category]![obj.type]!, applied_effect);
-  else target.applied_effect_categories[category]![obj.type] = [applied_effect] // TODO: gerer le coup suivant comme il faut
+  if(mapContainsKey(target.appliedEffectCategories[category]!, obj.type)) push(target.appliedEffectCategories[category]![obj.type]!, applied_effect);
+  else target.appliedEffectCategories[category]![obj.type] = [applied_effect] // TODO: gerer le coup suivant comme il faut
 }
 
 /**
