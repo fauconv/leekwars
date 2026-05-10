@@ -69,8 +69,7 @@ class InterCellInfo {
 }
 class RelativeCell {
   +reak AOE
-  +integer targetCell
-  +Map<integer,any> data
+  +integer targetCells
 }
 class CellRound {
   +Cell cell
@@ -345,6 +344,7 @@ ToolRound <|-- ChipRound
 LeekRound o-- Action : actions
 Strategy .right.> Talk : use
 Strategy ..> Board : use
+Strategy ..> RelativeCell : use
 Strategy .left.> SimulatedRound : use
 Board .left.> RealRound : use
 Effect ..> RealEffectResult
