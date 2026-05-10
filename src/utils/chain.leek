@@ -206,8 +206,7 @@ class Chain {
    * pop
    *
    * supprime le dernier element de la chaine, le renvoi et remet le curseur 
-   * sur le premier 
-   * element
+   * sur le premier element
    * @return le dernier element de la chaine ou null si la chaine est vide
    * 27 operations
    **/
@@ -230,8 +229,7 @@ class Chain {
    * shift
    *
    * supprime le premier element de la chaine, le renvoi et remet le curseur
-   * sur le premier
-   * element
+   * sur le premier element
    * @return le premier element de la chaine ou null si la chaine est vide
    * 27 operations
    **/
@@ -306,8 +304,7 @@ class Chain {
    * slice
    *
    * copie une partie de la chaine (mais pas les elements) en commencant a
-   * start et en finissant
-   * a end
+   * start et en finissant a end
    * @param stride : la fonction ne selectionne qu un element tous les stride
    * O(n)
    **/
@@ -347,8 +344,7 @@ class Chain {
    * setCurrent
    *
    * change la valeur de l element courant si il existe
-   * pour ajouter un nouvel element voir insertBeforeCurrent et 
-   * insertAfterCurrent
+   * pour ajouter un nouvel element voir insertBeforeCurrent et insertAfterCurrent
    * @return true en cas de succes
    * 8 operations
    **/
@@ -362,8 +358,7 @@ class Chain {
    * removeCurrent
    *
    * supprime l element courant si il existe et la place le curseur sur 
-   * l element suivant ou l element
-   * precedent si c etait le dernier element
+   * l element suivant ou l element precedent si c etait le dernier element
    * @return true en cas de succes
    * 45 operations
    **/

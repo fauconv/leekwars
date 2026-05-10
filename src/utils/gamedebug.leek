@@ -119,14 +119,14 @@ class GameDebug {
    * @param obj : TYPE_OBJECT => Object ou Objects
    * internal
    **/
-  private static void objectDebug(any obj, integer depth, Array<integer> limit, Array<integer> start, Array<boolean> revers, string space, string) {
+  private static void objectDebug(any obj, integer depth, Array<integer> limit, Array<integer> start, Array<boolean> revers, string space) {
     if(depth == 0) {
       if(obj instanceof Object) {
         str += "Object"
         return
       }
       if(obj instanceof Objects) {
-        str += Objects.string()
+        str += obj.string()
         return
       }
       str += obj.class.name + ": not herite from Objects";
@@ -135,7 +135,7 @@ class GameDebug {
     Array<string> keys;
     if(obj instanceof Object) {
       str += "Object {";
-      keys = (obj as Object).keys();
+      keys = obj.keys();
     } else {
       str += obj.class.name + " {";
       keys = obj.class.fields;
@@ -148,7 +148,7 @@ class GameDebug {
       for(any value in keys) {
         str += space2+value+": ";
         if(obj instanceof Object) {
-          add(true, (obj as Object)[value], "", depth, limit, start, revers,space2);
+          add(true, obj[value], "", depth, limit, start, revers,space2);
         } else {
           add(true, (obj as Objects)[value], "", depth, limit, start, revers, space2);
         }
@@ -172,7 +172,7 @@ class GameDebug {
       arrayDebug(element as Array<any>|Map<any,any>, depth, limit, start, revers, space);
     } else if(type == TYPE_OBJECT) {
       if(element instanceof Chain) 
-        chainDebug(element as Chain, depth, limit, start, revers, space);
+        chainDebug(element, depth, limit, start, revers, space);
       else 
         objectDebug(element, depth, limit, start, revers, space);
     } else {
