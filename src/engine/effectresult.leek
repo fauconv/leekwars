@@ -1,7 +1,7 @@
-/******************************************************************************
+/**************************************************************************
  * IntegerEffectResult
  * encapsule les calculs des effets
- ******************************************************************************/
+ **************************************************************************/
 class IntegerEffectResult extends Objects {
 
   integer minEffect;  // valeur minimum
@@ -45,19 +45,16 @@ class IntegerEffectResult extends Objects {
   /**
    * string
    **/
-  string string(string space = "") {
+  string string() {
     return "{minEffect:"+minEffect+", maxEffect:"+maxEffect+", midEffect:"+midEffect+"}";
-  }
-  string shortString(string space = "") {
-    return string(); 
   }
 
 }
 
-/******************************************************************************
+/***************************************************************************
  * RealEffectResult
  * encapsule les calculs des effets
- ******************************************************************************/
+ ***************************************************************************/
 class RealEffectResult extends Objects {
 
   real minEffect;  // valeur minimum
@@ -110,11 +107,8 @@ class RealEffectResult extends Objects {
   /**
    * string
    **/
-  string string(string space = "") {
+  string string() {
     return "{minEffect:"+minEffect+", maxEffect:"+maxEffect+", midEffect:"+midEffect+"}";
-  }
-  string shortString(string space = "") {
-    return string(); 
   }
 
 }

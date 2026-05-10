@@ -1,8 +1,8 @@
-/*****************************************************************************
+/***************************************************************************
  * Function<Effect, LeekRound, LeekRound => EffectResult>
  * Function(Effect obj, LeekRound shooter, LeekRound target) => EffectResult
  * liste des fonctions qui calcul les effets de chaque effet
- *****************************************************************************/
+ ***************************************************************************/
 
 /**
  * effect_absolute_shield
@@ -193,8 +193,8 @@ function effect_nova_vitality(Effect obj, LeekRound shooter, LeekRound target) =
 
 /**
  * effect_poison
- * l effet poison est normalement applique au debut du coup suivant et s'applique sur n tour
- * ici on ne prend en compte que le premier tour
+ * l effet poison est normalement applique au debut du coup suivant et 
+ * s'applique sur n tour ici on ne prend en compte que le premier tour
  * TODO: prendre en compte tous les tours
  **/
 function effect_poison(Effect obj, LeekRound shooter, LeekRound target) => void {

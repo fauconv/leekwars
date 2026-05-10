@@ -1,3 +1,5 @@
+// @version:4
+// @strict
 /******************************************************************************
  * CellRound
  * information d une cellule, qui change a chaque tour

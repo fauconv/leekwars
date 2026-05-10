@@ -1,9 +1,9 @@
-/******************************************************************************
+/***************************************************************************
  * Effect
  * modelise un effet d un weapon ou d un chip
  *
  * [0:type, 1:min, 2:max, 3:turns, 4:targets, 5:modifiers]
- ******************************************************************************/
+ ***************************************************************************/
 class Effect extends Objects {
   
   public string category;
@@ -153,7 +153,8 @@ class Effect extends Objects {
   /**
    * applyHeal
    * apply heal to target
-   * @param roundedDmg : {integer minEffect, integer maxEffect, integer midEffect}
+   * @param roundedDmg : {integer minEffect, integer maxEffect, 
+   *                      integer midEffect}
    **/
   void applyHeal(LeekRound target, IntegerEffectResult roundedDmg) {
     roundedDmg.minEffect = min(roundedDmg.minEffect, target.minTotalLife-target.minLife);
@@ -170,20 +171,23 @@ class Effect extends Objects {
   /**
    * erosion
    * erosion ne peut pas etre inferieur a la vie courante
-   * @param roundedDmg : {integer minEffect, integer maxEffect, integer midEffect}
+   * @param roundedDmg : {integer minEffect, integer maxEffect, 
+   *                      integer midEffect}
    **/
   void applyErosion(LeekRound target, real erosionFactor, IntegerEffectResult roundedDmg) {
     target.maxTotalLife = max(target.maxLife, target.maxTotalLife-round(erosionFactor * roundedDmg.minEffect));
     target.minTotalLife = max(target.minLife, target.minTotalLife-round((erosionFactor + CRITICAL_EROSION) *
-                                                                        roundedDmg.maxEffect));
+      roundedDmg.maxEffect));
     target.midTotalLife = max(target.midLife, target.midTotalLife-round((erosionFactor + CRITICAL_EROSION *
-                                                                         tmpMidCriticalLuck) * roundedDmg.maxEffect));
+      tmpMidCriticalLuck) * roundedDmg.maxEffect));
   }
 
   /** 
    * lifeSteal
-   * @param roundedDmg : {integer minEffect, integer maxEffect, integer midEffect}
-   * @param dmgReturn : {integer minEffect, integer maxEffect, integer midEffect}
+   * @param roundedDmg : {integer minEffect, integer maxEffect, 
+   *                      integer midEffect}
+   * @param dmgReturn : {integer minEffect, integer maxEffect, 
+   *                     integer midEffect}
    * @return {integer minEffect, integer maxEffect, integer midEffect}
    **/
   IntegerEffectResult lifeSteal(LeekRound shooter, IntegerEffectResult roundedDmg, IntegerEffectResult dmgReturn) {
@@ -199,7 +203,8 @@ class Effect extends Objects {
   
   /**
    * applyLifeSteal
-   * @param shooterDmg : {integer minEffect, integer maxEffect, integer midEffect}
+   * @param shooterDmg : {integer minEffect, integer maxEffect, 
+   *                      integer midEffect}
    **/
   void applyLifeStealAndDmgReturn(LeekRound shooter, IntegerEffectResult shooterDmg) {
     shooter.minInjury += shooterDmg.minEffect; // injury shooter
@@ -214,11 +219,8 @@ class Effect extends Objects {
    * toString
    * @return string
    **/
-  string string(string space = "") {
+  string string() {
     return "Effect("+EFFECT_TYPE_TRANSLATOR_CATEGORY[type]![0] as string+") {cat: "+category+" min: "+minEffect+"\n  max: "+maxEffect+" mid:"+midEffect + "}\n";
-  }
-  string shortString(string space = "") {
-    return "Effect("+EFFECT_TYPE_TRANSLATOR_CATEGORY[type]![0] as string + ")";
   }
   
 } // class

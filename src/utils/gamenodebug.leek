@@ -1,6 +1,8 @@
-include("chain");
-include("objects");
-include("functions");
+// @version:4
+// @strict
+include("chain.leek");
+include("objects.leek");
+include("functions.leek");
 
 /*****************************************************************************
  * GameDebug
@@ -20,7 +22,7 @@ class GameDebug {
    *
    * ajoute un element a debugger dans la liste a afficher
    **/
-  static void add(boolean condition, any element, string txt = "", integer depth = 1, Array<integer> limit = [], Array<integer> start = [], Array<boolean> revers = [], string space = "", string debugFunction = "shortString") {
+  static void add(boolean condition, any element, string txt = "", integer depth = 1, Array<integer> limit = [], Array<integer> start = [], Array<boolean> revers = [], string space = "") {
   }
   
   /**

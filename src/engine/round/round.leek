@@ -1,3 +1,5 @@
+// @version:4
+// @strict
 /******************************************************************************
  * Round
  * information sur un tour  de jeu (simule ou reel)
@@ -42,13 +44,13 @@ class RealRound extends Round {
     // add me and enemies
     //
     if(previousRound != null) {
-      meRound = new MeRound(this, Board.me, previousRound!.meRound);
+      meRound = new MeRound(this, Board.me, previousRound.meRound);
       leeksRound[meRound.id] = meRound;
       maxAOERange = meRound.maxAOERange;
       Array<InterCellInfo> myInter = meRound.currentCell.cell.interCellInfo;
       for(Leek enemy in Board.enemies) {
         if(!isAlive(enemy.id)) continue
-        pushEnemy(new EnemyRound(this, enemy, myInter, previousRound!.leeksRound[enemy.id] as EnemyRound));
+        pushEnemy(new EnemyRound(this, enemy, myInter, previousRound.leeksRound[enemy.id] as EnemyRound));
       }
     } else {
       meRound = new MeRound(this, Board.me);

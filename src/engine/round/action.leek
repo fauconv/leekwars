@@ -1,3 +1,5 @@
+// @version:4
+// @strict
 /******************************************************************************
  * Action (Abstract)
  * action que doit realiser un leek en simulation en ou vrai
@@ -41,10 +43,7 @@ class SetWeaponAction extends Action {
   /**
    * string
    **/
-  string string(string space = "") {
-    return shortString();
-  }
-  string shortString(string space = "") {
+  string string() {
     return "SetWeaponAction: "+TOOL_NAME_TRANSLATOR[toolId]!;
   }
 
@@ -75,10 +74,7 @@ class MoveAction extends Action {
   /**
    * string
    **/
-  string string(string space = "") {
-    return shortString();
-  }
-  string shortString(string space = "") {
+  string string() {
     return "MoveAction: "+cellId;
   }
 
@@ -114,10 +110,7 @@ class ToolAction extends Action {
   /**
    * string
    **/
-  string string(string space = "") {
-    return shortString();
-  }
-  string shortString(string space = "") {
+  string string() {
     return "ToolAction: use "+TOOL_NAME_TRANSLATOR[toolId]!+" on "+targetCell;
   }
 

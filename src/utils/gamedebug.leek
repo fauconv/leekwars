@@ -1,11 +1,11 @@
-include("chain");
-include("objects");
-include("functions");
+include("chain.leek");
+include("objects.leek");
+include("functions.leek");
 
-/*****************************************************************************
+/***************************************************************************
  * GameDebug
  * permet un debugage plus fin 
- *****************************************************************************/
+ ***************************************************************************/
 class GameDebug {
   
   private static string str = "\n";
@@ -29,7 +29,7 @@ class GameDebug {
    *
    * internal
    **/
-  private static void arrayDebug(Array<any>|Map<any,any>|Set array, integer depth, Array<integer> limit, Array<integer> start, Array<boolean> revers, string space, string debugFunction) {
+  private static void arrayDebug(Array<any>|Map<any,any>|Set array, integer depth, Array<integer> limit, Array<integer> start, Array<boolean> revers, string space) {
     integer lim = 1000;
     integer star = 0;
     integer cnt = 0;
@@ -60,7 +60,7 @@ class GameDebug {
           continue;
         }
         str += space2+key+": ";
-        add(true, value, "", depth, limit, start, revers, debugFunction, space2); // ret2 pour bug de compil
+        add(true, value, "", depth, limit, start, revers, space2); // ret2 pour bug de compil
         cnt++;
       }
       str += space+"]";
@@ -76,7 +76,7 @@ class GameDebug {
    * chainDebug
    * internal
    **/
-  private static void chainDebug(Chain obj, integer depth, Array<integer> limit, Array<integer> start, Array<boolean> revers, string space, string debugFunction) {
+  private static void chainDebug(Chain obj, integer depth, Array<integer> limit, Array<integer> start, Array<boolean> revers, string space) {
     integer lim = 1000;
     integer star = 0;
     integer cnt = 0;
@@ -100,7 +100,7 @@ class GameDebug {
           continue;
         }
         str += space2+i+": ";
-        add(true, obj.getCurrent(), "", depth, limit, start, revers, debugFunction, space2);
+        add(true, obj.getCurrent(), "", depth, limit, start, revers, space2);
         cnt++;
         obj.next();
       }
@@ -119,17 +119,15 @@ class GameDebug {
    * @param obj : TYPE_OBJECT => Object ou Objects
    * internal
    **/
-  private static void objectDebug(any obj, integer depth, Array<integer> limit, Array<integer> start, Array<boolean> revers, string space, string debugFunction) {
-    string ret;
+  private static void objectDebug(any obj, integer depth, Array<integer> limit, Array<integer> start, Array<boolean> revers, string space, string) {
     if(depth == 0) {
       if(obj instanceof Object) {
-        str += "Object";
-        return;
+        str += "Object"
+        return
       }
       if(obj instanceof Objects) {
-        if(debugFunction == "shortString") str += (obj as Objects).shortString(space);
-          else str += (obj as Objects).string(space);
-        return;
+        str += Objects.string()
+        return
       }
       str += obj.class.name + ": not herite from Objects";
       return;  
@@ -150,9 +148,9 @@ class GameDebug {
       for(any value in keys) {
         str += space2+value+": ";
         if(obj instanceof Object) {
-          add(true, (obj as Object)[value], "", depth, limit, start, revers, debugFunction, space2);
+          add(true, (obj as Object)[value], "", depth, limit, start, revers,space2);
         } else {
-          add(true, (obj as Objects)[value], "", depth, limit, start, revers, debugFunction, space2);
+          add(true, (obj as Objects)[value], "", depth, limit, start, revers, space2);
         }
       }
       str += space+"}";
@@ -166,17 +164,17 @@ class GameDebug {
    *
    * ajoute un element a debugger dans la liste a afficher
    **/
-  static void add(boolean condition, any element, string txt = "", integer depth = 1, Array<integer> limit = [], Array<integer> start = [], Array<boolean> revers = [], string debugFunction = "shortString", string space = "") {
+  static void add(boolean condition, any element, string txt = "", integer depth = 1, Array<integer> limit = [], Array<integer> start = [], Array<boolean> revers = [], string space = "") {
     if(!condition) return;
     if(txt != "") str+= txt +" => ";
     integer type = typeOf(element);
     if(type == TYPE_ARRAY || type == TYPE_MAP || type == TYPE_SET) {
-      arrayDebug(element as Array<any>|Map<any,any>, depth, limit, start, revers, space, debugFunction);
+      arrayDebug(element as Array<any>|Map<any,any>, depth, limit, start, revers, space);
     } else if(type == TYPE_OBJECT) {
       if(element instanceof Chain) 
-        chainDebug(element as Chain, depth, limit, start, revers, space, debugFunction);
+        chainDebug(element as Chain, depth, limit, start, revers, space);
       else 
-        objectDebug(element, depth, limit, start, revers, space, debugFunction);
+        objectDebug(element, depth, limit, start, revers, space);
     } else {
       str += string(element); // type simple et interval
     }
@@ -215,7 +213,8 @@ class GameDebug {
   /**
    * addCellText
    *
-   * ecrit le text (contenu dans cellsTexts) correspondant dans chacune des cases en index de cellsTexts
+   * ecrit le text (contenu dans cellsTexts) correspondant dans chacune 
+   * des cases en index de cellsTexts
    **/
   static void addCellText(boolean condition, Map<integer, any> cellsTexts, integer color = 0) {
     if(!condition) return;

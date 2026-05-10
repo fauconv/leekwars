@@ -1,45 +1,47 @@
+// @version:4
+// @strict
 /**************************************************************************
  * debug
  **************************************************************************/
-global boolean EFFECT_DEBUG = true;
-global boolean LEEKROUND_DEBUG = true;
-global boolean BASIC_STRATEGY_DEBUG = true;
-global boolean UNIT_TEST_DEBUG = false;
-global boolean TESTS_DEBUG = false;
-include("utils/gamedebug");
-//include("utils/gamenodebug");
+global boolean EFFECT_DEBUG = true
+global boolean BASIC_STRATEGY_DEBUG = true
+global boolean TESTS_RELATIVE_DEBUG = false
+global boolean UNIT_TEST_DEBUG = false
+global boolean TESTS_DEBUG = false
+include("utils/gamedebug.leek")
+//include("utils/gamenodebug")
 
 /**************************************************************************
  * strategy files
  **************************************************************************/
-include("engine/strategy");
-include("strategies/UT/unit_test");
-include("strategies/testsingame/testsingame");
-include("strategies/basicstrategy/basicstrategy");
+include("engine/strategy.leek")
+include("strategies/UT/unit_test.leek")
+include("strategies/testsingame/testsingame.leek")
+include("strategies/basicstrategy/basicstrategy.leek")
 
 /**************************************************************************
  * init
  **************************************************************************/
-global Strategy gStrategy = new Strategy();
+global Strategy gStrategy = new Strategy()
 if(!gBoardInit) {
   if(!(gBoardInit = Board.init())) {
-    debugC("Initialisation en 2 temps",COLOR_BLUE);
-    end();
-    return;
+    debugC("Initialisation en 2 temps",COLOR_BLUE)
+    end()
+    return
   }
   // strategies
-  if(UnitTest.isValide()) gStrategy = new UnitTest();
-  else if(TestsInGame.isValide()) gStrategy = new TestsInGame();
-  else if(BasicStrategy.isValide()) gStrategy = new BasicStrategy();
+  if(UnitTest.isValide()) gStrategy = new UnitTest()
+  else if(TestsInGame.isValide()) gStrategy = new TestsInGame()
+  else if(BasicStrategy.isValide()) gStrategy = new BasicStrategy()
 } else {
-  Board.update();
+  Board.update()
 }
 
 /*******************************************************
  * main
  *******************************************************/
-gStrategy.apply();
-end();
+gStrategy.apply()
+end()
 
 /*********************************************************
  * end

@@ -1,7 +1,9 @@
-/******************************************************************************
+// @version:4
+// @strict
+/***************************************************************************
  * Tool
  * class abstraite generique pour les weapons et les chips
- ******************************************************************************/
+ ***************************************************************************/
 class Tool extends Objects {
   
   public boolean needLos;
@@ -33,7 +35,8 @@ class Tool extends Objects {
    * constructor
    * @param id id du tool
    * @param owner le leek qui possede  ce tool
-   * @param effects la liste des effets de ce tool [[0:type, 1:min, 2:max, 3:turns, 4:targets, 5:modifiers]]
+   * @param effects la liste des effets de ce tool 
+   *        [[0:type, 1:min, 2:max, 3:turns, 4:targets, 5:modifiers]]
    **/
   protected constructor(integer id, Leek owner, Array<Array<integer|real>>effects) {
     
@@ -102,7 +105,8 @@ class Tool extends Objects {
   
   /**
    * canUseTool
-   * verifie si les conditions sont rempli pour utiliser ce tool (ligne, diagonal, distance, en vue)
+   * verifie si les conditions sont rempli pour utiliser ce tool 
+   * (ligne, diagonal, distance, en vue)
    * @param range la distance a laquelle on veut tirer
    * @param isInsight la target est en vue ?
    * @param isInline la target  est en ligne ?
@@ -129,17 +133,7 @@ class Tool extends Objects {
    *
    * @return string
    **/
-  string string(string space = "") {
-    return this.class.name+"("+TOOL_NAME_TRANSLATOR[id]+"):\n"+
-		                       space+"  areaType:"+areaType+"\n"+
-		                       space+"  needLos:"+needLos+"\n"+
-		                       space+"  cost:"+cost+"\n"+
-		                       space+"  launchType:"+TOOL_LAUNCHTYPE_TRANSLATOR[launchType]+"\n"+
-		                       space+"  minRange:"+minRange+"\n"+
-		                       space+"  maxRange:"+maxRange+"\n"+
-		                       space+"  cooldown:"+cooldown;
-  }
-  string shortString(string space = "") {
+  string string() {
     return this.class.name+"("+TOOL_NAME_TRANSLATOR[id]!+")("+maxRange+")";
   }
   
@@ -180,10 +174,10 @@ class Weapon extends Tool {
   
 }
 
-/******************************************************************************
+/***************************************************************************
  * Chip
  * represente une chip
- ******************************************************************************/
+ ***************************************************************************/
 class Chip extends Tool {
   
   /**
@@ -196,7 +190,7 @@ class Chip extends Tool {
     areaType = getChipArea(chipId)!;
     needLos  = chipNeedLos(chipId);
     cost     = getChipCost(chipId)!;
-    maxUse   = getChipMaxUses(chipId)
+    maxUse   = getChipMaxUses(chipId)!;
     launchType = getChipLaunchType(chipId)!;
     minRange = getChipMinRange(chipId)!;
     maxRange = getChipMaxRange(chipId)!;

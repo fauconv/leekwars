@@ -1,6 +1,7 @@
-/****************************************************************************
+// @version:4
+/***************************************************************************
  * Unit test
- ****************************************************************************/
+ ***************************************************************************/
 class UnitTest extends Strategy {
   
   static MeRound meRound;       // MeRound
@@ -11,7 +12,7 @@ class UnitTest extends Strategy {
    * isValide
    **/
   static boolean isValide() {
-    return UNIT_TEST_DEBUG && (getFightContext() == FIGHT_CONTEXT_TEST);
+    return UNIT_TEST_DEBUG && (getFightContext() == FIGHT_CONTEXT_TEST)
   }
   
   /**
@@ -88,10 +89,10 @@ class UnitTest extends Strategy {
    * effect
    **/
   boolean effect() {
-    if(meRound.weapon!.tool.effects[0].owner.shortString() == "Weapon(magnum)(8)" && meRound.weapon!.tool.effects[0].minEffect == 25) 
+    if(meRound.weapon!.tool.effects[0].owner.string() == "Weapon(magnum)(8)" && meRound.weapon!.tool.effects[0].minEffect == 25) 
       debugC("Effect OK", COLOR_GREEN);
     else 
-      debugC("Effect on setWepon (magnum) KO: "+ meRound.weapon!.tool.shortString() + "- (25) "+meRound.weapon!.tool.effects[0].minEffect, COLOR_RED);
+      debugC("Effect on setWepon (magnum) KO: "+ meRound.weapon!.tool.string() + "- (25) "+meRound.weapon!.tool.effects[0].minEffect, COLOR_RED);
     //GameDebug.add(true, meRound.weapon!.tool.effects,"current weapon effects",2);
     return true;
   }
@@ -101,10 +102,10 @@ class UnitTest extends Strategy {
    **/
   boolean leek() {
     //GameDebug.add(true, Board.me,"me",2);
-    if(Board.me.categories[CATEGORY_DAMAGE]![1].shortString() == "Chip(chip ice)(8)" && Board.me.categories[CATEGORY_PROTECTION]![0].shortString() == "Chip(chip helmet)(4)")
+    if(Board.me.categories[CATEGORY_DAMAGE]![1].string() == "Chip(chip ice)(8)" && Board.me.categories[CATEGORY_PROTECTION]![0].string() == "Chisp(chip helmet)(4)")
       debugC("Leek OK", COLOR_GREEN);
     else 
-      debugC("Leek me KO: " + Board.me.categories[CATEGORY_DAMAGE]![1].shortString() + " - " + Board.me.categories[CATEGORY_PROTECTION]![0].shortString(), COLOR_RED);
+      debugC("Leek me KO: " + Board.me.categories[CATEGORY_DAMAGE]![1].string() + " - " + Board.me.categories[CATEGORY_PROTECTION]![0].string(), COLOR_RED);
     return true;
   }
   
@@ -128,7 +129,6 @@ class UnitTest extends Strategy {
     currentRound.update();
     if(canUseWeaponOnCell(enemyRound.currentCellId)) {
       Round simulation = new SimulatedRound(currentRound);
-      Round oldRound = new SimulatedRound(currentRound);
       MeRound meSim = simulation.meRound;
       if(meSim.toolsRound[CHIP_PROTEIN]) meSim.addToolAction(CHIP_PROTEIN,meSim.currentCellId)
       meSim.addToolAction(meSim.weaponId!,enemyRound.currentCellId);

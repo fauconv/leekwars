@@ -1,8 +1,8 @@
-/******************************************************************************
+/***************************************************************************
  * Cell
  * modelise une cellule du plateau
  * stock les informations d une cellule qui ne change pas a chaque tour
- ******************************************************************************/
+ ***************************************************************************/
 class Cell extends Objects {
   
   public integer x;
@@ -23,7 +23,8 @@ class Cell extends Objects {
   /**
    * constructor
    * @param idCell id de la cell a creer
-   * @param interCellNull l objet intercell unique pour les interecell non concerne
+   * @param interCellNull l objet intercell unique pour les interecell 
+   *  non concerne
    **/
   protected constructor(integer idCell, InterCellInfo interCellNull) {
       
@@ -38,9 +39,12 @@ class Cell extends Objects {
   /**
    * getTrajectory
    * equivalent de getPath mais en ligne droite entre this et endCell
-   * calcule d interpolation lineaire pour obtenir le meme resultat que lineOfSight
+   * calcule d interpolation lineaire pour obtenir le meme resultat 
+   * que lineOfSight
    * @param endCell la cellule objectif du chemin
-   * @return la liste des cellules en ligne droite entre la cellule courante et endCell. La cellule de depart et d arrivee ne sont pas incluse dans la liste
+   * @return la liste des cellules en ligne droite entre la cellule courante
+   * et endCell. La cellule de depart et d arrivee ne sont pas incluse 
+   * dans la liste
    * O(n) n = longueur de la liste
    *
    **/
@@ -75,8 +79,9 @@ class Cell extends Objects {
   
   /**
    * getRelativeCells
-   * determine les cellules que l on peut viser pour atteindre this grace a l AOE des tools
-   * ne verifie pas que le tool peut atteindre la cellule vise
+   * determine les cellules que l on peut viser pour atteindre this grace 
+   * a l AOE des tools ne verifie pas que le tool peut atteindre la 
+   * cellule vise
    * @param tools la liste des tools dont on veut les relativeCells
    * @return la liste des relativeCells que l on peut viser pour atteindre this
    **/
@@ -190,20 +195,21 @@ class Cell extends Objects {
    *
    * @return string
    **/
-  string string(string space = "") {
+  string string() {
     return this.class.name+":{ id:"+id+"\n  x:"+x+" y:"+y+" isWall:"+isWall+"}\n";
   }
 }
 
-/******************************************************************************
+/***************************************************************************
  * FreeCell
- ******************************************************************************/
+ ***************************************************************************/
 class FreeCell extends Cell {
   
   /**
    * constructor
    * @param idCell id de la cell a creer
-   * @param interCellNull l objet intercell unique pour les interecell non concerne
+   * @param interCellNull l objet intercell unique pour les interecell 
+   * non concerne
    **/
   public constructor(integer idCell, InterCellInfo interCellNull) {
     super(idCell, interCellNull);
@@ -213,15 +219,16 @@ class FreeCell extends Cell {
  
 }
 
-/******************************************************************************
+/***************************************************************************
  * Wall
- ******************************************************************************/
+ ***************************************************************************/
 class Wall extends Cell {
   
   /**
    * constructor
    * @param idCell id de la cell a creer
-   * @param interCellNull l objet intercell unique pour les interecell non concerne
+   * @param interCellNull l objet intercell unique pour les interecell 
+   *  non concerne
    **/
   public constructor(integer idCell, InterCellInfo interCellNull) {
     super(idCell, interCellNull);

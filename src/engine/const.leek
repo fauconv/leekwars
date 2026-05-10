@@ -1,6 +1,6 @@
-/******************************************************
+/***************************************************************************
  * globals
- *******************************************************/
+ ***************************************************************************/
 
 //
 // global variables
@@ -360,7 +360,7 @@ global Map<integer,Array<any>> EFFECT_TYPE_TRANSLATOR_CATEGORY = [
 
 /**
  * getEffectsInfo
-**/
+ **/
 function getEffectsInfo(integer type) => Array<any> {
   if(!mapContainsKey(EFFECT_TYPE_TRANSLATOR_CATEGORY,type)) {
     debugC("getEffectsInfo-> type ("+type+") inconnu",COLOR_RED);

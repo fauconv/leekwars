@@ -1,3 +1,4 @@
+// @version:4
 debug("v5");
 
 getTrajectory(118,306, COLOR_BLUE);

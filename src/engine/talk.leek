@@ -1,4 +1,5 @@
-/*****************************************************************************
+// @version:4
+/***************************************************************************
  * Talk
  * static
  *
@@ -8,16 +9,19 @@
  *   1 = appel a l index courant
  *   2 = appel d un index random avec suppression des phrases utilises
  *   4 = appel a l index courant puis increment
- *   8 = appel a l index courant puis increment qui repete le dernier a l infini
- *   (16 = appel unique = 1 appel a talk avec le context courant puis retour au context CONT_NORMAL)
+ *   8 = appel a l index courant puis increment qui repete le dernier a 
+ *       l infini
+ *   (16 = appel unique = 1 appel a talk avec le context courant puis retour
+ *                         au context CONT_NORMAL)
  *   17 = appel unique a l index courant
  *   18 = appel unique random avec suppression des phrases utilises
  *   20 = appel unique incremental
  *   24 = appel unique incremental qui repete le dernier a l infini
  *   (32 = appel unique + mix avec CONT_NORMAL)
- *   34 = appel unique (+mix avec normal) random avec suppression des phrases utilises
+ *   34 = appel unique (+mix avec normal) random avec suppression des 
+ *        phrases utilises
  *
- *****************************************************************************/
+ ***************************************************************************/
 class Talk extends Objects {
   public static integer CURRENT      = 0b000001;
   public static integer RANDOM       = 0b000010;
@@ -40,21 +44,21 @@ class Talk extends Objects {
                                        "Oh ! un autre poireau ! Salut !", 
                                        "Je poureautais dans l'coin, quand on m'a dit : toi tu seras un poireau de combat"],
                                 normal:["Hum... il me reste des PT, t'en veux ?", 
-                                        "Mais qu'est ce qu'on fout là ?",
+                                        "Mais qu'est ce qu'on fout lÃ  ?",
                                         "Je vais te dire un secret... chui pas vraiment un poireau",
-                                        "t'es lent ! tu me tues ou on y passe la journée ?",
-                                        "On est pas obligé de parler si tu veux",
-                                        "hum... *fais semblant de réfléchir*",
+                                        "t'es lent ! tu me tues ou on y passe la journÃ©e ?",
+                                        "On est pas obligÃ© de parler si tu veux",
+                                        "hum... *fais semblant de rÃ©flÃ©chir*",
                                         "zzzZZZZzzz",
-                                        "j'ai PT, ça sent le poireau"],
+                                        "j'ai PT, Ã§a sent le poireau"],
                                 end:["bon... comment on range son arme maintenant ?", 
-                                     "J'ai gagné!", 
+                                     "J'ai gagnÃ©!", 
                                      "youhou ! c'est moi qui suis pas mort !", 
-                                     "et hop, t'es déja moins vivant!", 
+                                     "et hop, t'es dÃ©ja moins vivant!", 
                                      "et toc !", 
                                      "et pan dans les dents ! heu... dans le leek", 
-                                     "et voilà je t'ai refroidi... tu te conserveras plus longtemps", 
-                                     "heu... ca fait mal d'être mort ?", 
+                                     "et voilÃ  je t'ai refroidi... tu te conserveras plus longtemps", 
+                                     "heu... ca fait mal d'Ãªtre mort ?", 
                                      "bon je retourne me coucher", 
                                      "Oups pardon", 
                                      "tu dis rien... t'es mort ?... ah oui !"]
@@ -64,7 +68,8 @@ class Talk extends Objects {
   /**
    * talk
    * fait parler le poireau si il reste assez de TP.
-   * si il a quelque chose (dans text) a dire il le dit, sinon il choisi une phrase a dire en fonction du context 
+   * si il a quelque chose (dans text) a dire il le dit, sinon il choisi une 
+   * phrase a dire en fonction du context 
    * et du type dans le context
    **/
   static void talk() {

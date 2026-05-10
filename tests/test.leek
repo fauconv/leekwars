@@ -1,3 +1,5 @@
+// @version:4
+// @strict
 
 debug(0b1000 ** 2)
 debug(0b10 >> 0b1)

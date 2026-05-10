@@ -1,22 +1,24 @@
-include("effectresult")
-include("const");
-include("intercellinfo")
-include("cell")
-include("board");
-include("leek");
-include("tool");
-include("talk")
-include("effect");
-include("relativecell")
-include("round/round");
-include("round/cellround")
-include("round/leekround");
-include("round/toolround");
-include("round/action");
-include("effectfunctions")
-/****************************************************************************
+// @version:4
+// @strict
+include("effectresult.leek")
+include("const.leek");
+include("intercellinfo.leek")
+include("cell.leek")
+include("board.leek");
+include("leek.leek");
+include("tool.leek");
+include("talk.leek")
+include("effect.leek");
+include("relativecell.leek")
+include("round/round.leek");
+include("round/cellround.leek")
+include("round/leekround.leek");
+include("round/toolround.leek");
+include("round/action.leek");
+include("effectfunctions.leek")
+/***************************************************************************
  * Strategy
- ****************************************************************************/
+ ***************************************************************************/
 class Strategy extends Objects {
   
   /**
@@ -32,7 +34,7 @@ class Strategy extends Objects {
    * execute la strategy
    **/
   public boolean apply() {
-    (gFirstRound) and (Talk.text = "Je n'ai pas été codé pour ce format de combat, donc je bouge pas et toc !");
+    (gFirstRound) and (Talk.text = "Je n'ai pas Ã©tÃ© codÃ© pour ce format de combat, donc je bouge pas et toc !");
   }
 }
     
