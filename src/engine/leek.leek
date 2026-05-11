@@ -10,7 +10,8 @@ class Leek extends Objects {
   public boolean isEnemy;
   public boolean isSummon;
   public boolean needLos = true;
-  public integer maxAOERange;
+  public integer maxAOERange = 0;
+  public integer maxWeaponRange = 0
   
   public Array<Weapon> weapons = [];
   public Array<Chip> chips = [];
@@ -33,6 +34,7 @@ class Leek extends Objects {
     if(weapons != null) for(integer weaponId in weapons) {
       Weapon weapon = new Weapon(weaponId, this);
       categoriseTool(weapon);
+      ((weapon.categories[CATEGORY_DAMAGE]) && (weapon.maxAOERange > maxWeaponRange)) and (maxWeaponRange = tool.maxAOERange)
       push(this.weapons, weapon);
       needLos = weapon.needLos && needLos;
     }
