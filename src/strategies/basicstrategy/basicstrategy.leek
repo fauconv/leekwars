@@ -266,7 +266,7 @@ class BasicStrategy extends Strategy {
       }
     }
     
-    GameDebug.addOperation(TESTS_DEBUG,"phase 1");
+    GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"phase 1")
     
     //
     // phase 2 : on determine les tire que je peux faire
@@ -302,7 +302,7 @@ class BasicStrategy extends Strategy {
       }
       push(firingSolutions[sourceCellId]!, new FiringSolution(sim, cache[sourceCellId]!))
     }
-    
+    GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"phase 2");
     //
     // phase 3: on determine les tires que l ennemi pourra faire
     // phase 3.1: on determine pour chaque arme les relativeCell possible pour chaque simulation

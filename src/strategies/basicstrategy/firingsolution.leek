@@ -8,7 +8,7 @@
  ************************************************************************************************/
 class FiringSolution extends Objects {
   public SimulatedRound simulation // position du tireur
-  public Map<integer,RelativeCell> targetsList  // liste des relative cell atteignable depuis la
+  public Map<integer,RelativeCell> targetsList  // liste des relativeCells atteignable depuis la
                                                 // position du tireur
 
   /**
