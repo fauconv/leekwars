@@ -289,18 +289,34 @@ class BasicStrategy extends Strategy {
     // on peut atteindre et avec quel arme
     //
     Map<integer, Map<integer, RelativeCell>> cache = [:] // [SourceCellId][targetCellId] = relativeCell
-    Array<FiringSolution> firingSolutions = []
+    Map<integer, Array<FiringSolution>> firingSolutions = [:] // [SourceCellId][simNum] = firingSolution
     for(SimulatedRound sim in myMoveSimList) {
       Cell sourceCell = sim.meRound.currentCell.cell
       integer sourceCellId = sourceCell.id
-      if(mapContainsKey(cache, sourceCellId)) {
-        push(firingSolutions, new FiringSolution(sim, cache[sourceCellId]!))
-      } else {
+      if(!mapContainsKey(cache, sourceCellId)) {
         cache[sourceCellId] = [:]
         for(RelativeCell mc in enemyRelativeCells) {
           cache[sourceCellId]![mc.id] = mc.canUseTools(sourceCell)
         }
+        firingSolutions[sourceCellId] = []
       }
+      push(firingSolutions[sourceCellId]!, new FiringSolution(sim, cache[sourceCellId]!))
+    }
+    
+    //
+    // phase 3: on determine les tires que l ennemi pourra faire
+    // phase 3.1: on determine pour chaque arme les relativeCell possible pour chaque simulation
+    // phase 3.2: pour chaque simulation (chaque position de l enemy), on détermine lesquels  
+    // de mes relativeCells l enemy peut atteindre et avec quel arme. 
+    // a l arriver on veut que pour chacune de mes simulation j ai les simulation enemy qui me 
+    // font le plus mal 
+    //
+    tools = [];
+    for(ToolRound toolR in enemyRound.toolCategories[CATEGORY_DAMAGE]!) push(tools,toolR.tool);
+    
+    Array<Map<integer, RelativeCell>> myRelativeCellsBySim = []
+    for(SimulatedRound sim in myMoveSimList) {
+      push(myRelativeCellsBySim, sim.meRound.currentCell.cell.getRelativeCells(tools))
     }
     
   }

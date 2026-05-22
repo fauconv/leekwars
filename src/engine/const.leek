@@ -17,7 +17,9 @@ global boolean gBoardInit   = false;       // true quand le board est initialise
 global integer NB_CELLS           = 613;
 global integer MAX_DISTANCE       = 34; // 2*17
 global integer CENTER_CELL_ID     = 306;
-global integer MIN_COORD          = -17;
+@unused
+global integer MIN_COORD          = -17
+@unused
 global integer MAX_COORD          = 17;
 global real CRITICAL_BONUS      = CRITICAL_FACTOR - 1.0;
 global real PHYSICAL_EROSION    = 0.05;
@@ -30,12 +32,19 @@ global integer SET_WEAPON_COST = 1;
 //
 // colors
 //
+@unused
 global integer COLOR_BROWN = 12019715;
+@unused
 global integer COLOR_YELLOW = 15596544;
+@unused
 global integer COLOR_ORANGE = 16545280;
+@unused
 global integer COLOR_PINK = 16515255;
+@unused
 global integer COLOR_PURPLE = 13762812;
+@unused
 global integer COLOR_CYAN = 62716;
+@unused
 global integer COLOR_LIGHT_GREEN = 10550272;
 
 //
@@ -83,6 +92,7 @@ global Array<string> WIDTH_DIRECTION = ["left","right"];
 //
 // effects
 //
+@unused
 global Map<integer,string> EFFECT_MODIFIER_TRANSLATOR = [
   EFFECT_MODIFIER_IRREDUCTIBLE:"effect_modifier_irreductible",
   EFFECT_MODIFIER_MULTIPLIED_BY_TARGETS:"effect_modifier_multiplied_by_targets",
@@ -91,6 +101,7 @@ global Map<integer,string> EFFECT_MODIFIER_TRANSLATOR = [
   EFFECT_MODIFIER_STACKABLE:"effect_modifier_stackable"
 ]
 
+@unused
 global Map<integer,string> EFFECT_TARGET_TRANSLATOR = [
   EFFECT_TARGET_ALLIES:"effect_target_allies",
   EFFECT_TARGET_CASTER:"effect_target_caster",
@@ -102,6 +113,7 @@ global Map<integer,string> EFFECT_TARGET_TRANSLATOR = [
 //
 // tools
 //
+@unused
 global Map<integer,string> TOOL_LAUNCHTYPE_TRANSLATOR = [
   LAUNCH_TYPE_LINE:"line",
   LAUNCH_TYPE_DIAGONAL:"diag",

@@ -30,7 +30,7 @@ class GameDebug {
    *
    * change la couleur de fond d une liste de cells ou d'un cellId
    **/
-  static void addBackground(boolean condition, any cellsOrCellId, integer color = 0) {
+  static void addBackground(boolean _condition, any _cellsOrCellId, integer _color = 0) {
   }
   
   /**
@@ -38,14 +38,14 @@ class GameDebug {
    *
    * ecrit le text (contenu dans cellsTexts) correspondant dans chacune des cases en index de cellsTexts
    **/
-  static void addCellText(boolean condition, Map<integer, any> cellsTexts, integer color = 0) {
+  static void addCellText(boolean _condition, Map<integer, any> _cellsTexts, integer _color = 0) {
   }
 
   /**
    * addOperation
    * calcul les opt et la ram depuis le dernier addOperation et l affiche
    **/
-  static void addOperation(boolean condition, string txt = "") {
+  static void addOperation(boolean _condition, string _txt = "") {
   }
   
 }

@@ -14,6 +14,7 @@ global integer CHIP_EXASPERATION = 425;
  * @return un element de la map (les elements ne sont pas ordonnes)
  * 3 operations
  **/
+ @unused
 function mapFirst(Map<any,any> map) => any {
   for(any value in map) return value;
   return null;
@@ -25,6 +26,7 @@ function mapFirst(Map<any,any> map) => any {
  * @return le nombre d'element de l objet
  * 3 operations
  **/
+ @unused
 function objectSize(Object obj) => integer {
   return count(obj.keys());
 }
@@ -37,6 +39,7 @@ function objectSize(Object obj) => integer {
  * @param tab2 un tableau
  * O(count(tab2))
  **/
+ @unused
 function arrayConcatOpti(Array<any> tab1, Array<any> tab2) => void {
   for(any value in tab2) push(tab1, value);
 }
