@@ -1,3 +1,5 @@
+// @version:4
+// @strict
 /***************************************************************************
  * Function<Effect, LeekRound, LeekRound => EffectResult>
  * Function(Effect obj, LeekRound shooter, LeekRound target) => EffectResult

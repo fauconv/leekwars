@@ -1,4 +1,5 @@
 // @version:4
+// @strict
 /******************************************************************************
  * ToolRound
  * information d'un tool qui change a chaque tour weapon ou chip
@@ -40,6 +41,7 @@ class ToolRound extends Objects {
    * @param cellId l id de la cell cible du tool
    **/
   public void simulateUseOnCell(integer cellId) {
+    cellId = cellId // inutile juste pour enlever le warning
   }
 
   /**
@@ -83,6 +85,7 @@ class ToolRound extends Objects {
    * @cellId l id de la cell cible du tool
    **/
   public void useOnCell(integer cellId) {
+    cellId = cellId // inutile juste pour enlever le warning
   }
 
   /**

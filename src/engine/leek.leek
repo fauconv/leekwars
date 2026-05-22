@@ -1,3 +1,5 @@
+// @version:4
+// @strict
 /***************************************************************************
  * Leek
  ***************************************************************************/
@@ -10,8 +12,8 @@ class Leek extends Objects {
   public boolean isEnemy;
   public boolean isSummon;
   public boolean needLos = true;
-  public integer maxAOERange = 0;
-  public integer maxWeaponRange = 0
+  public integer maxAOERange = 0;   // distance maxi d utilisation des armes et puces
+  public integer maxWeaponRange = 0 // distance maxi d utilisation des armes
   
   public Array<Weapon> weapons = [];
   public Array<Chip> chips = [];
@@ -33,8 +35,10 @@ class Leek extends Objects {
     Array<integer>|null weapons = getWeapons(id);
     if(weapons != null) for(integer weaponId in weapons) {
       Weapon weapon = new Weapon(weaponId, this);
-      categoriseTool(weapon);
-      ((weapon.categories[CATEGORY_DAMAGE]) && (weapon.maxAOERange > maxWeaponRange)) and (maxWeaponRange = tool.maxAOERange)
+      tools[weaponId] = weapon;
+      for(string category in weapon.categories) push(categories[category]!, weapon);
+      ((weapon.categories[CATEGORY_DAMAGE]) && (weapon.maxAOERange > maxWeaponRange)) and        
+        (maxWeaponRange = weapon.maxAOERange) and (maxAOERange = weapon.maxAOERange)
       push(this.weapons, weapon);
       needLos = weapon.needLos && needLos;
     }
@@ -42,20 +46,14 @@ class Leek extends Objects {
     Array<integer>|null chips = getChips(id);
     if(chips != null) for(integer chipId in chips) {
       Chip chip = new Chip(chipId, this);
-      categoriseTool(chip);
+      tools[chipId] = chip;
+      for(string category in chip.categories) push(categories[category]!, chip);
+      ((chip.categories[CATEGORY_DAMAGE]) && (chip.maxAOERange > maxAOERange)) and 
+        (maxAOERange = chip.maxAOERange);
       push(this.chips, chip);
       needLos = chip.needLos && needLos;
     }
     
-  }
-  
-  /**
-   * categoriseTool
-   **/
-  private void categoriseTool(Tool tool) {
-    tools[tool.id] = tool;
-    for(string category in tool.categories) push(categories[category]!, tool);
-    ((tool.categories[CATEGORY_DAMAGE]) && (tool.maxAOERange > maxAOERange)) and (maxAOERange = tool.maxAOERange);
   }
     
   /**

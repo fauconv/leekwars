@@ -125,7 +125,7 @@ class Tool extends Objects {
    * encapsulation de getWeaponEffectiveArea et getChipEffectiveArea
    **/
   Array<integer>|null getToolEffectiveArea(integer cellToId, integer | null cellFromId = null) {
-    return null;
+    return [cellToId + cellFromId] // inutile juste pour enlever les warning
   }
 
   /**

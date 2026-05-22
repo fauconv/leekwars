@@ -1,0 +1,21 @@
+// @version:4
+// @strict
+/*************************************************************************************************
+ * FiringSolution
+ *
+ * une solution de tir depuis une sourceCell vers des targetCell relativeCell
+ * La relativeCell contient les tools utilisable
+ ************************************************************************************************/
+class FiringSolution extends Objects {
+  public SimulatedRound simulation // position du tireur
+  public Map<integer,RelativeCell> targetsList  // liste des relative cell atteignable depuis la
+                                                // position du tireur
+
+  /**
+   * constructor
+   **/
+  public constructor(SimulatedRound sim, Map<integer,RelativeCell> rel) {
+    simulation = sim
+    targetsList = rel
+  }
+}

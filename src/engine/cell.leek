@@ -1,3 +1,5 @@
+// @version:4
+// @strict
 /***************************************************************************
  * Cell
  * modelise une cellule du plateau
@@ -90,7 +92,7 @@ class Cell extends Objects {
     Cell|null reachableCell = this;
     for(Tool tool in tools) {
       if(ret[id]) ret[id]!.toolsList[tool.id] = tool;
-      else ret[id] = new RelativeCell(id, 1.0, id, [tool.id:tool]);        
+      else ret[id] = new RelativeCell(id, 1.0, this, [tool.id:tool]);        
       if(tool.isAOE) {
         if(tool.AOELaunchType == LAUNCH_TYPE_CIRCLE) { //  ------------ LAUNCH_TYPE_CIRCLE
           for(string direction in HEIGHT_DIRECTION) {
@@ -98,7 +100,7 @@ class Cell extends Objects {
             real pourcent = 1.0;
             for(integer i = tool.AOERange; i > 0; i--) {
               pourcent -= AOE_DEC_LINE_FACTOR;
-              reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent,id);
+              reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent);
               if(reachableCell == null) break;
             }
           }
@@ -107,14 +109,14 @@ class Cell extends Objects {
             real pourcent = 1.0;
             for(integer i = tool.AOERange; i > 0; i--) {
               pourcent -= AOE_DEC_LINE_FACTOR;
-              reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent,id);
+              reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent);
               if(reachableCell == null) break;
               for(string direction2 in HEIGHT_DIRECTION) {
                 Cell|null reachableCell2 = reachableCell;
                 var pourcent2 = pourcent;
                 for(var i2 = (i-1); i2 > 0; i2--) {
                   pourcent2 -= AOE_DEC_LINE_FACTOR;
-                  reachableCell2 = addRelativeCell(ret,reachableCell2!,direction2,tool,pourcent2,id);
+                  reachableCell2 = addRelativeCell(ret,reachableCell2!,direction2,tool,pourcent2);
                   if(reachableCell2 == null) break;
                 }
               }
@@ -126,7 +128,7 @@ class Cell extends Objects {
             real pourcent = 1.0;
             for(integer i = tool.AOERange; i > 0; i--) {
               pourcent -= AOE_DEC_LINE_FACTOR;
-              reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent,id);
+              reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent);
               if(reachableCell == null) break;
             }
           }
@@ -135,14 +137,14 @@ class Cell extends Objects {
             real pourcent = 1.0;
             for(var i = tool.AOERange; i > 0; i--) {
               pourcent -= AOE_DEC_LINE_FACTOR;
-              reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent,id);
+              reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent);
               if(reachableCell == null) break;
               for(var direction2 in HEIGHT_DIRECTION) {
                 Cell|null reachableCell2 = reachableCell;
                 var pourcent2 = pourcent;
                 for(var i2 = tool.AOERange; i2 > 0; i2--) {
                   pourcent2 -= AOE_DEC_LINE_FACTOR;
-                  reachableCell2 = addRelativeCell(ret,reachableCell2!,direction2,tool,pourcent2,id);
+                  reachableCell2 = addRelativeCell(ret,reachableCell2!,direction2,tool,pourcent2)
                   if(reachableCell2 == null) break;
                 }
               }
@@ -154,7 +156,7 @@ class Cell extends Objects {
             real pourcent = 1.0;
             for(var i = tool.AOERange; i > 0; i--) {
               pourcent -= AOE_DEC_DIAG_FACTOR;
-              reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent,id);
+              reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent)
               if(reachableCell == null) break;
             }
           }
@@ -164,7 +166,7 @@ class Cell extends Objects {
             real pourcent = 1.0;
             for(var i = tool.AOERange; i > 0; i--) {
               pourcent -= AOE_DEC_LINE_FACTOR;
-              reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent,id);
+              reachableCell = addRelativeCell(ret,reachableCell!,direction,tool,pourcent)
               if(reachableCell == null) break;
             }
           }
@@ -178,12 +180,12 @@ class Cell extends Objects {
    * addRelativeCell
    * macro pour getRelativeCells
    **/
-  private Cell|null addRelativeCell(Map<integer,RelativeCell> ret, Cell reachableCell, string direction, Tool tool, real pourcent, integer targetCellId) {
+  private Cell|null addRelativeCell(Map<integer,RelativeCell> ret, Cell reachableCell, string direction, Tool tool, real pourcent) {
     if(reachableCell[direction]) {
       reachableCell = reachableCell[direction] as Cell;
       if(!reachableCell.isWall) {
           if(ret[reachableCell.id]) ret[reachableCell.id]!.toolsList[tool.id] = tool;
-          else ret[reachableCell.id] = new RelativeCell(reachableCell.id, pourcent, targetCellId, [tool.id:tool]);
+          else ret[reachableCell.id] = new RelativeCell(reachableCell.id, pourcent, this, [tool.id:tool]);
       }
       return reachableCell;
     }

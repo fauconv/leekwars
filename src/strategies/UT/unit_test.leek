@@ -1,4 +1,5 @@
 // @version:4
+// @strict
 /***************************************************************************
  * Unit test
  ***************************************************************************/
@@ -118,6 +119,7 @@ class UnitTest extends Strategy {
     GameDebug.addOperation(true,"cout clonage");
     currentRound.update();
     GameDebug.addOperation(true,"cout update");
+    newRound = newRound // inutile juste pour enlever le warning
     return true;
   }
   

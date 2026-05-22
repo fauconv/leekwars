@@ -1,4 +1,5 @@
 // @version:4
+// @strict
 /******************************************************************************
  * LeekRound
  * information d un leek, qui change a chaque tour
