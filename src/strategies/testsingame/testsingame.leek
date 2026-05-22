@@ -2,14 +2,14 @@
 // @strict
 /****************************************************************************
  * testsInGame
- ****************************************************************************/
+ ***************************************************************************/
 class TestsInGame extends Strategy {
   
   public static Me me;
   public static Enemy enemy;    
   public static integer myId;
   public static integer enemyId;
-  public static Round currentRound;
+  public static RealRound currentRound;
   public static MeRound meRound;
   public static EnemyRound enemyRound;
   public static integer myCurrentCellId;
@@ -90,8 +90,8 @@ class TestsInGame extends Strategy {
     GameDebug.add(TESTS_DEBUG,meRound.appliedEffectCategories, "applied effect",2)
     
     //
-    // phase 1 : on determine les mouvements possibles de mon poireau et du
-    // poireau adverse
+    // phase 1 : on determine les mouvements possibles de mon poireau et 
+    // du poireau adverse
     // phase 1.1 : on cree une simulation pour chaque combinaison de buff 
     // de MP
     //
@@ -131,7 +131,7 @@ class TestsInGame extends Strategy {
         }
       }
     }
-
+    
     GameDebug.addOperation(TESTS_DEBUG,"phase 1");
     
     //
@@ -140,7 +140,8 @@ class TestsInGame extends Strategy {
     //
     Array<Tool> tools = [];
     for(ToolRound toolR in meRound.toolCategories[CATEGORY_DAMAGE]!) push(tools,toolR.tool);
-    Map<integer, RelativeCell> enemyRelativeCells = enemyRound.currentCell.cell.getRelativeCells(tools);
+    Map<integer, RelativeCell> enemyRelativeCells = 
+      enemyRound.currentCell.cell.getRelativeCells(tools);
     
     if(TESTS_RELATIVE_DEBUG) {
       for(RelativeCell mc in enemyRelativeCells) {
