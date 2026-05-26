@@ -10,8 +10,8 @@ class InterCellInfo extends Objects {
   public boolean isDiag;    // les 2 cellule sont sur la meme diagonale
   private integer isInSight = -1 // -1 = not set, 0 = false , 1 = true 
                                  // cette propriété est rempli au fur et a mesure
-  public integer to;
-
+  public integer to
+  public Map<integer, boolean> isUsableTool
   /**
    * constructor
    * constructeur pour l intercell par defaut
@@ -21,6 +21,7 @@ class InterCellInfo extends Objects {
     isInline = false;
     isDiag = false;
     to = 0;
+    isUsableTool = Board.toolsList // il faut creer tous les tool avant de cree les intercell
   }
 
   /**
@@ -35,7 +36,9 @@ class InterCellInfo extends Objects {
     if(range <= Board.maxAOERange) {
       this.isInline = (cellFrom.x == cellTo.x || cellFrom.y == cellTo.y);
       this.isDiag = (abs(cellFrom.x-cellTo.x) == abs(cellFrom.y-cellTo.y));
+      isUsableTool = [:]
     } else {
+      isUsableTool = Board.toolsList
       isInline = false;
       isDiag = false;
     }
@@ -43,6 +46,7 @@ class InterCellInfo extends Objects {
   
   /**
    * getIsInSight
+   * mets en cache lineOfSight
    **/
   public boolean getIsInSight() {
     if(isInSight == -1) {
@@ -50,6 +54,24 @@ class InterCellInfo extends Objects {
       else isInSight = 0
     }
     return isInSight == 1
+  }
+  
+  /**
+   * canUseTool
+   * verifie si les conditions sont rempli pour utiliser ce tool dans cette interCell
+   **/
+  public boolean canUseTool(Tool tool) {
+    integer toolId = tool.id
+    if(!mapContainsKey(isUsableTool, toolId)) {
+      integer launchType = tool.launchType
+      isUsableTool[toolId] = (range <= tool.maxRange && range >= tool.minRange && 
+                             (!tool.needLos || getIsInSight()) && 
+                             (launchType != LAUNCH_TYPE_LINE || isInline) && 
+                             (launchType != LAUNCH_TYPE_DIAGONAL || isDiag) && 
+                             (launchType != LAUNCH_TYPE_STAR || isDiag || isInline) && 
+                             (launchType != LAUNCH_TYPE_STAR_INVERTED || isDiag && isInline))
+    }
+    return isUsableTool[toolId]!
   }
 
   /**
@@ -60,5 +82,5 @@ class InterCellInfo extends Objects {
   public string string() {
     return this.class.name+":("+id+"<->"+to+":"+range+")";
   }
-
+  
 }

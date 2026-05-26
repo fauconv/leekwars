@@ -1,4 +1,17 @@
 // @version:4
 
-debug(0b1000 ** 2)
-debug(0b10 >> 0b1)
+Map<integer, integer> A = [1:1,2:2, 4:4]
+Map<integer, integer> B = [2:22,3:3]
+Map<integer, integer> C = [1:1,2:2, 4:4]
+integer opts = getOperations()
+mapPutAll(A,B)
+integer opts2 = getOperations()
+debug(A)
+debug((opts2 - opts - 2) + "")
+integer opts3 = getOperations()
+for(integer key : integer value in B) {
+  C[key] = value
+}
+integer opts4 = getOperations()
+debug(C)
+debug((opts4 - opts3 - 2) + "")

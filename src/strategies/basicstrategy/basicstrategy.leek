@@ -205,7 +205,6 @@ class BasicStrategy extends Strategy {
     // de MP
     //
     Map<integer,Round> myRoundsList = [:]
-    Map<integer,Round> enemyRoundsList = [:]
     integer myMaxMP
     if(mapContainsKey(meRound.toolsRound, CHIP_LEATHER_BOOTS) && meRound.toolsRound[CHIP_LEATHER_BOOTS]!.isUsable()) {
       SimulatedRound simAvecBoots = new SimulatedRound(currentRound)
@@ -218,6 +217,7 @@ class BasicStrategy extends Strategy {
       myMaxMP = meRound.minMP
       myRoundsList[0] = currentRound
     }
+    Map<integer,Round> enemyRoundsList = [:]
     integer enemyMaxMP
     if(mapContainsKey(enemyRound.toolsRound, CHIP_LEATHER_BOOTS) && enemyRound.toolsRound[CHIP_LEATHER_BOOTS]!.isUsable()) {
       SimulatedRound simAvecBoots = new SimulatedRound(currentRound)
@@ -319,13 +319,37 @@ class BasicStrategy extends Strategy {
     // l atteindre
     //
     for(integer relativeCellId : Array<RelativeCell> rcs in myRelativeCellsCache) {
-      Map<integer, boolean> toolsCache = [:]
+      Map<integer, Tool> toolsList = [:]
       for(RelativeCell rc in rcs) {
-        // TODO: todo
+        mapPutAll(toolsList,rc.toolsList)
+      }
+      integer size = mapSize(toolsList)
+      Map<integer, Tool> resultToolsList = [:]
+      for(integer sourceCellId : MoveCell _enemyMoveCell in enemyMoveCells) {
+        InterCellInfo interCellInfo = Board.cells[sourceCellId].interCellInfo[relativeCellId];
+        if(interCellInfo.range < Board.maxAOERange) {
+          for(integer toolId : Tool tool in toolsList) {
+            if(interCellInfo.canUseTool(tool)) {
+              resultToolsList[toolId] = tool
+            }
+          }
+          if(size == mapSize(resultToolsList)) break
+        }
+      }
+      for(RelativeCell rc in rcs) {
+        rc.toolsList = mapFilter(rc.toolsList, 
+                                 function(any _value, integer key, Map _map) => boolean {
+                                   return mapContainsKey(resultToolsList, key)
+                                 }) as Map<integer, Tool>
       }
     }
-
-
+    for(MoveCell myMoveCell in myMoveCells) {
+      myMoveCell.myRelativeCells = mapFilter(myMoveCell.myRelativeCells, 
+                                             function(RelativeCell value, integer _key, Map _map) => boolean {
+                                               return !mapIsEmpty(value.toolsList)
+                                             }) as Map<integer, RelativeCell>
+    }
+    GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"phase 3");
 
     // a l arriver on veut que pour chacune de mes simulation j ai les simulation enemy qui me 
     // font le plus mal 

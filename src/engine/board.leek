@@ -7,17 +7,19 @@
  ***************************************************************************/
 class Board extends Objects {
   
-  public static integer myId;
-  public static integer maxAOERange;
+  public static integer myId
+  public static integer maxAOERange
+  public static Map<integer, boolean> toolsList = [:] // list de tous les tool en jeu 
+                                                      // boolean=false
   public static Me me;
-  public static RealRound currentRound;
-  public static Array<Round> previousRounds = [];
-  public static Cell centerCell;
+  public static RealRound currentRound
+  public static Array<Round> previousRounds = []
+  public static Cell centerCell
   
-  public static Array<Enemy> enemies = [];
-  public static Array<Allie> allies  = [];
-  public static Map<integer, Leek> leeks;
-  public static Array<Cell> cells = [];   // Array(Cell) par consequent Map  
+  public static Array<Enemy> enemies = []
+  public static Array<Allie> allies  = []
+  public static Map<integer, Leek> leeks
+  public static Array<Cell> cells = []   // Array(Cell) par consequent Map  
   
   /**
    * constructor
@@ -60,7 +62,8 @@ class Board extends Objects {
       //
       // cells creations
       //
-      InterCellInfo interCellNull = new InterCellInfo();
+      InterCellInfo interCellNull = new InterCellInfo(); // il faut creer tous les tool 
+                                                         // avant de cree les intercell
       for(integer i = 0;i < NB_CELLS; i++) {
         push(cells, (getCellContent(i) == CELL_OBSTACLE)?new Wall(i, interCellNull):new FreeCell(i, interCellNull));
       }

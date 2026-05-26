@@ -49,7 +49,7 @@ function arrayConcatOpti(Array<any> tab1, Array<any> tab2) => void {
  * dans la Map theMap, ajoute value a la fin du tableau se trouvant en theMap[key]
  * et cree le tableau si il n'existe pas
  **/
-function mapPush(Map<any,Array<any>>theMap, any key, any value) {
+function mapPush(Map<any,Array<any>>theMap, any key, any value) => void  {
   if(mapContainsKey(theMap, key)) push(theMap[key]!, value)
   else theMap[key] = [value]
 }
