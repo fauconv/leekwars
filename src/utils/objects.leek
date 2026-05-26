@@ -17,7 +17,7 @@ class Objects {
    *
    * @return string
    **/
-  string string() {
+  public string string() {
     return this.class.name+":(#"+id+")";
   }
 }

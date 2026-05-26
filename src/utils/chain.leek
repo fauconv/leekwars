@@ -580,7 +580,7 @@ class _ChainElement {
    *
    * @return string
    **/
-  string string() {
+  public string string() {
     return string(element as string);
   }
 }

@@ -197,7 +197,7 @@ class Cell extends Objects {
    *
    * @return string
    **/
-  string string() {
+  public string string() {
     return this.class.name+":{ id:"+id+"\n  x:"+x+" y:"+y+" isWall:"+isWall+"}\n";
   }
 }

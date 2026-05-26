@@ -44,7 +44,7 @@ class InterCellInfo extends Objects {
    *
    * @return string
    **/
-  string string() {
+  public string string() {
     return this.class.name+":("+id+"<->"+to+":"+range+")";
   }
 

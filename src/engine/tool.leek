@@ -135,7 +135,7 @@ class Tool extends Objects {
    *
    * @return string
    **/
-  string string() {
+  public string string() {
     return this.class.name+"("+TOOL_NAME_TRANSLATOR[id]!+")("+maxRange+")";
   }
   
