@@ -47,10 +47,11 @@ class InterCellInfo extends Objects {
   /**
    * getIsInSight
    * mets en cache lineOfSight
+   * TODO: remplacer entitiesToIgnore ou gerer le cache de lineOfSight autrement actuellement ne marche que a 2 joueurs sans bulb
    **/
   public boolean getIsInSight() {
     if(isInSight == -1) {
-      if(lineOfSight(id, to)) isInSight = 1
+      if(lineOfSight(id, to, Board.entitiesToIgnore)) isInSight = 1
       else isInSight = 0
     }
     return isInSight == 1

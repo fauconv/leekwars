@@ -297,7 +297,7 @@ class BasicStrategy extends Strategy {
         if(ret != false) moveCell.enemyRelativeCells[rel.id] = ret as RelativeCell
       }
     }
-    GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"phase 2");
+    GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"phase 2")
 
     //
     // phase 3: on determine les tires que l ennemi pourra faire

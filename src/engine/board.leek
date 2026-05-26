@@ -19,6 +19,7 @@ class Board extends Objects {
   public static Array<Enemy> enemies = []
   public static Array<Allie> allies  = []
   public static Map<integer, Leek> leeks
+  public static Array<integer> entitiesToIgnore
   public static Array<Cell> cells = []   // Array(Cell) par consequent Map  
   
   /**
@@ -34,6 +35,7 @@ class Board extends Objects {
       me    = new Me();
       myId  = me.id;
       leeks = [myId:me];
+      entitiesToIgnore = [myId]
       maxAOERange = me.maxAOERange;
     
       //
@@ -43,6 +45,7 @@ class Board extends Objects {
       for(integer en in ens) {
         Enemy leek = new Enemy(en); 
         leeks[en] = leek;
+        push(entitiesToIgnore, en)
         push(enemies, leek);
         if(leek.maxAOERange > maxAOERange)
           maxAOERange = leek.maxAOERange;
@@ -55,6 +58,7 @@ class Board extends Objects {
       for(integer en in ens) {
         if(en != myId) {
           leeks[en] = new Allie(en);
+          push(entitiesToIgnore, en)
           push(allies, leeks[en]);
         }
       }
