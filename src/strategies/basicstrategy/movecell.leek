@@ -9,7 +9,9 @@ class MoveCell extends Objects {
   // public id : cellId de destination
   public Map<integer,SimulatedRound> simulations = [:] // comment on arrive jusqu a la position 
                                                        // [remainingMP] = simulation
-  public Map<integer,RelativeCell> relativeCells = [:]
+  public Map<integer,RelativeCell> myRelativeCells = [:] // les relativeCells de ma position
+  public Map<integer,RelativeCell> enemyRelativeCells = [:] // les relativeCells de l ennemy
+                                                            // atteignable depuis moveCell
   
   /**
    * constructor

@@ -9,6 +9,7 @@ class ToolRound extends Objects {
   public Tool tool;
   public Round roundObj;
   public LeekRound owner;
+  public integer ownerId;
   private integer usable;
   private integer cooldown; 
   
@@ -21,9 +22,9 @@ class ToolRound extends Objects {
     this.owner = owner;
     roundObj = owner.roundObj;
     id = tool.id;
+    ownerId = owner.id
     if(tool.class.super.name == "Tool") {
       this.tool = tool as Tool;
-      cooldown = 0;
       usable = this.tool.maxUse;
     } else {
       this.tool = (tool as ToolRound).tool;
@@ -32,9 +33,22 @@ class ToolRound extends Objects {
     }
   }
   
+  /**
+   * est ce que je peux utiliser ce tool pour ce round 
+   * utile surtout pour me. Pour les enemyUtiliser plutot isUsable nextRound
+   **/
   public boolean isUsable() {
-    return cooldown == 0 && usable != 0;
+    return cooldown == 0 && usable > 0;
   }
+
+  /**
+   * est ce que je peux utiliser ce tool pour le prochain round 
+   * TODO: peut etre il faut gerer "usableNextRound" comme propriete
+   **/
+  public boolean isUsableNextRound() {
+    return cooldown <= 1
+  }
+
   /**
    * simulateUseOnCell
    * abstract
@@ -84,8 +98,7 @@ class ToolRound extends Objects {
    * abstract
    * @cellId l id de la cell cible du tool
    **/
-  public void useOnCell(integer cellId) {
-    cellId = cellId // inutile juste pour enlever le warning
+  public void useOnCell(integer _cellId) {
   }
 
   /**
@@ -110,6 +123,7 @@ class WeaponRound extends ToolRound {
    * @param owner le owner du tool
    **/
   public constructor(Tool|ToolRound tool, LeekRound owner) {
+    cooldown = 0 // if(tool.class.super.name == "Tool") inutile ici car la valeur va etre ecrase dans super()
     super(tool, owner);
   }
   
@@ -136,8 +150,6 @@ class WeaponRound extends ToolRound {
 
 /******************************************************************************
  * ChipRound
- *
- * Exist only if cooldown == 0
  ******************************************************************************/
 class ChipRound extends ToolRound {
   
@@ -148,6 +160,7 @@ class ChipRound extends ToolRound {
    **/
   public constructor(Tool|ToolRound tool, LeekRound owner) {
     super(tool, owner);
+    if(tool.class.super.name == "Tool") cooldown = getCooldown(id, ownerId)!
   }
   
   /**

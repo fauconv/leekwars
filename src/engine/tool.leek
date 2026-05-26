@@ -27,7 +27,8 @@ class Tool extends Objects {
   public boolean targetEnemy     = false;
   public boolean targetCaster    = false;
   
-  public Leek owner;
+  public Leek owner
+  public integer ownerId
   public Array<Effect> effects = [];
   public Map<string,string> categories = [:];
   
@@ -42,6 +43,7 @@ class Tool extends Objects {
     
     this.id = id;
     this.owner = owner;
+    this.ownerId = owner.id
     
     Effect eff;
     for(Array<real|integer> effect in effects) {
@@ -124,8 +126,8 @@ class Tool extends Objects {
    * getToolEffectiveArea
    * encapsulation de getWeaponEffectiveArea et getChipEffectiveArea
    **/
-  Array<integer>|null getToolEffectiveArea(integer cellToId, integer | null cellFromId = null) {
-    return [cellToId + cellFromId] // inutile juste pour enlever les warning
+  Array<integer>|null getToolEffectiveArea(integer _cellToId, integer | null _cellFromId = null) {
+    return null
   }
 
   /**

@@ -12,6 +12,8 @@ class Action extends Objects {
   
   /**
    * execute
+   * on ne fait un update du round qu apres avoir executer toutes les actions
+   * pour economiser des operations
    **/
   void execute() {
   }
@@ -35,6 +37,8 @@ class SetWeaponAction extends Action {
 
   /**
    * execute
+   * on ne fait un update du round qu apres avoir executer toutes les actions
+   * pour economiser des operations
    **/
   void execute() {
     setWeapon(toolId);
@@ -66,6 +70,8 @@ class MoveAction extends Action {
 
   /**
    * execute
+   * on ne fait un update du round qu apres avoir executer toutes les actions
+   * pour economiser des operations
    **/
   void execute() {
     moveTowardCell(cellId);

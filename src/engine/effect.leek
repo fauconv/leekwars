@@ -69,7 +69,6 @@ class Effect extends Objects {
    * simulateUse
    * TODO: ajouter la puissance pour les battle royal
    * TODO: ajouter les passif des armes oubliees
-   * TODO: test des damage return
    * le shooter et le target doivent etre du meme round
    **/
   void simulateUse(LeekRound shooter, LeekRound target, real AOE, integer nbTargets, real midCriticalLuck) {

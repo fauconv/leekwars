@@ -273,7 +273,9 @@ class BasicStrategy extends Strategy {
     // phase 2.1: on determine pour chaque arme les relativeCell possible
     //
     Array<Tool> tools = [];
-    for(ToolRound toolR in meRound.toolCategories[CATEGORY_DAMAGE]!) push(tools,toolR.tool);
+    for(ToolRound toolR in meRound.toolCategories[CATEGORY_DAMAGE]!) {
+      if(toolR.isUsable()) push(tools,toolR.tool);
+    }
     Map<integer, RelativeCell> enemyRelativeCells = 
       enemyRound.currentCell.cell.getRelativeCells(tools);
     
@@ -291,20 +293,36 @@ class BasicStrategy extends Strategy {
     for(integer sourceCellId : MoveCell moveCell in myMoveCells) {
       Cell sourceCell = Board.cells[sourceCellId]
       for(RelativeCell rel in enemyRelativeCells) {
-        moveCell.relativeCells[rel.id] = rel.canUseTools(sourceCell)
+        RelativeCell|boolean ret = rel.canUseTools(sourceCell)
+        if(ret != false) moveCell.enemyRelativeCells[rel.id] = ret as RelativeCell
       }
     }
     GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"phase 2");
 
     //
     // phase 3: on determine les tires que l ennemi pourra faire
-    // phase 3.1: on determine pour chaque arme les relativeCell possible pour chaque simulation
+    // phase 3.1: on determine pour chaque arme les relativeCell possible de chaque moveCell
+    Array<Tool> enemyTools = [];
+    for(ToolRound toolR in enemyRound.toolCategories[CATEGORY_DAMAGE]!) {
+      if(toolR.isUsableNextRound()) push(enemyTools,toolR.tool)
+    }
+    Map<integer, Array<RelativeCell>> myRelativeCellsCache = [:]
+    for(integer myCellId : MoveCell myMoveCell in myMoveCells) {
+      myMoveCell.myRelativeCells = Board.cells[myCellId].getRelativeCells(tools)
+      for(integer relativeCellId : RelativeCell rc in myMoveCell.myRelativeCells) {
+        if(!mapContainsKey(myRelativeCellsCache, relativeCellId)) 
+          myRelativeCellsCache[relativeCellId] = [rc]
+        else 
+          push(myRelativeCellsCache[relativeCellId]!,rc)
+      }
+    }
+
     // phase 3.2: pour chaque simulation (chaque position de l enemy), on détermine lesquels  
     // de mes relativeCells l enemy peut atteindre et avec quel arme. 
     // a l arriver on veut que pour chacune de mes simulation j ai les simulation enemy qui me 
     // font le plus mal 
     //
-    // TODO: ici
+
   }
 }
 

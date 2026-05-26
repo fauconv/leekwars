@@ -29,9 +29,11 @@ class RelativeCell extends Objects {
    * sourceCell.
    * canUseWeaponOnCell ne convient pas car il ne prend pas en compte la source du tire qui est
    * toujours la currentCell
-   * @return une nouvelle RelativeCell qui ne contient que les armes utilisables
+   * @return une nouvelle RelativeCell qui ne contient que les armes utilisables ou false si il n y a
+   *         aucune arme utilisable
    **/
-  RelativeCell canUseTools(Cell sourceCell) {
+  RelativeCell|boolean canUseTools(Cell sourceCell) {
+    Boolean full = false;
     RelativeCell ret = new RelativeCell(id, AOE, targetCell, [:]);
     InterCellInfo interCellInfo = sourceCell.interCellInfo[id];
     integer range = interCellInfo.range;
@@ -42,9 +44,11 @@ class RelativeCell extends Objects {
     Map<integer,Tool> toolsList = [:];
     for(Tool tool in toolsList) {
       if(tool.canUseTool(range, isInsight, isInLine, isDiag)) {
+        full = true;
         ret.toolsList[tool.id] = tool
       }
     }
-    return ret
+    if(full) return ret
+    return false
   }
 }

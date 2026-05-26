@@ -175,11 +175,9 @@ class LeekRound extends Objects {
       appliedEffectCategories = clone((leek as LeekRound).appliedEffectCategories,4) as Map<string,Map<integer,Array<Array<integer|boolean>>>>
       
       for(ChipRound toolRound in (leek as LeekRound).chipsRound) {
-        if(getCooldown(toolRound.id) == 0) {
           ChipRound c = new ChipRound(toolRound, this);
           categoriseTool(c);
           push(chipsRound, c);
-        }
       }
       for(WeaponRound toolRound in (leek as LeekRound).weaponsRound) {
         WeaponRound w = new WeaponRound(toolRound, this);
@@ -222,7 +220,6 @@ class LeekRound extends Objects {
     weaponsRound = [];
     chipsRound = [];
     actions = [];
-   
     init();
 
   }
@@ -231,7 +228,6 @@ class LeekRound extends Objects {
    * init
    **/
   private void init() {
-    
     maxAOERange = 0;
     for(string category in CATEGORIES) {
       toolCategories[category] = [];
@@ -271,11 +267,9 @@ class LeekRound extends Objects {
     }
     
     for(Chip tool in leek.chips) {
-      if(getCooldown(tool.id) == 0) {
-        ChipRound c = new ChipRound(tool, this);
-        categoriseTool(c);
-        push(chipsRound, c);
-      }
+      ChipRound c = new ChipRound(tool, this);
+      categoriseTool(c);
+      push(chipsRound, c);
     }
     for(Weapon tool in leek.weapons) {
       WeaponRound w = new WeaponRound(tool, this);
