@@ -186,9 +186,7 @@ class LeekRound extends Objects {
       }
       if(weaponId != null) weapon = toolsRound[weaponId];
 
-      for(Action a in (leek as LeekRound).actions) {
-        push(actions, a);
-      }
+      for(Action a in (leek as LeekRound).actions) push(actions, a);
         
     } else {
       
@@ -259,11 +257,7 @@ class LeekRound extends Objects {
     for(Array<integer | boolean> effectArray in effects) {
       integer type = effectArray[0] as integer;
       string category = getEffectsInfo(type)[1] as string;
-      if(mapContainsKey(appliedEffectCategories[category]!,type)) {
-        push(appliedEffectCategories[category]![type]!, effectArray);
-      } else {
-        appliedEffectCategories[category]![type] = [effectArray];
-      }
+      mapPush(appliedEffectCategories[category]!, type, effectArray)
     }
     
     for(Chip tool in leek.chips) {

@@ -310,10 +310,7 @@ class BasicStrategy extends Strategy {
     for(integer myCellId : MoveCell myMoveCell in myMoveCells) {
       myMoveCell.myRelativeCells = Board.cells[myCellId].getRelativeCells(tools)
       for(integer relativeCellId : RelativeCell rc in myMoveCell.myRelativeCells) {
-        if(!mapContainsKey(myRelativeCellsCache, relativeCellId)) 
-          myRelativeCellsCache[relativeCellId] = [rc]
-        else 
-          push(myRelativeCellsCache[relativeCellId]!,rc)
+        mapPush(myRelativeCellsCache, relativeCellId, rc)
       }
     }
 
