@@ -9,7 +9,7 @@ class Tool extends Objects {
   public boolean needLos;
   public integer areaType; // Enumeration
   public integer cost;
-  public integer maxUse;
+  public integer maxUse; // si == -1 il n y a pas de limite d utilisation
   public integer launchType;    // Enumeration
   public integer minRange;
   public integer maxRange;

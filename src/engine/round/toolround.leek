@@ -10,7 +10,7 @@ class ToolRound extends Objects {
   public Round roundObj;
   public LeekRound owner;
   public integer ownerId;
-  private integer usable;
+  private integer usable; // si usable == -1 il n y a pas de limite d utilisation
   private integer cooldown; 
   
   /**
@@ -38,7 +38,7 @@ class ToolRound extends Objects {
    * utile surtout pour me. Pour les enemyUtiliser plutot isUsable nextRound
    **/
   public boolean isUsable() {
-    return cooldown == 0 && usable > 0;
+    return cooldown == 0 && usable != 0;
   }
 
   /**
@@ -72,7 +72,7 @@ class ToolRound extends Objects {
     owner.maxTP -= cost;
     owner.midTP -= cost;
     cooldown = tool.cooldown;
-    usable--;
+    if(usable > 0) usable--;
     real midCriticalLuck = owner.midAgility/1000.0; // probabilite de coup critique
     if(owner.maxAgility <= 0) {
       midCriticalLuck = 0.0
