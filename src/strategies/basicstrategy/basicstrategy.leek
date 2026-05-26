@@ -1,6 +1,6 @@
 // @version:4
 // @strict
-include("firingsolution.leek")
+include("movecell.leek")
 /****************************************************************************
  * BasicStrategy
  *
@@ -239,31 +239,31 @@ class BasicStrategy extends Strategy {
     Map<integer,integer> enemyRoutesList = enemyRound.route(enemyMaxMP)
     
     //
-    // phase 1.3 : on cree une simulation pour chaque itineraire et chaque 
-    // combinaison de buff de MP
+    // phase 1.3 : on cree une MoveCell pour chaque itineraire
     //
-    Array<SimulatedRound> myMoveSimList = []
-    Array<SimulatedRound> enemyMoveSimList = []
-    integer debugColor = COLOR_YELLOW
-    for(integer stop : Round sim in myRoundsList) {
-      for(integer cellId : integer remainingMP in myRoutesList) {
+    Map<integer,MoveCell> myMoveCells = [:]
+    for(integer cellId : integer remainingMP in myRoutesList) {
+      myMoveCells[cellId] = new MoveCell(cellId)
+      for(integer stop : Round sim in myRoundsList) {
         if(remainingMP >= stop) {
           SimulatedRound newSim = new SimulatedRound(sim)
           newSim.meRound.addMoveAction(cellId,myMaxMP-remainingMP)
-          push(myMoveSimList,newSim)
-          BASIC_STRATEGY_DEBUG and markText(cellId,remainingMP,debugColor,1)
+          myMoveCells[cellId]!.simulations[remainingMP-stop] = newSim
         }
       }
-      debugColor = COLOR_GREEN
+      BASIC_STRATEGY_DEBUG and !TESTS_RELATIVE_DEBUG and markText(cellId,remainingMP,COLOR_ORANGE,1)
     }
-    for(integer stop : Round sim in enemyRoundsList) {
-      for(integer cellId : integer remainingMP in enemyRoutesList) {
+    Map<integer,MoveCell> enemyMoveCells = [:]
+    for(integer cellId : integer remainingMP in enemyRoutesList) {
+      enemyMoveCells[cellId] = new MoveCell(cellId)
+      for(integer stop : Round sim in enemyRoundsList) {
         if(remainingMP >= stop) {
           SimulatedRound newSim = new SimulatedRound(sim)
           newSim.enemiesRound[0].addMoveAction(cellId,enemyMaxMP-remainingMP)
-          push(enemyMoveSimList,newSim)
+          enemyMoveCells[cellId]!.simulations[remainingMP-stop] = newSim
         }
       }
+      BASIC_STRATEGY_DEBUG and !TESTS_RELATIVE_DEBUG and markText(cellId,remainingMP,COLOR_ORANGE,1)
     }
     
     GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"phase 1")
@@ -285,24 +285,17 @@ class BasicStrategy extends Strategy {
     }
 
     //
-    // phase 2.2: pour chaque simulation (chaque position de me), on détermine quel relativeCell
+    // phase 2.2: pour chaque position de me, on détermine quel relativeCell
     // on peut atteindre et avec quel arme
     //
-    Map<integer, Map<integer, RelativeCell>> cache = [:] // [SourceCellId][targetCellId] = relativeCell
-    Map<integer, Array<FiringSolution>> firingSolutions = [:] // [SourceCellId][simNum] = firingSolution
-    for(SimulatedRound sim in myMoveSimList) {
-      Cell sourceCell = sim.meRound.currentCell.cell
-      integer sourceCellId = sourceCell.id
-      if(!mapContainsKey(cache, sourceCellId)) {
-        cache[sourceCellId] = [:]
-        for(RelativeCell mc in enemyRelativeCells) {
-          cache[sourceCellId]![mc.id] = mc.canUseTools(sourceCell)
-        }
-        firingSolutions[sourceCellId] = []
+    for(integer sourceCellId : MoveCell moveCell in myMoveCells) {
+      Cell sourceCell = Board.cells[sourceCellId]
+      for(RelativeCell rel in enemyRelativeCells) {
+        moveCell.relativeCells[rel.id] = rel.canUseTools(sourceCell)
       }
-      push(firingSolutions[sourceCellId]!, new FiringSolution(sim, cache[sourceCellId]!))
     }
     GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"phase 2");
+
     //
     // phase 3: on determine les tires que l ennemi pourra faire
     // phase 3.1: on determine pour chaque arme les relativeCell possible pour chaque simulation
@@ -311,14 +304,7 @@ class BasicStrategy extends Strategy {
     // a l arriver on veut que pour chacune de mes simulation j ai les simulation enemy qui me 
     // font le plus mal 
     //
-    tools = [];
-    for(ToolRound toolR in enemyRound.toolCategories[CATEGORY_DAMAGE]!) push(tools,toolR.tool);
-    
-    Array<Map<integer, RelativeCell>> myRelativeCellsBySim = []
-    for(SimulatedRound sim in myMoveSimList) {
-      push(myRelativeCellsBySim, sim.meRound.currentCell.cell.getRelativeCells(tools))
-    }
-    
+    // TODO: ici
   }
 }
 
