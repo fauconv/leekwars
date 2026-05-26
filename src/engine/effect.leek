@@ -220,7 +220,7 @@ class Effect extends Objects {
    * toString
    * @return string
    **/
-  string string() {
+  public string string() {
     return "Effect("+EFFECT_TYPE_TRANSLATOR_CATEGORY[type]![0] as string+") {cat: "+category+" min: "+minEffect+"\n  max: "+maxEffect+" mid:"+midEffect + "}\n";
   }
   

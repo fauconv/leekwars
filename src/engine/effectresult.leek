@@ -47,7 +47,7 @@ class IntegerEffectResult extends Objects {
   /**
    * string
    **/
-  string string() {
+  public string string() {
     return "{minEffect:"+minEffect+", maxEffect:"+maxEffect+", midEffect:"+midEffect+"}";
   }
 
@@ -109,7 +109,7 @@ class RealEffectResult extends Objects {
   /**
    * string
    **/
-  string string() {
+  public string string() {
     return "{minEffect:"+minEffect+", maxEffect:"+maxEffect+", midEffect:"+midEffect+"}";
   }
 
