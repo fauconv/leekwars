@@ -36,14 +36,9 @@ class RelativeCell extends Objects {
     Boolean full = false;
     RelativeCell ret = new RelativeCell(id, AOE, targetCell, [:]);
     InterCellInfo interCellInfo = sourceCell.interCellInfo[id];
-    integer range = interCellInfo.range;
-    if(range > Board.maxAOERange) return ret
-    boolean isInsight = lineOfSight(id, sourceCell.id)!;
-    boolean isDiag = interCellInfo.isDiag;
-    boolean isInLine = interCellInfo.isInline;        
-    Map<integer,Tool> toolsList = [:];
+    if(interCellInfo.range > Board.maxAOERange) return ret        
     for(Tool tool in toolsList) {
-      if(tool.canUseTool(range, isInsight, isInLine, isDiag)) {
+      if(tool.canUseTool(interCellInfo)) {
         full = true;
         ret.toolsList[tool.id] = tool
       }
@@ -51,4 +46,5 @@ class RelativeCell extends Objects {
     if(full) return ret
     return false
   }
+
 }

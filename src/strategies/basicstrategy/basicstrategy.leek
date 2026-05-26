@@ -302,20 +302,31 @@ class BasicStrategy extends Strategy {
     //
     // phase 3: on determine les tires que l ennemi pourra faire
     // phase 3.1: on determine pour chaque arme les relativeCell possible de chaque moveCell
+    //
     Array<Tool> enemyTools = [];
     for(ToolRound toolR in enemyRound.toolCategories[CATEGORY_DAMAGE]!) {
       if(toolR.isUsableNextRound()) push(enemyTools,toolR.tool)
     }
-    Map<integer, Array<RelativeCell>> myRelativeCellsCache = [:]
+    Map<integer, Array<RelativeCell>> myRelativeCellsCache = [:] // [relativeCellId][] = RelativeCell
     for(integer myCellId : MoveCell myMoveCell in myMoveCells) {
       myMoveCell.myRelativeCells = Board.cells[myCellId].getRelativeCells(tools)
-      for(integer relativeCellId : RelativeCell rc in myMoveCell.myRelativeCells) {
+      for(integer relativeCellId : RelativeCell rc in myMoveCell.myRelativeCells)
         mapPush(myRelativeCellsCache, relativeCellId, rc)
+    }
+
+    //
+    // phase 3.2: pour chacune de mes relativeCells, on détermine avec quel arme il peut 
+    // l atteindre
+    //
+    for(integer relativeCellId : Array<RelativeCell> rcs in myRelativeCellsCache) {
+      Map<integer, boolean> toolsCache = [:]
+      for(RelativeCell rc in rcs) {
+        // TODO: todo
       }
     }
 
-    // phase 3.2: pour chaque simulation (chaque position de l enemy), on détermine lesquels  
-    // de mes relativeCells l enemy peut atteindre et avec quel arme. 
+
+
     // a l arriver on veut que pour chacune de mes simulation j ai les simulation enemy qui me 
     // font le plus mal 
     //

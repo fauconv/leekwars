@@ -115,11 +115,13 @@ class Tool extends Objects {
    * @param isDiag la target est en diagonal ?
    * @return true si les conditions de tir sont rempli pour ce tool
    **/
-  public boolean canUseTool(integer range, boolean isInsight, boolean isInLine, boolean isDiag) {
-    return (range <= maxRange && range >= minRange && (!needLos || isInsight) && 
-            (launchType != LAUNCH_TYPE_LINE || isInLine) && (launchType != LAUNCH_TYPE_DIAGONAL || isDiag) && 
-            (launchType != LAUNCH_TYPE_STAR || isDiag || isInLine) && 
-            (launchType != LAUNCH_TYPE_STAR_INVERTED || isDiag && isInLine));
+  public boolean canUseTool(InterCellInfo interCellInfo) {
+    return (interCellInfo.range <= maxRange && interCellInfo.range >= minRange && 
+            (!needLos || interCellInfo.getIsInSight()) && 
+            (launchType != LAUNCH_TYPE_LINE || interCellInfo.isInline) && 
+            (launchType != LAUNCH_TYPE_DIAGONAL || interCellInfo.isDiag) && 
+            (launchType != LAUNCH_TYPE_STAR || interCellInfo.isDiag || interCellInfo.isInline) && 
+            (launchType != LAUNCH_TYPE_STAR_INVERTED || interCellInfo.isDiag && interCellInfo.isInline));
   }
   
   /**
