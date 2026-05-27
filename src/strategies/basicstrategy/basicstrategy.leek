@@ -290,10 +290,11 @@ class BasicStrategy extends Strategy {
     // phase 2.2: pour chaque position de me, on détermine quel relativeCell
     // on peut atteindre et avec quel arme
     //
+    Array<integer> ignoredEntitiesListAttack = [myId]
     for(integer sourceCellId : MoveCell moveCell in myMoveCells) {
       Cell sourceCell = Board.cells[sourceCellId]
       for(RelativeCell rel in enemyRelativeCells) {
-        RelativeCell|boolean ret = rel.canUseTools(sourceCell)
+        RelativeCell|boolean ret = rel.canUseTools(sourceCell, ignoredEntitiesListAttack, "attack")
         if(ret != false) moveCell.enemyRelativeCells[rel.id] = ret as RelativeCell
       }
     }
@@ -318,6 +319,7 @@ class BasicStrategy extends Strategy {
     // phase 3.2: pour chacune de mes relativeCells, on détermine avec quel arme il peut 
     // l atteindre
     //
+    Array<integer> ignoredEntitiesListDefence = [myId, enemyId]
     for(integer relativeCellId : Array<RelativeCell> rcs in myRelativeCellsCache) {
       Map<integer, Tool> toolsList = [:]
       for(RelativeCell rc in rcs) {
@@ -329,7 +331,7 @@ class BasicStrategy extends Strategy {
         InterCellInfo interCellInfo = Board.cells[sourceCellId].interCellInfo[relativeCellId];
         if(interCellInfo.range < Board.maxAOERange) {
           for(integer toolId : Tool tool in toolsList) {
-            if(interCellInfo.canUseTool(tool)) {
+            if(interCellInfo.canUseTool(tool, ignoredEntitiesListDefence, "defence")) {
               resultToolsList[toolId] = tool
             }
           }

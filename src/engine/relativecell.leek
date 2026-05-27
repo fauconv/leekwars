@@ -32,13 +32,14 @@ class RelativeCell extends Objects {
    * @return une nouvelle RelativeCell qui ne contient que les armes utilisables ou false si il n y a
    *         aucune arme utilisable
    **/
-  RelativeCell|boolean canUseTools(Cell sourceCell) {
+  RelativeCell|boolean canUseTools(Cell sourceCell, Array<integer> entitiesToIgnore, 
+                                   string cacheId = InterCellInfo.DEFAULT_CACHE) {
     Boolean full = false;
     RelativeCell ret = new RelativeCell(id, AOE, targetCell, [:]);
     InterCellInfo interCellInfo = sourceCell.interCellInfo[id];
     if(interCellInfo.range > Board.maxAOERange) return false        
     for(Tool tool in toolsList) {
-      if(interCellInfo.canUseTool(tool)) {
+      if(interCellInfo.canUseTool(tool, entitiesToIgnore, cacheId)) {
         full = true;
         ret.toolsList[tool.id] = tool
       }

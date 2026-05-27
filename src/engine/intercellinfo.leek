@@ -5,13 +5,18 @@
  * information entre 2 cellules
  ***************************************************************************/
 class InterCellInfo extends Objects {
+  public static string DEFAULT_CACHE = "default"
   public integer range;     // distance entre 2 cellule
   public boolean isInline;  // les 2 cellule sont sur la meme ligne
   public boolean isDiag;    // les 2 cellule sont sur la meme diagonale
-  private integer isInSight = -1 // -1 = not set, 0 = false , 1 = true 
-                                 // cette propriété est rempli au fur et a mesure
+  private Map<string, boolean> isInSightCache = [:]  // si [0] = false , on est pas en vue. 
+                                                     // sinon il faut tester
   public integer to
-  public Map<integer, boolean> isUsableTool
+  private boolean isResetable
+  public Map<string,Map<integer, boolean>> isUsableToolCache = [:]  // si [0][toolId] = false,
+                                                                    // alors on peut pas l utilise
+                                                                    // sinon il faut tester
+ 
   /**
    * constructor
    * constructeur pour l intercell par defaut
@@ -21,7 +26,9 @@ class InterCellInfo extends Objects {
     isInline = false;
     isDiag = false;
     to = 0;
-    isUsableTool = Board.toolsList // il faut creer tous les tool avant de cree les intercell
+    isUsableToolCache[InterCellInfo.DEFAULT_CACHE] = Board.toolsList // il faut creer tous les tool avant de cree les intercell
+    isInSightCache[InterCellInfo.DEFAULT_CACHE] = false
+    isResetable = false
   }
 
   /**
@@ -36,43 +43,64 @@ class InterCellInfo extends Objects {
     if(range <= Board.maxAOERange) {
       this.isInline = (cellFrom.x == cellTo.x || cellFrom.y == cellTo.y);
       this.isDiag = (abs(cellFrom.x-cellTo.x) == abs(cellFrom.y-cellTo.y));
-      isUsableTool = [:]
+      isUsableToolCache[InterCellInfo.DEFAULT_CACHE] = [:]
+      isResetable = true
     } else {
-      isUsableTool = Board.toolsList
+      isUsableToolCache[InterCellInfo.DEFAULT_CACHE] = Board.toolsList
       isInline = false;
       isDiag = false;
+      isInSightCache[InterCellInfo.DEFAULT_CACHE] = false
+      isResetable = false
     }
   }
   
   /**
    * getIsInSight
    * mets en cache lineOfSight
-   * TODO: remplacer entitiesToIgnore ou gerer le cache de lineOfSight autrement actuellement ne marche que a 2 joueurs sans bulb
+   * @param entitiesToIgnore : list des entityIds a ignorer
+   * @param cacheId : id correspondant a la configuration de entitiesToIgnore doit etre != 0
    **/
-  public boolean getIsInSight() {
-    if(isInSight == -1) {
-      if(lineOfSight(id, to, Board.entitiesToIgnore)) isInSight = 1
-      else isInSight = 0
-    }
-    return isInSight == 1
+  public boolean getIsInSight(Array<integer> entitiesToIgnore, 
+                              string cacheId = InterCellInfo.DEFAULT_CACHE) {
+    if(mapContainsKey(isInSightCache,InterCellInfo.DEFAULT_CACHE)) 
+      return isInSightCache[InterCellInfo.DEFAULT_CACHE]!
+    if(mapContainsKey(isInSightCache,cacheId)) return isInSightCache[cacheId]!
+    isInSightCache[cacheId] = lineOfSight(id, to, entitiesToIgnore)
+    return isInSightCache[cacheId]!
   }
   
   /**
    * canUseTool
    * verifie si les conditions sont rempli pour utiliser ce tool dans cette interCell
    **/
-  public boolean canUseTool(Tool tool) {
+  public boolean canUseTool(Tool tool, Array<integer> entitiesToIgnore, 
+                            string cacheId = InterCellInfo.DEFAULT_CACHE) {
     integer toolId = tool.id
-    if(!mapContainsKey(isUsableTool, toolId)) {
-      integer launchType = tool.launchType
-      isUsableTool[toolId] = (range <= tool.maxRange && range >= tool.minRange && 
-                             (!tool.needLos || getIsInSight()) && 
-                             (launchType != LAUNCH_TYPE_LINE || isInline) && 
-                             (launchType != LAUNCH_TYPE_DIAGONAL || isDiag) && 
-                             (launchType != LAUNCH_TYPE_STAR || isDiag || isInline) && 
-                             (launchType != LAUNCH_TYPE_STAR_INVERTED || isDiag && isInline))
-    }
-    return isUsableTool[toolId]!
+    if(mapContainsKey(isUsableToolCache[InterCellInfo.DEFAULT_CACHE]!, toolId)) 
+      return isUsableToolCache[InterCellInfo.DEFAULT_CACHE]![toolId]!
+    if(mapContainsKey(isUsableToolCache, cacheId) && mapContainsKey(isUsableToolCache, toolId))
+      return isUsableToolCache[cacheId]![toolId]!
+    integer launchType = tool.launchType
+    if(!mapContainsKey(isUsableToolCache, cacheId)) isUsableToolCache[cacheId] = [:]
+    isUsableToolCache[cacheId]![toolId] = (range <= tool.maxRange && range >= tool.minRange &&  
+                                           (launchType != LAUNCH_TYPE_LINE || isInline) && 
+                                           (launchType != LAUNCH_TYPE_DIAGONAL || isDiag) && 
+                                           (launchType != LAUNCH_TYPE_STAR || isDiag || isInline) && 
+                                           (launchType != LAUNCH_TYPE_STAR_INVERTED || 
+                                            !isDiag && !isInline) &&
+                                           (!tool.needLos || getIsInSight(entitiesToIgnore, cacheId)) )
+    return isUsableToolCache[cacheId]![toolId]!
+  }
+  
+  /**
+   * resetCache
+   * a la fin du tour il faut reset le cache pour le tour suivant
+   */
+  public void resetCache() {
+    if(!isResetable) return; // le ; est obligatoire
+    isUsableToolCache = [:]
+    isUsableToolCache[InterCellInfo.DEFAULT_CACHE] = [:]
+    isInSightCache = [:]
   }
 
   /**
