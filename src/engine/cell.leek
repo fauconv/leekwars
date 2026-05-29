@@ -82,8 +82,8 @@ class Cell extends Objects {
   /**
    * getRelativeCells
    * determine les cellules que l on peut viser pour atteindre this grace 
-   * a l AOE des tools ne verifie pas que le tool peut atteindre la 
-   * cellule vise
+   * a l AOE des tools. 
+   * ne verifie pas que le tool peut atteindre la cellule visee
    * @param tools la liste des tools dont on veut les relativeCells
    * @return la liste des relativeCells que l on peut viser pour atteindre this
    **/

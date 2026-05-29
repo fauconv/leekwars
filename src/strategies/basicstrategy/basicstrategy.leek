@@ -251,7 +251,10 @@ class BasicStrategy extends Strategy {
           myMoveCells[cellId]!.simulations[remainingMP-stop] = newSim
         }
       }
-      BASIC_STRATEGY_DEBUG and !TESTS_RELATIVE_DEBUG and markText(cellId,remainingMP,COLOR_ORANGE,1)
+      if(BASIC_STRATEGY_DEBUG) {
+        markText(cellId,remainingMP,0,1)
+        mark(cellId,COLOR_PINK,1);
+      }
     }
     Map<integer,MoveCell> enemyMoveCells = [:]
     for(integer cellId : integer remainingMP in enemyRoutesList) {
@@ -263,9 +266,7 @@ class BasicStrategy extends Strategy {
           enemyMoveCells[cellId]!.simulations[remainingMP-stop] = newSim
         }
       }
-      BASIC_STRATEGY_DEBUG and !TESTS_RELATIVE_DEBUG and markText(cellId,remainingMP,COLOR_GREEN,1)
     }
-    
     GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"phase 1")
     
     //
@@ -278,13 +279,6 @@ class BasicStrategy extends Strategy {
     }
     Map<integer, RelativeCell> enemyRelativeCells = 
       enemyRound.currentCell.cell.getRelativeCells(tools);
-    
-    if(TESTS_RELATIVE_DEBUG) {
-      for(RelativeCell mc in enemyRelativeCells) {
-        mark(mc.id,COLOR_PINK,1);
-        markText(mc.id,mapSize(mc.toolsList),0,1);
-      }
-    }
 
     //
     // phase 2.2: pour chaque position de me, on détermine quel relativeCell
@@ -294,8 +288,8 @@ class BasicStrategy extends Strategy {
     for(integer sourceCellId : MoveCell moveCell in myMoveCells) {
       Cell sourceCell = Board.cells[sourceCellId]
       for(RelativeCell rel in enemyRelativeCells) {
-        RelativeCell|boolean ret = rel.canUseTools(sourceCell, ignoredEntitiesListAttack, "attack")
-        if(ret != false) moveCell.enemyRelativeCells[rel.id] = ret as RelativeCell
+        RelativeCell|boolean ret = rel.canUseTools(sourceCell, ignoredEntitiesListAttack, "attack");
+        (ret != false) and (moveCell.enemyRelativeCells[rel.id] = ret as RelativeCell)
       }
     }
     GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"phase 2")
@@ -310,7 +304,7 @@ class BasicStrategy extends Strategy {
     }
     Map<integer, Array<RelativeCell>> myRelativeCellsCache = [:] // [relativeCellId][] = RelativeCell
     for(integer myCellId : MoveCell myMoveCell in myMoveCells) {
-      myMoveCell.myRelativeCells = Board.cells[myCellId].getRelativeCells(tools)
+      myMoveCell.myRelativeCells = Board.cells[myCellId].getRelativeCells(enemyTools)
       for(integer relativeCellId : RelativeCell rc in myMoveCell.myRelativeCells)
         mapPush(myRelativeCellsCache, relativeCellId, rc)
     }
@@ -321,10 +315,9 @@ class BasicStrategy extends Strategy {
     //
     Array<integer> ignoredEntitiesListDefence = [myId, enemyId]
     for(integer relativeCellId : Array<RelativeCell> rcs in myRelativeCellsCache) {
+      (TESTS_RELATIVE_DEBUG) and mark(relativeCellId,COLOR_ORANGE,1);
       Map<integer, Tool> toolsList = [:]
-      for(RelativeCell rc in rcs) {
-        mapPutAll(toolsList,rc.toolsList)
-      }
+      for(RelativeCell rc in rcs) mapPutAll(toolsList,rc.toolsList)
       integer size = mapSize(toolsList)
       Map<integer, Tool> resultToolsList = [:]
       for(integer sourceCellId : MoveCell _enemyMoveCell in enemyMoveCells) {
