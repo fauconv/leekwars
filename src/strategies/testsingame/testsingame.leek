@@ -140,15 +140,6 @@ class TestsInGame extends Strategy {
     //
     Array<Tool> tools = [];
     for(ToolRound toolR in meRound.toolCategories[CATEGORY_DAMAGE]!) push(tools,toolR.tool);
-    Map<integer, RelativeCell> enemyRelativeCells = 
-      enemyRound.currentCell.cell.getRelativeCells(tools);
-    
-    if(TESTS_RELATIVE_DEBUG) {
-      for(RelativeCell mc in enemyRelativeCells) {
-        mark(mc.id,COLOR_PINK,1);
-        markText(mc.id,mapSize(mc.toolsList),0,1);
-      }
-    }
 
     /*
       

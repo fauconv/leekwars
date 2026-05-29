@@ -78,7 +78,7 @@ class RealRound extends Round {
    * pushEnemy
    * factorisation
    **/
-  private pushEnemy(EnemyRound en) {
+  private void pushEnemy(EnemyRound en) {
     push(enemiesRound, en);
     leeksRound[en.id] = en;
     if(en.maxAOERange == maxAOERange) {

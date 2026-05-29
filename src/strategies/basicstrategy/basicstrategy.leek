@@ -253,7 +253,6 @@ class BasicStrategy extends Strategy {
       }
       if(BASIC_STRATEGY_DEBUG) {
         markText(cellId,remainingMP,0,1)
-        mark(cellId,COLOR_PINK,1);
       }
     }
     Map<integer,MoveCell> enemyMoveCells = [:]
@@ -315,7 +314,6 @@ class BasicStrategy extends Strategy {
     //
     Array<integer> ignoredEntitiesListDefence = [myId, enemyId]
     for(integer relativeCellId : Array<RelativeCell> rcs in myRelativeCellsCache) {
-      (TESTS_RELATIVE_DEBUG) and mark(relativeCellId,COLOR_ORANGE,1);
       Map<integer, Tool> toolsList = [:]
       for(RelativeCell rc in rcs) mapPutAll(toolsList,rc.toolsList)
       integer size = mapSize(toolsList)
@@ -349,6 +347,25 @@ class BasicStrategy extends Strategy {
     // a l arriver on veut que pour chacune de mes simulation j ai les simulation enemy qui me 
     // font le plus mal 
     //
+    if(BASIC_STRATEGY_DEBUG) {
+      for(integer mcId : MoveCell mc in myMoveCells) {
+        integer color
+        if(!mapIsEmpty(mc.enemyRelativeCells)) {
+          if(!mapIsEmpty(mc.myRelativeCells)) {
+            color = COLOR_YELLOW // ca fight
+          } else {
+            color = COLOR_GREEN // je fight mais pas lui
+          }
+        } else {
+          if(!mapIsEmpty(mc.myRelativeCells)) {
+            color = COLOR_RED // il fight mais pas moi
+          } else {
+            color = COLOR_PINK // cas neutre pas d attack pas de def
+          }
+        }
+        mark(mcId,color,1)
+      }
+    }
 
   }
 }
