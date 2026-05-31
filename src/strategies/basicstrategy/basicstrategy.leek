@@ -298,7 +298,7 @@ class BasicStrategy extends Strategy {
     //
     Array<Tool> enemyTools = [];
     for(ToolRound toolR in enemyRound.toolCategories[CATEGORY_DAMAGE]!) {
-      if(toolR.isUsableNextRound()) push(enemyTools,toolR.tool)
+      if(toolR.isUsable()) push(enemyTools,toolR.tool)
     }
     Map<integer, Array<RelativeCell>> myRelativeCellsCache = [:] // [relativeCellId][] = RelativeCell
     for(integer myCellId : MoveCell myMoveCell in myMoveCells) {

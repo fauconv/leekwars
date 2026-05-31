@@ -35,18 +35,10 @@ class ToolRound extends Objects {
   
   /**
    * est ce que je peux utiliser ce tool pour ce round 
-   * utile surtout pour me. Pour les enemyUtiliser plutot isUsable nextRound
+   * utile surtout pour me. Pour les enemyUtiliser plutot isUsableNextRound
    **/
   public boolean isUsable() {
     return cooldown == 0 && usable != 0;
-  }
-
-  /**
-   * est ce que je peux utiliser ce tool pour le prochain round 
-   * TODO: peut etre il faut gerer "usableNextRound" comme propriete
-   **/
-  public boolean isUsableNextRound() {
-    return cooldown <= 1
   }
 
   /**
@@ -54,8 +46,7 @@ class ToolRound extends Objects {
    * abstract
    * @param cellId l id de la cell cible du tool
    **/
-  public void simulateUseOnCell(integer cellId) {
-    cellId = cellId // inutile juste pour enlever le warning
+  public void simulateUseOnCell(integer _cellId) {
   }
 
   /**
@@ -160,7 +151,10 @@ class ChipRound extends ToolRound {
    **/
   public constructor(Tool|ToolRound tool, LeekRound owner) {
     super(tool, owner);
-    if(tool.class.super.name == "Tool") cooldown = getCooldown(id, ownerId)!
+    if(tool.class.super.name == "Tool") {
+      cooldown = getCooldown(id, ownerId)!;
+      (!owner.leek.isMe && cooldown > 0) and cooldown-- // on veut le cooldown du PROCHAIN tour des autres joueurs pas son cooldown courant 
+    }
   }
   
   /**

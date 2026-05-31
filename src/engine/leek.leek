@@ -11,6 +11,8 @@ class Leek extends Objects {
   public boolean isAllie;
   public boolean isEnemy;
   public boolean isSummon;
+  public integer playOrder
+  public boolean playBeforeMe
   public boolean needLos = true;
   public integer maxAOERange = 0;   // distance maxi d utilisation des armes et puces
   public integer maxWeaponRange = 0 // distance maxi d utilisation des armes
@@ -26,9 +28,10 @@ class Leek extends Objects {
    * @param id identifiant du leek
    **/
   protected constructor(integer id) {
-    this.id  = id
-    name     = getName(id)!;
-    farmer   = getFarmerName(id)!;
+    this.id   = id
+    name      = getName(id)!;
+    farmer    = getFarmerName(id)!;
+    playOrder = getEntityTurnOrder(id)!
 
     for(string category in CATEGORIES) categories[category] = [];
     
@@ -88,9 +91,8 @@ class Allie extends Leek {
     isAllie  = true;
     isEnemy  = false;
     isSummon = false;
-    this.id  = id
-    name     = getName(id)!;
-    farmer   = getFarmerName(id)!;
+    super(id)
+    playBeforeMe = playOrder < Board.myPlayOrder // il faut creer me en prems
   }
   
 }
@@ -110,6 +112,7 @@ class Enemy extends Leek {
     isEnemy  = true;
     isSummon = false;
     super(id);
+    playBeforeMe = playOrder < Board.myPlayOrder // il faut creer me en prems
   }
   
 }
@@ -128,6 +131,7 @@ class Me extends Leek {
     isEnemy  = false;
     isSummon = false;
     super(getEntity());
+    playBeforeMe = false
   }
   
 }

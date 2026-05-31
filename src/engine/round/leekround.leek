@@ -10,17 +10,17 @@ class LeekRound extends Objects {
 
   // move state
   public static integer STATE_NO_MOVE  = 0b00001; // le poireau n a pas bouger entre les 2 tour
-  public static integer STATE_APPROACH = 0b00010; // le poireau c est approche de nous
-  public static integer STATE_ESCAPE   = 0b00100; // le poireau c est eloigne de nous
-  public static integer STATE_CENTER   = 0b01000; // le poireau c est approche du centre
-  public static integer STATE_DECENTER = 0b10000; // le poireau c est eloigne du centre
+  public static integer STATE_APPROACH = 0b00010; // le poireau s est approche de nous
+  public static integer STATE_ESCAPE   = 0b00100; // le poireau s est eloigne de nous
+  public static integer STATE_CENTER   = 0b01000; // le poireau s est approche du centre
+  public static integer STATE_DECENTER = 0b10000; // le poireau s est eloigne du centre
   
   // combat state
-  public static integer STATE_HEAL     = 0b000001 // le poireau c est soigne
+  public static integer STATE_HEAL     = 0b000001 // le poireau s est soigne
   public static integer STATE_PROTECT  = 0b000010 // le poireau se protege
   public static integer STATE_BUFF     = 0b000100 // le poireau a un buff
   public static integer STATE_DEBUFF   = 0b001000 // le poireau a un debuff
-  public static integer STATE_ATTAKED  = 0b010000 // le poireau a ete attaque par un autre poireau
+  public static integer STATE_ATTACKED = 0b010000 // le poireau a ete attaque par un autre poireau
   public static integer STATE_DAMAGED  = 0b100000 // le poireau a des domage sur la duree (poison)
 
   public Leek leek;
@@ -423,7 +423,7 @@ class EnemyRound extends LeekRound {
       }
 
       if(previousEnemyRound.midLife < midLife) combatState += STATE_HEAL;
-      else if(previousEnemyRound.midLife > midLife) combatState += STATE_ATTAKED;
+      else if(previousEnemyRound.midLife > midLife) combatState += STATE_ATTACKED;
       if(!mapIsEmpty(appliedEffectCategories[CATEGORY_PROTECTION]!)) combatState += STATE_PROTECT;
       if(!mapIsEmpty(appliedEffectCategories[CATEGORY_BUFF]!)) combatState += STATE_BUFF;
       if(!mapIsEmpty(appliedEffectCategories[CATEGORY_DAMAGE]!)) combatState += STATE_DAMAGED;
@@ -454,7 +454,7 @@ class MeRound extends LeekRound {
       pathToCenter = (leek as MeRound).pathToCenter
     } else if(previousMeRound != null) {
       if(previousMeRound.midLife < midLife) combatState += STATE_HEAL
-      else if(previousMeRound.midLife > midLife) combatState += STATE_ATTAKED
+      else if(previousMeRound.midLife > midLife) combatState += STATE_ATTACKED
       if(!mapIsEmpty(appliedEffectCategories[CATEGORY_PROTECTION]!)) combatState += STATE_PROTECT
       if(!mapIsEmpty(appliedEffectCategories[CATEGORY_BUFF]!)) combatState += STATE_BUFF
       if(!mapIsEmpty(appliedEffectCategories[CATEGORY_DAMAGE]!)) combatState += STATE_DAMAGED
@@ -463,9 +463,9 @@ class MeRound extends LeekRound {
       
       integer turn = roundObj.id
       MeRound previousMeRoundStart = Board.previousRounds[turn-2].meRound // [turn] : n existe pas c est le tour actuel, 
-                                                                          // [turn-1] = previousMeRound (cad: la fin du tour precedent)
-                                                                          // [turn-2] = le debut du tour precedent
-                                                                          // si turn < 2 on ne passe pas par ici
+            // [turn-1] = previousMeRound (cad: la fin du tour precedent)
+            // [turn-2] = le debut du tour precedent
+            // si turn < 2 on ne passe pas par ici
       if(previousMeRoundStart.currentCellId == currentCellId) {
         moveState = LeekRound.STATE_NO_MOVE
       } else {
