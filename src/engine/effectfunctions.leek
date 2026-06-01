@@ -110,20 +110,20 @@ function effect_buff_wisdom(Effect obj, LeekRound shooter, LeekRound target) => 
  **/
 function effect_damage(Effect obj, LeekRound shooter, LeekRound target) => void {
   RealEffectResult targetDmg = obj.targetDmg(shooter.minStrength, shooter.maxStrength, shooter.midStrength);
-  GameDebug.add(EFFECT_DEBUG && UNIT_TEST_DEBUG, targetDmg, "targetDmg");
+  GameDebug.add(EFFECT_DEBUG, targetDmg, "targetDmg");
   // TODO: puissance
   IntegerEffectResult dmgReturn = new IntegerEffectResult();
   (target.id != shooter.id) and (dmgReturn = obj.dmgReturn(target, targetDmg));
-  GameDebug.add(EFFECT_DEBUG && UNIT_TEST_DEBUG, dmgReturn, "dmgReturn");
+  GameDebug.add(EFFECT_DEBUG, dmgReturn, "dmgReturn");
   obj.shield(target, targetDmg);
-  GameDebug.add(EFFECT_DEBUG && UNIT_TEST_DEBUG, targetDmg, "shield");
+  GameDebug.add(EFFECT_DEBUG, targetDmg, "shield");
   IntegerEffectResult roundedDmg = targetDmg.round()
   obj.applyDmg(target, roundedDmg);
   obj.applyErosion(target, PHYSICAL_EROSION, roundedDmg);
-  GameDebug.add(EFFECT_DEBUG && UNIT_TEST_DEBUG,{max:target.maxTotalLife,min:target.minTotalLife,mid:target.midTotalLife},"target totalLife");
+  GameDebug.add(EFFECT_DEBUG,{max:target.maxTotalLife,min:target.minTotalLife,mid:target.midTotalLife},"target totalLife");
   if(target.id != shooter.id) {
     IntegerEffectResult shooterDmg = obj.lifeSteal(shooter, roundedDmg, dmgReturn);
-    GameDebug.add(EFFECT_DEBUG && UNIT_TEST_DEBUG, shooterDmg, "shooterDmg");
+    GameDebug.add(EFFECT_DEBUG, shooterDmg, "shooterDmg");
     obj.applyLifeStealAndDmgReturn(shooter, shooterDmg);
     obj.applyErosion(shooter, PHYSICAL_EROSION, dmgReturn);
   }

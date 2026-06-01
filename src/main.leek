@@ -5,8 +5,7 @@
  **************************************************************************/
 global boolean EFFECT_DEBUG = true
 global boolean BASIC_STRATEGY_DEBUG = true
-global boolean UNIT_TEST_DEBUG = false
-global boolean TESTS_DEBUG = false
+
 include("utils/gamedebug.leek")
 //include("utils/gamenodebug")
 
@@ -14,8 +13,6 @@ include("utils/gamedebug.leek")
  * strategy files
  **************************************************************************/
 include("engine/strategy.leek")
-include("strategies/UT/unit_test.leek")
-include("strategies/testsingame/testsingame.leek")
 include("strategies/basicstrategy/basicstrategy.leek")
 
 /**************************************************************************
@@ -29,9 +26,8 @@ if(!gBoardInit) {
     return
   }
   // strategies
-  if(UnitTest.isValide()) gStrategy = new UnitTest()
-  else if(TestsInGame.isValide()) gStrategy = new TestsInGame()
-  else if(BasicStrategy.isValide()) gStrategy = new BasicStrategy()
+  if(BasicStrategy.isValide()) gStrategy = new BasicStrategy()
+  else gStrategy = new Strategy()
 } else {
   Board.update()
 }
