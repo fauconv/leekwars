@@ -57,7 +57,7 @@ class ToolRound extends Objects {
     
     Array<real> AOEs = [];
     for(integer entity in targets)
-      push(AOEs, max(0.0,1.0-roundObj.leeksRound[entity]!.currentCell.cell.interCellInfo[cellId].range*AOE_DEC_LINE_FACTOR));
+      push(AOEs, max(0.0,1.0-roundObj.leeksRound[entity]!.currentCell.cell.interCellInfo[cellId].distance*AOE_DEC_LINE_FACTOR));
     integer cost = tool.cost;
     owner.minTP -= cost;
     owner.maxTP -= cost;

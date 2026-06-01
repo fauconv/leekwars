@@ -406,15 +406,15 @@ class EnemyRound extends LeekRound {
       if(previousEnemyRound.currentCellId == currentCellId) {
         moveState = LeekRound.STATE_NO_MOVE;
       } else {
-        integer d1 = myInter[currentCellId].range;
-        integer d2 = myInter[previousEnemyRound.currentCellId].range;
+        integer d1 = myInter[currentCellId].distance;
+        integer d2 = myInter[previousEnemyRound.currentCellId].distance;
         if(d1 > d2) {
           moveState = LeekRound.STATE_ESCAPE;
         } else if(d1 < d2) {
           moveState = LeekRound.STATE_APPROACH;
         }
-        d1 = Board.centerCell.interCellInfo[currentCellId].range;
-        d2 = Board.centerCell.interCellInfo[previousEnemyRound.currentCellId].range;
+        d1 = Board.centerCell.interCellInfo[currentCellId].distance;
+        d2 = Board.centerCell.interCellInfo[previousEnemyRound.currentCellId].distance;
         if(d1 > d2) {
           moveState += LeekRound.STATE_DECENTER;
         } else if(d1 < d2) {
@@ -469,8 +469,8 @@ class MeRound extends LeekRound {
       if(previousMeRoundStart.currentCellId == currentCellId) {
         moveState = LeekRound.STATE_NO_MOVE
       } else {
-        integer d1 = Board.centerCell.interCellInfo[currentCellId].range
-        integer d2 = Board.centerCell.interCellInfo[previousMeRoundStart.currentCellId].range
+        integer d1 = Board.centerCell.interCellInfo[currentCellId].distance
+        integer d2 = Board.centerCell.interCellInfo[previousMeRoundStart.currentCellId].distance
         if(d1 > d2) {
           moveState = LeekRound.STATE_DECENTER
         } else if(d1 < d2) {

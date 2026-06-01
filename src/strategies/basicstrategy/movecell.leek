@@ -1,0 +1,76 @@
+// @version:4
+// @strict
+/*************************************************************************************************
+ * MoveCell
+ *
+ * une solution de déplacement vers id
+ ************************************************************************************************/
+class MoveCell extends Objects {
+  // public id : cellId de destination
+  public Cell myCell // la cell de destination
+  public integer ownerId
+  public integer maxRemainingMP = 0
+  public integer distanceToCenter
+  public integer distanceToEnemy
+  public Map<integer,SimulatedRound> simulations = [:] // comment on arrive jusqu a la position 
+                                                       // [remainingMP] = simulation
+  public Map<integer,RelativeCell> myRelativeCells = [:] // les relativeCells de ma position
+  public Map<integer,RelativeCell> enemyRelativeCells = [:] // les relativeCells de l ennemy
+                                                            // atteignable depuis moveCell
+  public Map<integer,MoveCell> escapes = [:]
+  
+  /**
+   * constructor
+   * @param cellId : id de la moveCell
+   * @param ownerId : id du owner de la moveCell
+   * @param simsList : list des Round qui pourrait amener a cette moveCell
+   * @param usedMP : nombre de MP utilise pour arriver a la moveCell
+   **/
+  public constructor(integer cellId, integer ownerId, Map<integer, Round> simsList,
+                     integer usedMP, integer enemyCellId) {
+    id = cellId
+    myCell = Board.cells[cellId]
+    this.ownerId = ownerId
+    distanceToCenter = myCell.interCellInfo[CENTER_CELL_ID].distance
+    distanceToEnemy  = myCell.interCellInfo[enemyCellId].distance
+    for(integer maxMP : Round sim in simsList) {
+      if(maxMP >= usedMP) {
+        integer remainingMP = maxMP-usedMP
+        SimulatedRound newSim = new SimulatedRound(sim)
+        newSim.leeksRound[ownerId]!.addMoveAction(cellId, usedMP)
+        simulations[remainingMP] = newSim;
+        (remainingMP > maxRemainingMP) and (maxRemainingMP = remainingMP)
+      }
+    }
+  }
+  
+  /**
+   * setEnemyRelativeCells
+   **/
+  public void setEnemyRelativeCells(Map<integer, RelativeCell> relativeCells) {
+    Array<integer> ignoredEntitiesListAttack = [ownerId]
+    for(RelativeCell rel in relativeCells) {
+      RelativeCell|boolean ret = rel.canUseTools(myCell, ignoredEntitiesListAttack, 
+                                                 "attack");
+      (ret != false) and (enemyRelativeCells[rel.id] = ret as RelativeCell)
+    }
+  }
+
+  /**
+   * setMyRelativeCells
+   **/
+  public Map<integer,RelativeCell> setMyRelativeCells(Array<Tool> enemyTools) {
+    return (myRelativeCells = myCell.getRelativeCells(enemyTools))
+  }
+
+  /**
+   * ComputeEscape
+   **/
+  public void ComputeEscape(Map<integer,MoveCell> moveCells) {
+    Map<integer,integer> routesList = 
+      simulations[maxRemainingMP]!.leeksRound[ownerId]!.route(maxRemainingMP)
+    for(integer cellId : integer _remainingMP in routesList) {
+      escapes[cellId] = moveCells[cellId]
+    }
+  }
+}

@@ -37,7 +37,7 @@ class RelativeCell extends Objects {
     Boolean full = false;
     RelativeCell ret = new RelativeCell(id, AOE, targetCell, [:]);
     InterCellInfo interCellInfo = sourceCell.interCellInfo[id];
-    if(interCellInfo.range > Board.maxAOERange) return false        
+    if(interCellInfo.distance > Board.maxAOERange) return false        
     for(Tool tool in toolsList) {
       if(interCellInfo.canUseTool(tool, entitiesToIgnore, cacheId)) {
         full = true;

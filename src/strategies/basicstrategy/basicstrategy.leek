@@ -1,5 +1,6 @@
 // @version:4
 // @strict
+include("movecell.leek")
 include("basicstrategytools.leek")
 /****************************************************************************
  * BasicStrategy
@@ -202,8 +203,10 @@ class BasicStrategy extends Strategy {
     // phase 1 : on determine les mouvements possibles de mon poireau et 
     // du poireau adverse
     //
-    Map<integer,MoveCell> myMoveCells    = BasicStrategytools.getMoveCells(meRound)  
-    Map<integer,MoveCell> enemyMoveCells = BasicStrategytools.getMoveCells(enemyRound)
+    Map<integer,MoveCell> myMoveCells    = BasicStrategytools.getMoveCells(meRound,
+                                                                           enemyCurrentCellId)  
+    Map<integer,MoveCell> enemyMoveCells = BasicStrategytools.getMoveCells(enemyRound,
+                                                                           myCurrentCellId)
     GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"phase 1")
     
     //
@@ -221,13 +224,8 @@ class BasicStrategy extends Strategy {
     // phase 2.2: pour chaque position de me, on détermine quel relativeCell
     // on peut atteindre et avec quel arme
     //
-    Array<integer> ignoredEntitiesListAttack = [myId]
-    for(integer sourceCellId : MoveCell moveCell in myMoveCells) {
-      Cell sourceCell = Board.cells[sourceCellId]
-      for(RelativeCell rel in enemyRelativeCells) {
-        RelativeCell|boolean ret = rel.canUseTools(sourceCell, ignoredEntitiesListAttack, "attack");
-        (ret != false) and (moveCell.enemyRelativeCells[rel.id] = ret as RelativeCell)
-      }
+    for(MoveCell moveCell in myMoveCells) {
+      moveCell.setEnemyRelativeCells(enemyRelativeCells)
     }
     GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"phase 2")
 
@@ -240,9 +238,8 @@ class BasicStrategy extends Strategy {
       if(toolR.isUsable()) push(enemyTools,toolR.tool)
     }
     Map<integer, Array<RelativeCell>> myRelativeCellsCache = [:] // [relativeCellId][] = RelativeCell
-    for(integer myCellId : MoveCell myMoveCell in myMoveCells) {
-      myMoveCell.myRelativeCells = Board.cells[myCellId].getRelativeCells(enemyTools)
-      for(integer relativeCellId : RelativeCell rc in myMoveCell.myRelativeCells)
+    for(MoveCell myMoveCell in myMoveCells) {
+      for(integer relativeCellId : RelativeCell rc in myMoveCell.setMyRelativeCells(enemyTools))
         mapPush(myRelativeCellsCache, relativeCellId, rc)
     }
 
@@ -256,9 +253,9 @@ class BasicStrategy extends Strategy {
       for(RelativeCell rc in rcs) mapPutAll(toolsList,rc.toolsList)
       integer size = mapSize(toolsList)
       Map<integer, Tool> resultToolsList = [:]
-      for(integer sourceCellId : MoveCell _enemyMoveCell in enemyMoveCells) {
-        InterCellInfo interCellInfo = Board.cells[sourceCellId].interCellInfo[relativeCellId];
-        if(interCellInfo.range < Board.maxAOERange) {
+      for(MoveCell enemyMoveCell in enemyMoveCells) {
+        InterCellInfo interCellInfo = enemyMoveCell.myCell.interCellInfo[relativeCellId];
+        if(interCellInfo.distance < Board.maxAOERange) {
           for(integer toolId : Tool tool in toolsList) {
             if(interCellInfo.canUseTool(tool, ignoredEntitiesListDefence, "defence")) {
               resultToolsList[toolId] = tool
@@ -280,18 +277,31 @@ class BasicStrategy extends Strategy {
                                                return !mapIsEmpty(value.toolsList)
                                              }) as Map<integer, RelativeCell>
     }
-    GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"phase 3");
+    GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"phase 3")
+    
+    //
+    // TODO: phase 4 : calcul des escapes
+    //
+    for(MoveCell mc in myMoveCells) {
+      mc.ComputeEscape(myMoveCells)
+    }
+    GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"phase 4")
 
     //
-    // a l arriver on veut que pour chacune de mes simulations j ai les simulations enemy qui me 
-    // font le plus mal 
+    // coloration
     //
     if(BASIC_STRATEGY_DEBUG) {
       for(integer mcId : MoveCell mc in myMoveCells) {
         integer color
         if(!mapIsEmpty(mc.enemyRelativeCells)) {
-          if(!mapIsEmpty(mc.myRelativeCells)) {
+          if(!mapIsEmpty(mc.myRelativeCells)) { 
             color = COLOR_YELLOW // ca fight
+            for(MoveCell esc in mc.escapes) {
+              if(mapIsEmpty(esc.myRelativeCells)) {
+                color = COLOR_ORANGE // je hit and run
+                break
+              }
+            }
           } else {
             color = COLOR_GREEN // je fight mais pas lui
           }
@@ -303,6 +313,10 @@ class BasicStrategy extends Strategy {
           }
         }
         mark(mcId,color,1)
+        string text = ""
+        for(RelativeCell rel in mc.enemyRelativeCells)
+          text += (rel.AOE + " ")
+        markText(mcId,text,0,1)
       }
     }
 

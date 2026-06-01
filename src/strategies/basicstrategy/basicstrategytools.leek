@@ -9,7 +9,7 @@ class BasicStrategytools {
   /**
    * phase 1 : on determine les mouvements possibles du leekRound
    **/
-  public static Map<integer,MoveCell> getMoveCells(LeekRound leekRound) {
+  public static Map<integer,MoveCell> getMoveCells(LeekRound leekRound, integer enemyCellId) {
 
     //
     // phase 1.1 : on cree une simulation pour chaque combinaison de buff de MP
@@ -17,18 +17,16 @@ class BasicStrategytools {
     integer maxMP
     integer leekRoundId = leekRound.id
     Map<integer,MoveCell> moveCells = [:]
-    Map<integer, Round> roundsList = [:]
+    Map<integer, Round> roundsList = [leekRound.minMP:Board.currentRound]
     if(mapContainsKey(leekRound.toolsRound, CHIP_LEATHER_BOOTS) && 
                       leekRound.toolsRound[CHIP_LEATHER_BOOTS]!.isUsable()) {
       SimulatedRound simAvecBoots = new SimulatedRound(Board.currentRound)
       LeekRound leekBoots = simAvecBoots.leeksRound[leekRoundId]!
       leekBoots.addToolAction(CHIP_LEATHER_BOOTS, leekRound.currentCellId);
       maxMP = leekBoots.minMP // on prend le min pour eviter le coup critique, si il y a un critique on le traite plus tard
-      roundsList[0] = simAvecBoots
-      roundsList[maxMP - leekBoots.minMP] = new SimulatedRound(Board.currentRound)
+      roundsList[maxMP] = simAvecBoots
     } else {
       maxMP = leekRound.minMP
-      roundsList[0] = new SimulatedRound(Board.currentRound)
     }
 
     //
@@ -41,14 +39,8 @@ class BasicStrategytools {
     // phase 1.3 : on cree une MoveCell pour chaque itineraire
     //
     for(integer cellId : integer remainingMP in routesList) {
-      moveCells[cellId] = new MoveCell(cellId)
-      for(integer stop : Round sim in roundsList) {
-        if(remainingMP >= stop) {
-          SimulatedRound newSim = new SimulatedRound(sim)
-          newSim.leeksRound[leekRoundId]!.addMoveAction(cellId,maxMP-remainingMP)
-          moveCells[cellId]!.simulations[remainingMP-stop] = newSim
-        }
-      }
+      moveCells[cellId] = new MoveCell(cellId, leekRoundId, roundsList, 
+                                       maxMP-remainingMP, enemyCellId)
     }
     return moveCells
   }
