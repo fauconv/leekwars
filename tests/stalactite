@@ -1,3 +1,5 @@
+// @version:4
+// @strict
 Array<integer> enemies = getEnemies()
 integer enemy = enemies[0]
 if(canUseChip(CHIP_STALACTITE, enemy)) {

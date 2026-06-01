@@ -1,4 +1,5 @@
 // @version:4
+// @strict
 
 Map<integer, integer> A = [1:1,2:2, 4:4]
 Map<integer, integer> B = [2:22,3:3]

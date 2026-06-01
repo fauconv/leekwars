@@ -1,7 +1,0 @@
-// @version:4
-debug(getRegisters());
-
-setRegister("test", "toto");
-
-debug(getRegisters());
-pause();
