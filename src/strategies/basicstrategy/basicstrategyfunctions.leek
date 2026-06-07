@@ -1,0 +1,13 @@
+// @version:4
+// @strict
+/***************************************************************************
+ * Function<LeekRound, RelativeCell => void>
+ * liste des fonctions qui calcul les insta kill
+ ***************************************************************************/
+function spark(LeekRound shooter, RelativeCell rc) => void {
+   
+}
+
+function magnum_ice_spark(LeekRound shooter, RelativeCell rc) => void {
+   
+}

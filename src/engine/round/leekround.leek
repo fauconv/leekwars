@@ -317,6 +317,15 @@ class LeekRound extends Objects {
     }
     return flatReachableCells
   }
+  
+  /**
+   * isUsableTool
+   * Attention ! on ne verifi pas que le leek possede bien se tool
+   **/
+  public boolean isUsableTool(integer toolId) {
+    return(minTP >= toolsRound[toolId]!.tool.cost &&
+           toolsRound[toolId]!.isUsable())
+  }
 
   /**
    * ajoute une action de type ToolAction et la simule dans le round
@@ -332,7 +341,8 @@ class LeekRound extends Objects {
   /**
    * addMoveAction
    * @param cellId l id de la cell de destination
-   * @param usedMP le nombre de MP utiliser pour aller a cellId, attention aucune verification n est faite
+   * @param usedMP le nombre de MP utiliser pour aller a cellId, 
+   * attention aucune verification n est faite
    **/
   public void addMoveAction(integer cellId, integer usedMP) {
     push(actions, new MoveAction(cellId));

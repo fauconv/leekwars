@@ -4,7 +4,7 @@
  * BasicStrategyTools
  * macros pour BasicStrategy
  ***************************************************************************/
-class BasicStrategytools {
+class BasicStrategyTools {
 
   /**
    * phase 1 : on determine les mouvements possibles du leekRound
@@ -44,4 +44,56 @@ class BasicStrategytools {
     }
     return moveCells
   }
+
+  /**
+  * ComputeShots
+  **/
+  public static void ComputeShots(LeekRound shooter, RelativeCell rc) {
+    string functionName = ""
+    
+
+    for(integer toolId : string toolName in TOOL_NAME_TRANSLATOR) {
+      if(mapContainsKey(rc.toolsList, toolId)) functionName += (toolName+"_")
+    }
+    if(mapContainsKey(BS_SHOTS_FUNCTION, functionName)) {
+      Function<LeekRound, RelativeCell => void> shotFunction = BS_SHOTS_FUNCTION[functionName]!
+      shotFunction(shooter, rc)
+    } else {
+      string error = "basicstrategytools.leek=>ComputeShots=>"+functionName
+      debugC(error + " : fonction inconnue", COLOR_RED)
+      setRegister(error, functionName + " inconnue")
+      Talk.text = "Oups tu as gagné j'ai buggé, je connais pas tes armes"
+    }
+    /*
+    addChipAction(shooter, rc, CHIP_ROCK)
+    addWeaponAction(shooter, rc, WEAPON_SHOTGUN)
+    addWeaponAction(shooter, rc, WEAPON_MAGNUM)
+    */
+  }
+
+  /**
+   * addChipAction
+   **/
+  private static void addChipAction(LeekRound shooter, RelativeCell rc, integer chipId) {
+    if(mapContainsKey(rc.toolsList, chipId)) {
+      while(shooter.isUsableTool(chipId)) {
+        shooter.addToolAction(chipId, rc.id)
+      }
+    }
+  }
+
+   /**
+   * addWeaponAction
+   **/
+  private static void addWeaponAction(LeekRound shooter, RelativeCell rc, 
+                                      integer weaponId) {
+    if(mapContainsKey(rc.toolsList, weaponId) && 
+       (shooter.weaponId == weaponId)) {
+      while(shooter.isUsableTool(weaponId)) {
+        shooter.addToolAction(weaponId, rc.id)
+      }
+    }
+  }
+
 }
+

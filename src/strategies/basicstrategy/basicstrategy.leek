@@ -2,6 +2,8 @@
 // @strict
 include("movecell.leek")
 include("basicstrategytools.leek")
+include("basicstrategyconst.leek")
+include("basicstrategyfunctions.leek")
 /****************************************************************************
  * BasicStrategy
  *
@@ -18,6 +20,11 @@ include("basicstrategytools.leek")
  ***************************************************************************/
 class BasicStrategy extends Strategy {
   
+  public static integer STRATEGY_UNKNOWN         = 0
+  public static integer STRATEGY_LONG_RANGE_SHORT= 1
+  public static integer STRATEGY_SHORT_RANGE     = 2
+  public static integer STRATEGY_LONG_RANGE_LONG = 3
+  public static integer STRATEGY_SPARK           = 4
   public static Me me;
   public static Enemy enemy;    
   public static integer myId;
@@ -31,6 +38,7 @@ class BasicStrategy extends Strategy {
   public static real myLifeRatio;
   public static real enemyLifeRatio;
   public static boolean prepareMode = false
+  public static integer currentStrategy = STRATEGY_UNKNOWN
   
   /**
    * isValide
@@ -91,7 +99,7 @@ class BasicStrategy extends Strategy {
       meRound.setWeaponUpdate(weaponId);
     } else {
       (count(me.weapons) > 0) and meRound.setWeaponUpdate(me.weapons[0].id)
-      string error = "BasicStrategy=>firstRoundAlgo=>aucune arme connu ("+weaponId+")"
+      string error = "BasicStrategy.leek=>firstRound=>aucune arme connu ("+weaponId+")"
       debugC(error, COLOR_RED);
       debugC(me.weapons, COLOR_RED);
       setRegister(error, me.weapons);
@@ -203,9 +211,9 @@ class BasicStrategy extends Strategy {
     // phase 1 : on determine les mouvements possibles de mon poireau et 
     // du poireau adverse
     //
-    Map<integer,MoveCell> myMoveCells    = BasicStrategytools.getMoveCells(meRound,
+    Map<integer,MoveCell> myMoveCells    = BasicStrategyTools.getMoveCells(meRound,
                                                                            enemyCurrentCellId)  
-    Map<integer,MoveCell> enemyMoveCells = BasicStrategytools.getMoveCells(enemyRound,
+    Map<integer,MoveCell> enemyMoveCells = BasicStrategyTools.getMoveCells(enemyRound,
                                                                            myCurrentCellId)
     GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"phase 1")
     
@@ -280,7 +288,7 @@ class BasicStrategy extends Strategy {
     GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"phase 3")
     
     //
-    // TODO: phase 4 : calcul des escapes
+    // phase 4 : calcul des escapes
     //
     for(MoveCell mc in myMoveCells) {
       mc.ComputeEscape(myMoveCells)
@@ -290,28 +298,39 @@ class BasicStrategy extends Strategy {
     //
     // coloration
     //
-    if(BASIC_STRATEGY_DEBUG) {
-      for(integer mcId : MoveCell mc in myMoveCells) {
-        integer color
-        if(!mapIsEmpty(mc.enemyRelativeCells)) {
-          if(!mapIsEmpty(mc.myRelativeCells)) { 
-            color = COLOR_YELLOW // ca fight
-            for(MoveCell esc in mc.escapes) {
-              if(mapIsEmpty(esc.myRelativeCells)) {
-                color = COLOR_ORANGE // je hit and run
-                break
-              }
+    Array<MoveCell> fightMoveCell = []
+    Array<MoveCell> hitMoveCell = []
+    Array<MoveCell> hitNRunMoveCell = []
+    Array<MoveCell> neutralMoveCell = []
+    Array<MoveCell> hurtMoveCell = []
+    for(integer mcId : MoveCell mc in myMoveCells) {
+      integer color
+      if(!mapIsEmpty(mc.enemyRelativeCells)) {
+        mc.ComputeInstaKill()
+        if(!mapIsEmpty(mc.myRelativeCells)) { 
+          color = COLOR_YELLOW // ca fight
+          for(MoveCell esc in mc.escapes) {
+            if(mapIsEmpty(esc.myRelativeCells)) {
+              color = COLOR_ORANGE // je hit and run
+              push(hitNRunMoveCell, mc)
+              break
             }
-          } else {
-            color = COLOR_GREEN // je fight mais pas lui
           }
+          (color == COLOR_YELLOW) and (push(fightMoveCell, mc))
         } else {
-          if(!mapIsEmpty(mc.myRelativeCells)) {
-            color = COLOR_RED // il fight mais pas moi
-          } else {
-            color = COLOR_PINK // cas neutre pas d attack pas de def
-          }
+          color = COLOR_GREEN // je fight mais pas lui
+          push(hitMoveCell, mc)
         }
+      } else {
+        if(!mapIsEmpty(mc.myRelativeCells)) {
+          color = COLOR_RED // il fight mais pas moi
+          push(hurtMoveCell, mc)
+        } else {
+          color = COLOR_PINK // cas neutre pas d attack pas de def
+          push(neutralMoveCell, mc)
+        }
+      }
+      if(BASIC_STRATEGY_DEBUG) {
         mark(mcId,color,1)
         string text = ""
         for(RelativeCell rel in mc.enemyRelativeCells)

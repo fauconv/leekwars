@@ -12,13 +12,15 @@ class MoveCell extends Objects {
   public integer maxRemainingMP = 0
   public integer distanceToCenter
   public integer distanceToEnemy
-  public Map<integer,SimulatedRound> simulations = [:] // comment on arrive jusqu a la position 
+  public Map<integer,SimulatedRound> simulations = [:] // comment on arrive jusqu a la position [remainingMP]
                                                        // [remainingMP] = simulation
   public Map<integer,RelativeCell> myRelativeCells = [:] // les relativeCells de ma position
   public Map<integer,RelativeCell> enemyRelativeCells = [:] // les relativeCells de l ennemy
                                                             // atteignable depuis moveCell
   public Map<integer,MoveCell> escapes = [:]
   
+  public Array<Action> instaKill = []
+  public integer instaKillScore = 0
   /**
    * constructor
    * @param cellId : id de la moveCell
@@ -71,6 +73,20 @@ class MoveCell extends Objects {
       simulations[maxRemainingMP]!.leeksRound[ownerId]!.route(maxRemainingMP)
     for(integer cellId : integer _remainingMP in routesList) {
       escapes[cellId] = moveCells[cellId]
+    }
+  }
+
+  /**
+   * ComputeInstaKill
+   **/
+  public void ComputeInstaKill() {
+    integer minRemaingMP = Integer.MAX_VALUE
+    for(integer remainingMP : Round _sim in simulations) {
+      minRemaingMP = min(minRemaingMP, remainingMP) 
+    }
+    for(RelativeCell rc in enemyRelativeCells) {
+      SimulatedRound base = new SimulatedRound(simulations[minRemaingMP]!)
+      BasicStrategyTools.ComputeShots(base.meRound, rc)
     }
   }
 }

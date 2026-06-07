@@ -1,0 +1,9 @@
+// @version:4
+// @strict
+/***************************************************************************
+ * BS_ globals
+ ***************************************************************************/
+global Map<string, Function<LeekRound, RelativeCell => void>> BS_SHOTS_FUNCTION = [
+  "spark_":spark,
+  "magnum_ice_spark_":magnum_ice_spark
+]
