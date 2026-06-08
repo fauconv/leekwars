@@ -86,7 +86,20 @@ class MoveCell extends Objects {
     }
     for(RelativeCell rc in enemyRelativeCells) {
       SimulatedRound base = new SimulatedRound(simulations[minRemaingMP]!)
-      BasicStrategyTools.ComputeShots(base.meRound, rc)
+      string functionName = ""
+      for(integer toolId : string toolName in TOOL_NAME_TRANSLATOR) {
+        if(mapContainsKey(rc.toolsList, toolId)) functionName += (toolName+"_")
+      }
+      if(mapContainsKey(BS_SHOTS_FUNCTION, functionName)) {
+        Function<LeekRound, RelativeCell => void> shotFunction = BS_SHOTS_FUNCTION[functionName]!
+        shotFunction(base.meRound, rc)
+      } else {
+        string error = "basicstrategytools.leek=>ComputeShots=>"+functionName
+        debugC(error + " : fonction inconnue", COLOR_RED)
+        setRegister(error, functionName + " inconnue")
+        Talk.text = "Oups tu as gagné, j'ai buggé, je connais pas tes armes"
+      }
     }
   }
+
 }

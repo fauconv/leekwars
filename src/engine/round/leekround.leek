@@ -319,14 +319,22 @@ class LeekRound extends Objects {
   }
   
   /**
-   * isUsableTool
+   * isToolUsable
    * Attention ! on ne verifi pas que le leek possede bien se tool
    **/
-  public boolean isUsableTool(integer toolId) {
+  public boolean isToolUsable(integer toolId) {
     return(minTP >= toolsRound[toolId]!.tool.cost &&
            toolsRound[toolId]!.isUsable())
   }
-
+  
+  /**
+   * isToolAvailable
+   **/
+  public boolean isToolAvailable(integer toolId) {
+    return(mapContainsKey(toolsRound, toolId) &&
+           minTP >= toolsRound[toolId]!.tool.cost &&
+           toolsRound[toolId]!.isUsable())
+  }
   /**
    * ajoute une action de type ToolAction et la simule dans le round
    * @param toolId l id du tool a utiliser

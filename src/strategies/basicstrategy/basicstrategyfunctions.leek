@@ -5,9 +5,12 @@
  * liste des fonctions qui calcul les insta kill
  ***************************************************************************/
 function spark(LeekRound shooter, RelativeCell rc) => void {
-   
+  if(shooter.isToolAvailable(CHIP_PROTEIN)) 
+    shooter.addToolAction(CHIP_PROTEIN, shooter.currentCellId)
+  while(shooter.isToolUsable(CHIP_SPARK))
+    shooter.addToolAction(CHIP_SPARK, rc.id)
 }
 
-function magnum_ice_spark(LeekRound shooter, RelativeCell rc) => void {
+function magnum_ice_pebble_rock_spark(LeekRound shooter, RelativeCell rc) => void {
    
 }
