@@ -346,7 +346,7 @@ class BasicStrategy extends Strategy {
       }
     }
     GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"Colorisation")
-
+    GameDebug.add(BASIC_STRATEGY_DEBUG, MoveCell.cache, "Mc.cache",2)
   }
 }
 

@@ -104,8 +104,7 @@ class MoveCell extends Objects {
       string cacheKey = functionName+"-"+shooter.id+"-"+shooter.minTP+"-"+rc.AOE
       if(!mapContainsKey(MoveCell.cache, cacheKey)) {
         SimulatedRound base = new SimulatedRound(simulations[minRemaingMP]!)
-        MeRound shooter2 = base.meRound      
-        GameDebug.add(BASIC_STRATEGY_DEBUG, cacheKey, "cacheKey")     
+        MeRound shooter2 = base.meRound       
         MoveCell.cache[cacheKey] = BS_SHOTS_FUNCTION[functionName]!(shooter2, rc)
       }
       if(MoveCell.cache[cacheKey]![1] < instaKillScore) {
