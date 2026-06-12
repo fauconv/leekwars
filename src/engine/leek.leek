@@ -65,13 +65,7 @@ class Leek extends Objects {
    * @return string
    **/
   public string string() {
-    string ret = this.class.name+"("+name+") maxAOE:"+maxAOERange+"\n";
-    for(string category in CATEGORIES) {
-      ret += category+":\n"
-      for(Tool tool in categories[category]!) {
-        ret += tool.string() + "\n";
-      }
-    }
+    string ret = this.class.name+"("+name+") maxAOE:"+maxAOERange;
     return ret;  
   }
   

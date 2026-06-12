@@ -39,6 +39,16 @@ class BasicStrategy extends Strategy {
   public static real enemyLifeRatio;
   public static boolean prepareMode = false
   public static integer currentStrategy = STRATEGY_UNKNOWN
+
+  public static Array<MoveCell> fightMoveCell = []
+  public static Array<MoveCell> hitMoveCell = []
+  public static Array<MoveCell> hitNRunMoveCell = []
+  public static Array<MoveCell> neutralMoveCell = []
+  public static Array<MoveCell> hurtMoveCell = []
+  public static Map<integer,MoveCell> myMoveCells  
+  public static Map<integer,MoveCell> enemyMoveCells
+  public static integer instaKillScore = Integer.MAX_VALUE
+  public static MoveCell instaKillMc
   
   /**
    * isValide
@@ -86,8 +96,6 @@ class BasicStrategy extends Strategy {
    **/
   static boolean firstRound() {
     integer weaponId = WEAPON_MAGNUM
-    debug(me.maxAOERange + " >= " + me.maxWeaponRange + "<->" + 
-          enemy.maxWeaponRange + " <= "  + enemy.maxAOERange)
     if(me.maxAOERange > enemy.maxAOERange) {
       if(enemy.maxAOERange < 5 && mapContainsKey(me.tools, WEAPON_SHOTGUN)) 
         weaponId = WEAPON_SHOTGUN;
@@ -113,13 +121,15 @@ class BasicStrategy extends Strategy {
    * B - si on peut insta kill
    **/
   static boolean isInstaKill() {
-    return false
+    return instaKillScore <= 0
   }
   
   /**
    * B - si on peut insta kill -> on le fait (fin)
    **/
   static boolean instaKill() {
+    instaKillMc.instaKillShooter.actionsStack = instaKillMc.instaKillStack
+    instaKillMc.instaKillShooter.execute()
     return true
   }
 
@@ -211,10 +221,8 @@ class BasicStrategy extends Strategy {
     // phase 1 : on determine les mouvements possibles de mon poireau et 
     // du poireau adverse
     //
-    Map<integer,MoveCell> myMoveCells    = BasicStrategyTools.getMoveCells(meRound,
-                                                                           enemyCurrentCellId)  
-    Map<integer,MoveCell> enemyMoveCells = BasicStrategyTools.getMoveCells(enemyRound,
-                                                                           myCurrentCellId)
+    myMoveCells    = BasicStrategyTools.getMoveCells(meRound, enemyCurrentCellId)  
+    enemyMoveCells = BasicStrategyTools.getMoveCells(enemyRound, myCurrentCellId)
     GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"phase 1")
     
     //
@@ -296,17 +304,16 @@ class BasicStrategy extends Strategy {
     GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"phase 4")
 
     //
-    // coloration
+    // coloration et calcul des instakill
     //
-    Array<MoveCell> fightMoveCell = []
-    Array<MoveCell> hitMoveCell = []
-    Array<MoveCell> hitNRunMoveCell = []
-    Array<MoveCell> neutralMoveCell = []
-    Array<MoveCell> hurtMoveCell = []
     for(integer mcId : MoveCell mc in myMoveCells) {
       integer color
       if(!mapIsEmpty(mc.enemyRelativeCells)) {
-        mc.ComputeInstaKill()
+        integer score = mc.ComputeInstaKill()
+        if(score < instaKillScore) {
+          instaKillScore = score
+          instaKillMc = mc
+        }
         if(!mapIsEmpty(mc.myRelativeCells)) { 
           color = COLOR_YELLOW // ca fight
           for(MoveCell esc in mc.escapes) {
@@ -338,6 +345,7 @@ class BasicStrategy extends Strategy {
         markText(mcId,text,0,1)
       }
     }
+    GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"Colorisation")
 
   }
 }

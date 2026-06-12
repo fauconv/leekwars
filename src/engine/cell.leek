@@ -92,10 +92,10 @@ class Cell extends Objects {
     Cell|null reachableCell = this;
     for(Tool tool in tools) {
       if(ret[id]) ret[id]!.toolsList[tool.id] = tool;
-      else ret[id] = new RelativeCell(id, 1.0, this, [tool.id:tool]);        
+      else ret[id] = new RelativeCell(id, 1.0, id, [tool.id:tool]);        
       if(tool.isAOE) {
         if(tool.AOELaunchType == LAUNCH_TYPE_CIRCLE) { //  ------------ LAUNCH_TYPE_CIRCLE
-          for(string direction in HEIGHT_DIRECTION) {
+          for(string direction in HEIGHT_DIRECTION) { 
             reachableCell = this;
             real pourcent = 1.0;
             for(integer i = tool.AOERange; i > 0; i--) {
@@ -185,7 +185,7 @@ class Cell extends Objects {
       reachableCell = reachableCell[direction] as Cell;
       if(!reachableCell.isWall) {
           if(ret[reachableCell.id]) ret[reachableCell.id]!.toolsList[tool.id] = tool;
-          else ret[reachableCell.id] = new RelativeCell(reachableCell.id, pourcent, this, [tool.id:tool]);
+          else ret[reachableCell.id] = new RelativeCell(reachableCell.id, pourcent, id, [tool.id:tool]);
       }
       return reachableCell;
     }

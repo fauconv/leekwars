@@ -17,6 +17,13 @@ class Action extends Objects {
    **/
   void execute() {
   }
+  
+  /**
+   * simulate
+   **/
+  void simulate(LeekRound _leek) {
+  }
+
 
 }
 
@@ -43,7 +50,18 @@ class SetWeaponAction extends Action {
   void execute() {
     setWeapon(toolId);
   }
-    
+  
+  /**
+   * simulate
+   **/
+  void simulate(LeekRound leek) {
+    leek.minTP -= SET_WEAPON_COST;
+    leek.maxTP -= SET_WEAPON_COST;
+    leek.midTP -= SET_WEAPON_COST;
+    leek.weaponId = toolId;
+    leek.weapon = leek.toolsRound[toolId];
+  }
+
   /**
    * string
    **/
@@ -59,12 +77,14 @@ class SetWeaponAction extends Action {
 class MoveAction extends Action {
 
   private integer cellId;
+  private integer usedMP
 
   /**
    * constructor
    **/
-  constructor(integer cellId) {
+  constructor(integer cellId, integer usedMP) {
     this.cellId = cellId;
+    this.usedMP = usedMP
     id = 0
   }
 
@@ -76,7 +96,20 @@ class MoveAction extends Action {
   void execute() {
     moveTowardCell(cellId);
   }
-    
+  
+  /**
+   * simulate
+   **/
+  void simulate(LeekRound leek) {
+    leek.minMP -= usedMP;
+    leek.maxMP -= usedMP;
+    leek.midMP -= usedMP;
+    leek.currentCell.leekOnCell = null;
+    leek.currentCellId = cellId;
+    leek.currentCell = leek.roundObj.cellsRound[cellId];
+    leek.currentCell.leekOnCell = leek
+  }
+
   /**
    * string
    **/
@@ -112,7 +145,14 @@ class ToolAction extends Action {
   void execute() {
     Board.currentRound.meRound.toolsRound[toolId]!.useOnCell(targetCell);
   }
-    
+
+  /**
+   * simulate
+   **/
+  void simulate(LeekRound leek) {
+    leek.toolsRound[toolId]!.simulateUseOnCell(targetCell);
+  }
+
   /**
    * string
    **/

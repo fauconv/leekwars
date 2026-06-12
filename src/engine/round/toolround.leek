@@ -130,7 +130,7 @@ class WeaponRound extends ToolRound {
 
   /**
    * simulateUseOnCell
-   * TODO: check si getWeaponTargets gere l enemi qui se tire sur lui meme
+   * TODO: remplacer getWeaponTargets par une fonction a nous qui gerer les mouvements simules
    * @param cellId id de la cell cible du tir
    **/
   public void simulateUseOnCell(integer cellId) {
@@ -168,7 +168,7 @@ class ChipRound extends ToolRound {
   
   /**
    * simulateUseOnCell
-   * TODO: check si getChipTargets gere l enemi qui se tire sur lui meme
+   * TODO: remplacer getWeaponTargets par une fonction a nous qui gerer les mouvements simules
    * @param cellId id de la cell cible du tir
    **/
   public void simulateUseOnCell(integer cellId) {

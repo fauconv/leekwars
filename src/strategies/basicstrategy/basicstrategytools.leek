@@ -23,6 +23,7 @@ class BasicStrategyTools {
       SimulatedRound simAvecBoots = new SimulatedRound(Board.currentRound)
       LeekRound leekBoots = simAvecBoots.leeksRound[leekRoundId]!
       leekBoots.addToolAction(CHIP_LEATHER_BOOTS, leekRound.currentCellId);
+      leekBoots.simulateActions()
       maxMP = leekBoots.minMP // on prend le min pour eviter le coup critique, si il y a un critique on le traite plus tard
       roundsList[maxMP] = simAvecBoots
     } else {
@@ -45,5 +46,25 @@ class BasicStrategyTools {
     return moveCells
   }
 
+  /**
+   * addToolAction
+   **/
+  public static void addToolAction(LeekRound shooter, RelativeCell rc, Array<Action> actions,
+                                   integer toolId) {
+    ToolAction a = new ToolAction(toolId, rc.id)
+    push(shooter.actionsStack, a)
+    push(actions, a)
+    shooter.simulateActions()
+  }
+
+  /**
+   * addSetWeaponAction
+   **/
+  public static void addSetWeaponAction(LeekRound shooter, Array<Action> actions, integer toolId) {
+    SetWeaponAction a = new SetWeaponAction(toolId)
+    push(shooter.actionsStack, a)
+    push(actions, a)
+    shooter.simulateActions()
+  }
 }
 

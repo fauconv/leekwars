@@ -58,7 +58,7 @@ class InterCellInfo extends Objects {
    * getIsInSight
    * mets en cache lineOfSight
    * @param entitiesToIgnore : list des entityIds a ignorer
-   * @param cacheId : id correspondant a la configuration de entitiesToIgnore doit etre != 0
+   * @param cacheId : id correspondant a la configuration de entitiesToIgnore
    **/
   public boolean getIsInSight(Array<integer> entitiesToIgnore, 
                               string cacheId = InterCellInfo.DEFAULT_CACHE) {

@@ -9,17 +9,17 @@
  ***************************************************************************/
 class RelativeCell extends Objects {
   public real AOE;
-  public Cell targetCell; // cell where is the target leek
+  public integer targetCellId; // cell where is the target leek
   public Map<integer, Tool> toolsList;
 
   /**
    * constructors
    * @param tools : Attention: le tableau n est pas copie
    **/
-  constructor(integer cellId, real AOE, Cell targetCell, Map<integer, Tool> tools) {
+  constructor(integer cellId, real AOE, integer targetCellId, Map<integer, Tool> tools) {
     this.id = cellId;
     this.AOE = AOE;
-    this.targetCell = targetCell;
+    this.targetCellId = targetCellId;
     toolsList = tools;
   }
   
@@ -35,7 +35,7 @@ class RelativeCell extends Objects {
   RelativeCell|boolean canUseTools(Cell sourceCell, Array<integer> entitiesToIgnore, 
                                    string cacheId = InterCellInfo.DEFAULT_CACHE) {
     Boolean full = false;
-    RelativeCell ret = new RelativeCell(id, AOE, targetCell, [:]);
+    RelativeCell ret = new RelativeCell(id, AOE, targetCellId, [:]);
     InterCellInfo interCellInfo = sourceCell.interCellInfo[id];
     if(interCellInfo.distance > Board.maxAOERange) return false        
     for(Tool tool in toolsList) {

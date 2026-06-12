@@ -87,7 +87,8 @@ class LeekRound extends Objects {
   
   public Map<string,Array<ToolRound>> toolCategories = [:];
 
-  public Array<Action> actions = [];
+  public Array<Action> actionsStack = []
+  public Array<Action> simulatedActions = []
 
   public integer moveState = LeekRound.STATE_UNKNOWN; // qu a fait l'enemi pendant son tour en terme de deplacement ou comment ai je bouger au tour precedant
   public integer combatState = LeekRound.STATE_UNKNOWN; // qu a fait l'enemi pendant son tour en terme de combat ou ai je ete blaisse ou affecte pendant le tour de l ennemi
@@ -186,7 +187,8 @@ class LeekRound extends Objects {
       }
       if(weaponId != null) weapon = toolsRound[weaponId];
 
-      for(Action a in (leek as LeekRound).actions) push(actions, a);
+      for(Action a in (leek as LeekRound).actionsStack) push(actionsStack, a);
+      for(Action a in (leek as LeekRound).simulatedActions) push(simulatedActions, a);
         
     } else {
       
@@ -217,7 +219,8 @@ class LeekRound extends Objects {
     toolsRound = [:];
     weaponsRound = [];
     chipsRound = [];
-    actions = [];
+    actionsStack = [];
+    simulatedActions = [];
     init();
 
   }
@@ -335,6 +338,18 @@ class LeekRound extends Objects {
            minTP >= toolsRound[toolId]!.tool.cost &&
            toolsRound[toolId]!.isUsable())
   }
+
+  /**
+   * simulateActions
+   **/
+  public void simulateActions() {
+    for(Action a in actionsStack) {
+      push(simulatedActions, a)
+      a.simulate(this)
+    }
+    actionsStack = []
+  }
+
   /**
    * ajoute une action de type ToolAction et la simule dans le round
    * @param toolId l id du tool a utiliser
@@ -342,8 +357,7 @@ class LeekRound extends Objects {
    * @return les effets simuler de l action du tool
    **/
   public void addToolAction(integer toolId, integer targetCellId) {
-    push(actions, new ToolAction(toolId, targetCellId));
-    toolsRound[toolId]!.simulateUseOnCell(targetCellId);
+    push(actionsStack, new ToolAction(toolId, targetCellId));
   }
   
   /**
@@ -353,14 +367,7 @@ class LeekRound extends Objects {
    * attention aucune verification n est faite
    **/
   public void addMoveAction(integer cellId, integer usedMP) {
-    push(actions, new MoveAction(cellId));
-    minMP -= usedMP;
-    maxMP -= usedMP;
-    midMP -= usedMP;
-    currentCell.leekOnCell = null;
-    currentCellId = cellId;
-    currentCell = roundObj.cellsRound[cellId];
-    currentCell.leekOnCell = this;
+    push(actionsStack, new MoveAction(cellId, usedMP))
   }
 
   /**
@@ -369,12 +376,7 @@ class LeekRound extends Objects {
    * @param weaponId l id du weapon a set
    **/
   public void addSetWeaponAction(integer weaponId) {
-    push(actions, new SetWeaponAction(weaponId));
-    minTP -= SET_WEAPON_COST;
-    maxTP -= SET_WEAPON_COST;
-    midTP -= SET_WEAPON_COST;
-    this.weaponId = weaponId;
-    this.weapon = toolsRound[weaponId];
+    push(actionsStack, new SetWeaponAction(weaponId))
   }
 
 }
@@ -534,7 +536,9 @@ class MeRound extends LeekRound {
    * execute toutes les actions du leek et mets a jour le currentround
    **/
   public void execute() {
-    for(Action a in actions) a.execute();
+    GameDebug.add(true,this,"simulatedActions")
+    for(Action a in simulatedActions) a.execute()
+    for(Action a in actionsStack) a.execute()
     Board.currentRound.update()
   }
 

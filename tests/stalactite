@@ -2,8 +2,10 @@
 // @strict
 Array<integer> enemies = getEnemies()
 integer enemy = enemies[0]
-if(canUseChip(CHIP_STALACTITE, enemy)) {
+//if(canUseChip(CHIP_STALACTITE, enemy)) {
+debug("pt avant:" + getTP())
     useChip(CHIP_STALACTITE,enemy)
-} else {
-    moveToward(enemy)
-}
+    debug("pt apres:" + getTP())
+// } else {
+//    moveToward(enemy)
+//}

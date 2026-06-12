@@ -3,11 +3,12 @@
 /***************************************************************************
  * BS_ globals
  ***************************************************************************/
-global Map<string, Function<LeekRound, RelativeCell => void>> BS_SHOTS_FUNCTION = [
+global Map<string, Function<LeekRound, RelativeCell => Array<any>>> BS_SHOTS_FUNCTION = [
   "spark_":spark,
-  "magnum_ice_spark_":magnum_ice_pebble_rock_spark,
-  "magnum_ice_rock_spark_":magnum_ice_pebble_rock_spark,
-  "magnum_ice_pebble_rock_spark_":magnum_ice_pebble_rock_spark,
-  "magnum_shotgun_ice_pebble_spark_":magnum_ice_pebble_rock_spark,
-  "magnum_shotgun_ice_pebble_rock_spark_":magnum_ice_pebble_rock_spark
+  "magnum_ice_spark_":magnum_shotgun_ice_pebble_rock_spark,
+  "magnum_ice_rock_spark_":magnum_shotgun_ice_pebble_rock_spark,
+  "magnum_ice_pebble_spark_":magnum_shotgun_ice_pebble_rock_spark,
+  "magnum_ice_pebble_rock_spark_":magnum_shotgun_ice_pebble_rock_spark,
+  "magnum_shotgun_ice_pebble_spark_":magnum_shotgun_ice_pebble_rock_spark,
+  "magnum_shotgun_ice_pebble_rock_spark_":magnum_shotgun_ice_pebble_rock_spark
 ]

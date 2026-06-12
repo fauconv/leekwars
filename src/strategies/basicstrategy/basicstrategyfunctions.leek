@@ -4,13 +4,55 @@
  * Function<LeekRound, RelativeCell => void>
  * liste des fonctions qui calcul les insta kill
  ***************************************************************************/
-function spark(LeekRound shooter, RelativeCell rc) => void {
-  if(shooter.isToolAvailable(CHIP_PROTEIN)) 
-    shooter.addToolAction(CHIP_PROTEIN, shooter.currentCellId)
-  while(shooter.isToolUsable(CHIP_SPARK))
-    shooter.addToolAction(CHIP_SPARK, rc.id)
+function spark(LeekRound shooter, RelativeCell rc) => Array<any> {
+  Array<Action> actions = []
+  while(shooter.isToolUsable(CHIP_SPARK)) {
+    BasicStrategyTools.addToolAction(shooter, rc, actions, CHIP_SPARK)
+  }
+  return [actions,shooter.roundObj.cellsRound[rc.targetCellId].leekOnCell!.maxLife]
 }
 
-function magnum_ice_pebble_rock_spark(LeekRound shooter, RelativeCell rc) => void {
-   
+function magnum_shotgun_ice_pebble_rock_spark(LeekRound shooter, RelativeCell rc) => Array<any> {
+  Array<Action> actions = []
+  Map<integer, Tool> toolsList = rc.toolsList
+  if(mapContainsKey(toolsList, WEAPON_SHOTGUN)) {
+    if(shooter.weaponId == WEAPON_SHOTGUN) {
+      BasicStrategyTools.addToolAction(shooter, rc, actions, WEAPON_SHOTGUN)
+    } else if(shooter.minTP >= 11) { // CHIP_ROCK + WEAPON_SHOTGUN + setWeapon
+      BasicStrategyTools.addSetWeaponAction(shooter, actions, WEAPON_SHOTGUN)
+      BasicStrategyTools.addToolAction(shooter, rc, actions, WEAPON_SHOTGUN)
+    }
+  }
+  if(mapContainsKey(toolsList, CHIP_ROCK) && shooter.isToolUsable(CHIP_ROCK))
+    BasicStrategyTools.addToolAction(shooter, rc, actions, CHIP_ROCK)
+  if(mapContainsKey(toolsList, WEAPON_SHOTGUN) && shooter.weaponId != WEAPON_SHOTGUN && 
+     (shooter.minTP == 6 || shooter.minTP >= 11))
+      BasicStrategyTools.addSetWeaponAction(shooter, actions, WEAPON_SHOTGUN)
+  if(mapContainsKey(toolsList, shooter.weaponId)) {
+    while(shooter.isToolUsable(shooter.weaponId!)) {
+      BasicStrategyTools.addToolAction(shooter, rc, actions, shooter.weaponId!)
+    }
+  }
+  if(mapContainsKey(toolsList, WEAPON_MAGNUM) && (shooter.weaponId != WEAPON_MAGNUM) && (shooter.minTP >= 6)) {
+    BasicStrategyTools.addSetWeaponAction(shooter, actions, WEAPON_MAGNUM)
+    while(shooter.isToolUsable(WEAPON_MAGNUM)) {
+      BasicStrategyTools.addToolAction(shooter, rc, actions, WEAPON_MAGNUM)
+    }
+  }
+  if(mapContainsKey(toolsList, CHIP_ICE)) {
+    while(shooter.isToolUsable(CHIP_ICE)) {
+      BasicStrategyTools.addToolAction(shooter, rc, actions, CHIP_ICE)
+    }
+  }
+  if(mapContainsKey(toolsList, CHIP_SPARK)) {
+    while(shooter.isToolUsable(CHIP_SPARK)) {
+      BasicStrategyTools.addToolAction(shooter, rc, actions, CHIP_SPARK)
+    }
+  }
+  if(mapContainsKey(toolsList, CHIP_PEBBLE)) {
+    while(shooter.isToolUsable(CHIP_PEBBLE)) {
+      BasicStrategyTools.addToolAction(shooter, rc, actions, CHIP_PEBBLE)
+    }
+  }
+  return [actions,shooter.roundObj.cellsRound[rc.targetCellId].leekOnCell!.maxLife]
 }
