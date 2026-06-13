@@ -41,14 +41,15 @@ class BasicStrategy extends Strategy {
   public static integer currentStrategy = STRATEGY_UNKNOWN
 
   public static Array<MoveCell> fightMoveCell = []
-  public static Array<MoveCell> hitMoveCell = []
   public static Array<MoveCell> hitNRunMoveCell = []
   public static Array<MoveCell> neutralMoveCell = []
   public static Array<MoveCell> hurtMoveCell = []
   public static Map<integer,MoveCell> myMoveCells  
   public static Map<integer,MoveCell> enemyMoveCells
   public static integer instaKillScore = Integer.MAX_VALUE
+  public static integer hitNRunScore = Integer.MAX_VALUE
   public static MoveCell instaKillMc
+  public static boolean usedAntidote = false
   
   /**
    * isValide
@@ -147,6 +148,7 @@ class BasicStrategy extends Strategy {
     if(mapContainsKey(meRound.toolsRound, CHIP_ANTIDOTE)) {
       useChip(CHIP_ANTIDOTE)
       currentRound.update()
+      usedAntidote = true
     } 
   }
 
@@ -154,7 +156,7 @@ class BasicStrategy extends Strategy {
    * D - si on peut tirer sans se blaisser et qu il ne peut pas se soigner plus qu on ne le blaisse
    **/
   static boolean isShootNRun() {
-    return false
+    return !isEmpty(hitNRunMoveCell)
   }
 
   /**
@@ -162,6 +164,32 @@ class BasicStrategy extends Strategy {
    **/
   static boolean shootNRun() {
     prepareMode = false
+    if(usedAntidote) {
+      // TODO: refaire les calcul de score apres l utilisation d antidote
+    }
+    while(count(hitNRunMoveCell)> 1) {
+      // TODO: on doit choisir quel Mc prendre
+      pop(hitNRunMoveCell)
+    }
+    MoveCell soluce = hitNRunMoveCell[0]
+    soluce.instaKillShooter.actionsStack = soluce.instaKillStack
+    // je vire les escape qui pointe vers des cell ou il peut m attaquer
+    Map<integer, MoveCell> esc = soluce.escapes
+    Array<MoveCell> esc2 = []
+    for(MoveCell mc in esc) { 
+      if(mapIsEmpty(mc.myRelativeCells)) push(esc2, mc)
+    }
+    while(count(esc2) > 1) {
+      // TODO: on choisi un escape
+      pop(esc2)
+    }
+    if(mapIsEmpty(soluce.myRelativeCells)) {
+      // TODO: je dois choisir entre rester la et escapes
+    } else {
+      push(soluce.instaKillShooter.actionsStack, new MoveAction(esc2[0].id,0)) // 0 car on ne veut pas simuler
+    }
+    GameDebug.add(true,soluce,"soluce",2)
+    soluce.instaKillShooter.execute()
     return true
   }
 
@@ -315,18 +343,24 @@ class BasicStrategy extends Strategy {
           instaKillMc = mc
         }
         if(!mapIsEmpty(mc.myRelativeCells)) { 
-          color = COLOR_YELLOW // ca fight
+          color = COLOR_ORANGE // ca fight
           for(MoveCell esc in mc.escapes) {
             if(mapIsEmpty(esc.myRelativeCells)) {
-              color = COLOR_ORANGE // je hit and run
-              push(hitNRunMoveCell, mc)
+              color = COLOR_YELLOW // je hit and run
+              if(hitNRunScore == score) push(hitNRunMoveCell, mc)
+              else if(hitNRunScore > score) {
+                hitNRunMoveCell = [mc]
+              }
               break
             }
           }
-          (color == COLOR_YELLOW) and (push(fightMoveCell, mc))
+          (color == COLOR_ORANGE) and (push(fightMoveCell, mc))
         } else {
           color = COLOR_GREEN // je fight mais pas lui
-          push(hitMoveCell, mc)
+          if(hitNRunScore == score) push(hitNRunMoveCell, mc)
+          else if(hitNRunScore > score) {
+            hitNRunMoveCell = [mc]
+          }
         }
       } else {
         if(!mapIsEmpty(mc.myRelativeCells)) {

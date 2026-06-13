@@ -9,7 +9,7 @@ global integer LAUNCH_TYPE_SQUARE = 8;
 global integer CHIP_EXASPERATION = 425;
 
 /***
- * first
+ * mapFirst
  * @param map la map dont on veut un element
  * @return un element de la map (les elements ne sont pas ordonnes)
  * 3 operations
@@ -18,6 +18,24 @@ global integer CHIP_EXASPERATION = 425;
 function mapFirst(Map<any,any> map) => any {
   for(any value in map) return value;
   return null;
+}
+
+/***
+ * mapShift
+ * retourne un element de la map et le supprime de la map
+ * @param map la map dont on veut un element
+ * @return un element de la map (les elements ne sont pas ordonnes)
+ * X operations
+ **/
+@unused
+function mapShift(Map<any,any> map) => any {
+  any key = null
+  any value = null
+  for(key : value in map) {
+    break
+  }
+  if(key != null) mapRemove(map, key)
+  return value;
 }
 
 /***
