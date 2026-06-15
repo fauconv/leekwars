@@ -13,16 +13,14 @@ class MoveCell extends Objects {
   public integer maxRemainingMP = 0
   public integer distanceToCenter
   public integer distanceToEnemy
-  public Map<integer,SimulatedRound> simulations = [:] // comment on arrive jusqu a la position [remainingMP]
-                                                       // [remainingMP] = simulation
-  public Map<integer,RelativeCell> myRelativeCells = [:] // les relativeCells de ma position
-  public Map<integer,RelativeCell> enemyRelativeCells = [:] // les relativeCells de l ennemy
-                                                            // atteignable depuis moveCell
-  public Map<integer,MoveCell> escapes = [:] // les echapatoires
+  public integer instaKillSim // le remainingMP de la sim qui permet l instaKill
+  public Map<integer,LeekRound> shooters = [:]    // comment on arrive jusqu a la position [remaingMP] = simulation
+  public Map<integer,RelativeCell> myRelativeCells = [:]    // les relativeCells de ma position
+  public Map<integer,RelativeCell> enemyRelativeCells = [:] // les relativeCells de l ennemy atteignable depuis moveCell
+  public Map<integer,Map<integer,MoveCell>> escapes = [:]   // les echapatoires pour chaque sim
   
-  public Array<Action> instaKillStack = []          //action a faire pour faire un instakill
-  public integer instaKillScore = Integer.MAX_VALUE // les PV restant a l enemy apres un instaKill
-  public MeRound instaKillShooter                   // la simulation utilise pour l instaKill
+  public Map<integer,Array<Action>> instaKillStack = [:] // action a faire pour faire un instakill pour chaque sim
+  public Map<integer,integer> instaKillScore = [:]       // les PV restant a l enemy apres un instaKill pour chaque sim
 
   /**
    * constructor
@@ -34,8 +32,8 @@ class MoveCell extends Objects {
   public constructor(integer cellId, integer ownerId, Map<integer, Round> simsList,
                      integer usedMP, integer enemyCellId) {
     id = cellId
-    myCell = Board.cells[cellId]
     this.ownerId = ownerId
+    myCell = Board.cells[cellId]
     distanceToCenter = myCell.interCellInfo[CENTER_CELL_ID].distance
     distanceToEnemy  = myCell.interCellInfo[enemyCellId].distance
     for(integer maxMP : Round sim in simsList) {
@@ -44,7 +42,7 @@ class MoveCell extends Objects {
         SimulatedRound newSim = new SimulatedRound(sim)
         newSim.leeksRound[ownerId]!.addMoveAction(cellId, usedMP)
         newSim.leeksRound[ownerId]!.simulateActions()
-        simulations[remainingMP] = newSim;
+        shooters[remainingMP] = newSim.leeksRound[ownerId]!;
         (remainingMP > maxRemainingMP) and (maxRemainingMP = remainingMP)
 
       }
@@ -73,10 +71,14 @@ class MoveCell extends Objects {
    * ComputeEscape
    **/
   public void ComputeEscape(Map<integer,MoveCell> moveCells) {
-    Map<integer,integer> routesList = 
-      simulations[maxRemainingMP]!.leeksRound[ownerId]!.route(maxRemainingMP)
-    for(integer cellId : integer _remainingMP in routesList) {
-      escapes[cellId] = moveCells[cellId]
+    Map<integer,integer> routesList = shooters[maxRemainingMP]!.route(maxRemainingMP)
+    for(integer simRemaingMP : LeekRound _shooter in shooters) {
+      escapes[simRemaingMP] = [:]
+      for(integer cellId : integer remainingMP in routesList) {
+        if(remainingMP == maxRemainingMP) continue // je ne veux pas l escape correspondant a la movecell
+        if(remainingMP < maxRemainingMP - simRemaingMP) continue
+        escapes[simRemaingMP]![cellId] = moveCells[cellId]
+      }
     }
   }
 
@@ -84,36 +86,45 @@ class MoveCell extends Objects {
    * ComputeInstaKill
    **/
   public integer ComputeInstaKill() {
-    integer minRemaingMP = Integer.MAX_VALUE
-    for(integer remainingMP : Round _sim in simulations) {
-      minRemaingMP = min(minRemaingMP, remainingMP) 
+    integer ret = Integer.MAX_VALUE
+    for(integer remainingMP : LeekRound shooter in shooters) {
+      instaKillScore[remainingMP] = Integer.MAX_VALUE
+      for(RelativeCell rc in enemyRelativeCells) {
+        string functionName = ""
+        for(integer toolId : string toolName in TOOL_NAME_TRANSLATOR) {
+          if(mapContainsKey(rc.toolsList, toolId)) functionName += (toolName+"_")
+        }
+        if(!mapContainsKey(BS_SHOTS_FUNCTION, functionName)) {
+          string error = "basicstrategytools.leek=>ComputeShots=>"+functionName
+          debugC(error + " : fonction inconnue", COLOR_RED)
+          setRegister(error, functionName + " inconnue")
+          Talk.text = "Oups tu as gagné, j'ai buggé"
+          functionName = "magnum_shotgun_ice_pebble_rock_spark_" // mode par defaut
+        }
+        string cacheKey = functionName+"-"+shooter.id+"-"+shooter.minTP+"-"+rc.AOE
+        if(!mapContainsKey(MoveCell.cache, cacheKey)) {
+          SimulatedRound base = new SimulatedRound(shooter.roundObj)    
+          MoveCell.cache[cacheKey] = BS_SHOTS_FUNCTION[functionName]!(base.meRound, rc)
+        }
+        if(MoveCell.cache[cacheKey]![1] < instaKillScore[remainingMP]) {
+          instaKillScore[remainingMP] = MoveCell.cache[cacheKey]![1] as integer
+          instaKillStack[remainingMP] = MoveCell.cache[cacheKey]![0] as Array<Action>
+          if(instaKillScore[remainingMP] < ret) {
+            ret = instaKillScore[remainingMP]!
+            instaKillSim = remainingMP
+          }
+        }
+      }
     }
-    for(RelativeCell rc in enemyRelativeCells) {
-      MeRound shooter = simulations[minRemaingMP]!.meRound
-      string functionName = ""
-      for(integer toolId : string toolName in TOOL_NAME_TRANSLATOR) {
-        if(mapContainsKey(rc.toolsList, toolId)) functionName += (toolName+"_")
-      }
-      if(!mapContainsKey(BS_SHOTS_FUNCTION, functionName)) {
-        string error = "basicstrategytools.leek=>ComputeShots=>"+functionName
-        debugC(error + " : fonction inconnue", COLOR_RED)
-        setRegister(error, functionName + " inconnue")
-        Talk.text = "Oups tu as gagné, j'ai buggé"
-        functionName = "magnum_shotgun_ice_pebble_rock_spark_" // mode par defaut
-      }
-      string cacheKey = functionName+"-"+shooter.id+"-"+shooter.minTP+"-"+rc.AOE
-      if(!mapContainsKey(MoveCell.cache, cacheKey)) {
-        SimulatedRound base = new SimulatedRound(simulations[minRemaingMP]!)
-        MeRound shooter2 = base.meRound       
-        MoveCell.cache[cacheKey] = BS_SHOTS_FUNCTION[functionName]!(shooter2, rc)
-      }
-      if(MoveCell.cache[cacheKey]![1] < instaKillScore) {
-        instaKillScore = MoveCell.cache[cacheKey]![1] as integer
-        instaKillStack = MoveCell.cache[cacheKey]![0] as Array<Action>
-        instaKillShooter = shooter
-      }
-    }
-    return instaKillScore
+    return ret
   }
-
+  
+  /**
+   * execute
+   **/
+  execute(integer simRemainingMP, integer|null escapeId = null) {
+    shooters[simRemainingMP]!.actionsStack = instaKillStack[simRemainingMP]!;
+    if(escapeId != null) shooters[simRemainingMP]!.addMoveAction(escapeId, 0);
+    (shooters[simRemainingMP] as MeRound).execute()
+  }
 }

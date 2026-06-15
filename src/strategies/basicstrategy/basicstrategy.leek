@@ -42,6 +42,7 @@ class BasicStrategy extends Strategy {
 
   public static Array<MoveCell> fightMoveCell = []
   public static Array<MoveCell> hitNRunMoveCell = []
+  public static Array<integer> hitNRunRemainingMP = [] // l id de la sim qui va avec hitNRunMoveCell
   public static Array<MoveCell> neutralMoveCell = []
   public static Array<MoveCell> hurtMoveCell = []
   public static Map<integer,MoveCell> myMoveCells  
@@ -129,8 +130,7 @@ class BasicStrategy extends Strategy {
    * B - si on peut insta kill -> on le fait (fin)
    **/
   static boolean instaKill() {
-    instaKillMc.instaKillShooter.actionsStack = instaKillMc.instaKillStack
-    instaKillMc.instaKillShooter.execute()
+    instaKillMc.execute(instaKillMc.instaKillSim)
     return true
   }
 
@@ -170,11 +170,12 @@ class BasicStrategy extends Strategy {
     while(count(hitNRunMoveCell)> 1) {
       // TODO: on doit choisir quel Mc prendre
       pop(hitNRunMoveCell)
+      pop(hitNRunRemainingMP)
     }
-    MoveCell soluce = hitNRunMoveCell[0]
-    soluce.instaKillShooter.actionsStack = soluce.instaKillStack
+    MoveCell soluce = hitNRunMoveCell[0];
+    integer simRemainingMP = hitNRunRemainingMP[0];
     // je vire les escape qui pointe vers des cell ou il peut m attaquer
-    Map<integer, MoveCell> esc = soluce.escapes
+    Map<integer, MoveCell> esc = soluce.escapes[simRemainingMP]!
     Array<MoveCell> esc2 = []
     for(MoveCell mc in esc) { 
       if(mapIsEmpty(mc.myRelativeCells)) push(esc2, mc)
@@ -186,10 +187,9 @@ class BasicStrategy extends Strategy {
     if(mapIsEmpty(soluce.myRelativeCells)) {
       // TODO: je dois choisir entre rester la et escapes
     } else {
-      push(soluce.instaKillShooter.actionsStack, new MoveAction(esc2[0].id,0)) // 0 car on ne veut pas simuler
+      soluce.execute(simRemainingMP,esc2[0].id)
     }
     GameDebug.add(true,soluce,"soluce",2)
-    soluce.instaKillShooter.execute()
     return true
   }
 
@@ -340,18 +340,24 @@ class BasicStrategy extends Strategy {
         integer score = mc.ComputeInstaKill()
         if(score < instaKillScore) {
           instaKillScore = score
-          instaKillMc = mc
+          instaKillMc = mc // je ne stock pas toute les installKill possible je prend juste la premiere
         }
         if(!mapIsEmpty(mc.myRelativeCells)) { 
           color = COLOR_ORANGE // ca fight
-          for(MoveCell esc in mc.escapes) {
-            if(mapIsEmpty(esc.myRelativeCells)) {
-              color = COLOR_YELLOW // je hit and run
-              if(hitNRunScore == score) push(hitNRunMoveCell, mc)
-              else if(hitNRunScore > score) {
-                hitNRunMoveCell = [mc]
+          for(integer simRemaingMP : Map<integer,MoveCell> escs in mc.escapes) {
+            for(MoveCell esc in escs) {
+              if(mapIsEmpty(esc.myRelativeCells)) {
+                color = COLOR_YELLOW // je hit and run
+                if(hitNRunScore == mc.instaKillScore[simRemaingMP]) {
+                  push(hitNRunMoveCell, mc)
+                  push(hitNRunRemainingMP, simRemaingMP)
+                }
+                else if(hitNRunScore > mc.instaKillScore[simRemaingMP]) {
+                  hitNRunMoveCell = [mc]
+                  hitNRunRemainingMP = [simRemaingMP]
+                }
+                break
               }
-              break
             }
           }
           (color == COLOR_ORANGE) and (push(fightMoveCell, mc))
