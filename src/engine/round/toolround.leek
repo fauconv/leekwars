@@ -125,8 +125,6 @@ class WeaponRound extends ToolRound {
    * @param cellId id de la cell cible du tir
    **/
   public void useOnCell(integer cellId) {
-    debug("useWeaponOnCell("+cellId+")")
-    pause()
     useWeaponOnCell(cellId);
   }
 

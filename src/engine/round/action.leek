@@ -94,7 +94,6 @@ class MoveAction extends Action {
    * pour economiser des operations
    **/
   void execute() {
-    debug(string())
     moveTowardCell(cellId);
   }
   
@@ -144,7 +143,6 @@ class ToolAction extends Action {
    * pour economiser des operations
    **/
   void execute() {
-    debug(string())
     Board.currentRound.meRound.toolsRound[toolId]!.useOnCell(targetCell);
   }
 

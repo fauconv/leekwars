@@ -536,8 +536,6 @@ class MeRound extends LeekRound {
    * execute toutes les actions du leek et mets a jour le currentround
    **/
   public void execute() {
-    GameDebug.add(true,simulatedActions, "execute->simulatedActions")
-    GameDebug.add(true,actionsStack, "execute->actionsStack")
     for(Action a in simulatedActions) a.execute()
     for(Action a in actionsStack) a.execute()
     Board.currentRound.update()

@@ -413,5 +413,6 @@ function effect_vulnerability(Effect obj, LeekRound _shooter, LeekRound target) 
  * effect_default
  **/
 function effect_default(Effect obj, LeekRound _shooter, LeekRound _target) => void {
-  GameDebug.add(true, obj, "Unmanaged Effect", 0);
+  debugC("effectfunctions.leek->effect_default-> Unmanaged Effect",COLOR_RED);
+  setRegister("effectfunctions.leek->effect_default-> Unmanaged Effect", obj);
 }
