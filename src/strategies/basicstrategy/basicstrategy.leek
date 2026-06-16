@@ -200,7 +200,6 @@ class BasicStrategy extends Strategy {
     } else {
       soluce.execute(simRemainingMP,esc2[0].id)
     }
-    GameDebug.add(true,soluce,"soluce",2)
     return true
   }
 
@@ -343,8 +342,8 @@ class BasicStrategy extends Strategy {
     }
 
     //
-    // phase 3.2: pour chacune de mes relativeCells, on détermine avec quel arme il peut 
-    // l atteindre
+    // phase 3.2: pour chacune de mes relativeCells, on détermine avec quel 
+    // arme il peut l atteindre
     //
     Array<integer> ignoredEntitiesListDefence = [myId, enemyId]
     for(integer relativeCellId : Array<RelativeCell> rcs in myRelativeCellsCache) {
@@ -354,7 +353,7 @@ class BasicStrategy extends Strategy {
       Map<integer, Tool> resultToolsList = [:]
       for(MoveCell enemyMoveCell in enemyMoveCells) {
         InterCellInfo interCellInfo = enemyMoveCell.myCell.interCellInfo[relativeCellId];
-        if(interCellInfo.distance < Board.maxAOERange) {
+        if(interCellInfo.distance <= Board.maxAOERange) {
           for(integer toolId : Tool tool in toolsList) {
             if(interCellInfo.canUseTool(tool, ignoredEntitiesListDefence, "defence")) {
               resultToolsList[toolId] = tool
