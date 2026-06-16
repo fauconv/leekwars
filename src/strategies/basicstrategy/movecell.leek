@@ -123,7 +123,8 @@ class MoveCell extends Objects {
    * execute
    **/
   execute(integer simRemainingMP, integer|null escapeId = null) {
-    shooters[simRemainingMP]!.actionsStack = instaKillStack[simRemainingMP]!;
+    if(mapContainsKey(instaKillStack, simRemainingMP))
+      shooters[simRemainingMP]!.actionsStack = instaKillStack[simRemainingMP]!;
     if(escapeId != null) shooters[simRemainingMP]!.addMoveAction(escapeId, 0);
     (shooters[simRemainingMP] as MeRound).execute()
   }

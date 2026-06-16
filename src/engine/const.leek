@@ -373,6 +373,31 @@ global Map<integer,Array<any>> EFFECT_TYPE_TRANSLATOR_CATEGORY = [
 ]
 
 /**
+ * TODO:
+ **/
+/*
+getStates([entier entity]) → ensemble<entier> states
+isStatic([nombre entity]) → booléen static
+STATE_INVINCIBLE
+STATE_UNHEALABLE
+STAT_ABSOLUTE_SHIELD
+STAT_AGILITY
+STAT_CORES
+STAT_DAMAGE_RETURN
+STAT_FREQUENCY
+STAT_LIFE
+STAT_MAGIC
+STAT_MP
+STAT_POWER
+STAT_RAM
+STAT_RELATIVE_SHIELD
+STAT_RESISTANCE
+STAT_SCIENCE
+STAT_STRENGTH
+STAT_TP
+STAT_WISDOM
+*/
+/**
  * getEffectsInfo
  **/
 function getEffectsInfo(integer type) => Array<any> {

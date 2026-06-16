@@ -21,6 +21,18 @@ function mapFirst(Map<any,any> map) => any {
 }
 
 /***
+ * mapFirst
+ * @param map la map dont on veut un element
+ * @return la cle d'un element de la map (les elements ne sont pas ordonnes)
+ * 3 operations
+ **/
+ @unused
+function mapFirstKey(Map<any,any> map) => any {
+  for(any key: any _value in map) return key;
+  return null;
+}
+
+/***
  * mapShift
  * retourne un element de la map et le supprime de la map
  * @param map la map dont on veut un element

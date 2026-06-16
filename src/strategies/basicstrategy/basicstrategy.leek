@@ -37,20 +37,21 @@ class BasicStrategy extends Strategy {
 	
   public static real myLifeRatio;
   public static real enemyLifeRatio;
+  public static integer myInjuries;
   public static boolean prepareMode = false
   public static integer currentStrategy = STRATEGY_UNKNOWN
 
-  public static Array<MoveCell> fightMoveCell = []
-  public static Array<MoveCell> hitNRunMoveCell = []
-  public static Array<integer> hitNRunRemainingMP = [] // l id de la sim qui va avec hitNRunMoveCell
-  public static Array<MoveCell> neutralMoveCell = []
-  public static Array<MoveCell> hurtMoveCell = []
+  public static Array<MoveCell> fightMoveCell
+  public static Array<MoveCell> hitNRunMoveCell
+  public static Array<integer> hitNRunRemainingMP // l id de la sim qui va avec hitNRunMoveCell
+  public static Array<MoveCell> neutralMoveCell
+  public static Array<MoveCell> hurtMoveCell
   public static Map<integer,MoveCell> myMoveCells  
   public static Map<integer,MoveCell> enemyMoveCells
-  public static integer instaKillScore = Integer.MAX_VALUE
-  public static integer hitNRunScore = Integer.MAX_VALUE
+  public static integer instaKillScore
+  public static integer hitNRunScore
   public static MoveCell instaKillMc
-  public static boolean usedAntidote = false
+  public static boolean usedAntidote
   
   /**
    * isValide
@@ -78,7 +79,16 @@ class BasicStrategy extends Strategy {
     enemyCurrentCellId = enemyRound.currentCellId;
     myLifeRatio = meRound.maxLife / meRound.maxTotalLife
     enemyLifeRatio = enemyRound.maxLife / enemyRound.maxTotalLife
-    
+    myInjuries = meRound.maxTotalLife - meRound.maxLife;
+    fightMoveCell = []
+    hitNRunMoveCell = []
+    hitNRunRemainingMP = []
+    neutralMoveCell = []
+    hurtMoveCell = []
+    instaKillScore = Integer.MAX_VALUE
+    hitNRunScore = Integer.MAX_VALUE
+    usedAntidote = false
+
     GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"init board");
     
     if(gFirstRound) return firstRound()
@@ -90,7 +100,8 @@ class BasicStrategy extends Strategy {
       if(isInjured()) return hideHealNProtect()
       if(!prepareMode) return setPrepareMode()
     }
-    return attack()
+    if(isFightable()) return attack()
+    return moveAway()
   }
   
   /**
@@ -197,14 +208,14 @@ class BasicStrategy extends Strategy {
    * E - si on peut se cacher
    **/
   static boolean isHideable() {
-    return false
+    return !isEmpty(neutralMoveCell)
   }
 
   /**
    * E.a - si on est blaisse a plus de 50% et qu'il est moins mal en point qque nous
    **/
   static boolean isInjured() {
-    return false
+    return (myLifeRatio < 0.5) || (myLifeRatio < 1) && isEmpty(fightMoveCell)
   }
 
   /**
@@ -212,8 +223,15 @@ class BasicStrategy extends Strategy {
    *        on se soigne et on se protege (fin)
    **/
   static boolean hideHealNProtect() {
-    prepareMode = false
-    return true
+    if(myInjuries >= 50 && meRound.isToolAvailable(CHIP_CURE)) {
+      useChip(CHIP_CURE)
+      myInjuries = getTotalLife() - getLife()
+    }
+    if(myInjuries >= 30 && meRound.isToolAvailable(CHIP_BANDAGE)) {
+      useChip(CHIP_BANDAGE)
+      myInjuries = getTotalLife() - getLife()
+    }
+    return setPrepareMode()
   }
   
   /**
@@ -222,12 +240,27 @@ class BasicStrategy extends Strategy {
    * (buff de tire  buff de protection) (fin)
    **/
   static boolean setPrepareMode() {
-    useChip(CHIP_MOTIVATION) // 3-2 PT 
+    while(count(neutralMoveCell) > 1) {
+      // TODO: choisir le bon hide
+      pop(neutralMoveCell)
+    }
+    MoveCell soluce = neutralMoveCell[0];
+    integer simRemainingMP = mapFirstKey(neutralMoveCell[0].shooters) as integer;
+    soluce.execute(simRemainingMP)
+    useChip(CHIP_MOTIVATION) // 4-2 PT 
     useChip(CHIP_PROTEIN) // 3 PT
     useChip(CHIP_HELMET) // 3 PT
     useChip(CHIP_WALL) // 3PT
     prepareMode = true
+    currentRound.update()
     return true
+  }
+  
+  /**
+   * isFightable
+   **/
+  static booelan isFightable() {
+    return !isEmpty(fightMoveCell)
   }
 
   /**
@@ -235,10 +268,32 @@ class BasicStrategy extends Strategy {
    * de min degat
    **/
   static boolean attack() {
+    if(usedAntidote) {
+      // TODO: refaire les calcul de score apres l utilisation d antidote
+    }
+    while(count(fightMoveCell) > 1) {
+      // TODO: choisir le bon fight en calculant les degat fait par l enemy
+      pop(fightMoveCell)
+    }
+    MoveCell soluce = fightMoveCell[0];
+    integer simRemainingMP = mapFirstKey(fightMoveCell[0].shooters) as integer;
+    soluce.execute(simRemainingMP) // TODO: je dois aussi choisir un escape
     prepareMode = false
     return true
   }
   
+  /**
+   * moveAway
+   * TODO: a voir quoi faire
+   **/
+  static boolean moveAway() {
+    moveToward(enemyId)
+    useChip(CHIP_MOTIVATION) 
+    useChip(CHIP_HELMET)
+    useChip(CHIP_WALL)
+    currentRound.update()
+  }
+
   /**
    * simulation
    * cree les differente simulation pour l algo
