@@ -49,6 +49,7 @@ class SetWeaponAction extends Action {
    * pour economiser des operations
    **/
   void execute() {
+    GameDebug.add(ACTION_DEBUG,string())
     setWeapon(toolId);
   }
   
@@ -95,6 +96,7 @@ class MoveAction extends Action {
    * pour economiser des operations
    **/
   void execute() {
+    GameDebug.add(ACTION_DEBUG,string())
     moveTowardCell(cellId);
   }
   
@@ -144,6 +146,7 @@ class ToolAction extends Action {
    * pour economiser des operations
    **/
   void execute() {
+    GameDebug.add(ACTION_DEBUG,string())
     Board.currentRound.meRound.toolsRound[toolId]!.useOnCell(targetCell);
   }
 

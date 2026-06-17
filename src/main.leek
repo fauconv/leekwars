@@ -4,6 +4,7 @@
  * debug
  **************************************************************************/
 global boolean EFFECT_DEBUG = false
+global boolean ACTION_DEBUG = true
 global boolean BASIC_STRATEGY_DEBUG = true
 
 include("utils/gamedebug.leek")

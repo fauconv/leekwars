@@ -130,170 +130,7 @@ class BasicStrategy extends Strategy {
     return true
   }
   
-  /**
-   * B - si on peut insta kill
-   **/
-  static boolean isInstaKill() {
-    return instaKillScore <= 0
-  }
-  
-  /**
-   * B - si on peut insta kill -> on le fait (fin)
-   **/
-  static boolean instaKill() {
-    instaKillMc.execute(instaKillMc.instaKillSim)
-    return true
-  }
-
-  /**
-   * C - si on est empoisonne
-   **/
-  static boolean isPoisonned() {
-    return (mapContainsKey(meRound.appliedEffectCategories[CATEGORY_DAMAGE]!, EFFECT_POISON))
-  }
-
-  /**
-   * C - si on est empoisonne -> on se soigne
-   **/
-  static void antidote() {
-    if(mapContainsKey(meRound.toolsRound, CHIP_ANTIDOTE)) {
-      useChip(CHIP_ANTIDOTE)
-      currentRound.update()
-      usedAntidote = true
-    } 
-  }
-
-  /**
-   * D - si on peut tirer sans se blaisser et qu il ne peut pas se soigner plus qu on ne le blaisse
-   **/
-  static boolean isShootNRun() {
-    return !isEmpty(hitNRunMoveCell)
-  }
-
-  /**
-   * D -> on tire et on se cache (fin)
-   **/
-  static boolean shootNRun() {
-    prepareMode = false
-    if(usedAntidote) {
-      // TODO: refaire les calcul de score apres l utilisation d antidote
-    }
-    while(count(hitNRunMoveCell)> 1) {
-      // TODO: on doit choisir quel Mc prendre
-      pop(hitNRunMoveCell)
-      pop(hitNRunRemainingMP)
-    }
-    MoveCell soluce = hitNRunMoveCell[0];
-    integer simRemainingMP = hitNRunRemainingMP[0];
-    // je vire les escape qui pointe vers des cell ou il peut m attaquer
-    Map<integer, MoveCell> esc = soluce.escapes[simRemainingMP]!
-    Array<MoveCell> esc2 = []
-    for(MoveCell mc in esc) { 
-      if(mapIsEmpty(mc.myRelativeCells)) push(esc2, mc)
-    }
-    while(count(esc2) > 1) {
-      // TODO: on choisi un escape
-      pop(esc2)
-    }
-    if(mapIsEmpty(soluce.myRelativeCells)) {
-      // TODO: je dois choisir entre rester la et escapes
-    } else {
-      soluce.execute(simRemainingMP,esc2[0].id)
-    }
-    return true
-  }
-
-  /**
-   * E - si on peut se cacher
-   **/
-  static boolean isHideable() {
-    return !isEmpty(neutralMoveCell)
-  }
-
-  /**
-   * E.a - si on est blaisse a plus de 50% et qu'il est moins mal en point qque nous
-   **/
-  static boolean isInjured() {
-    return (myLifeRatio < 0.5) || (myLifeRatio < 1) && isEmpty(fightMoveCell)
-  }
-
-  /**
-   * E.a -> on se cache en restant le plus pret de l enemy et au centre, 
-   *        on se soigne et on se protege (fin)
-   **/
-  static boolean hideHealNProtect() {
-    if(myInjuries >= 50 && meRound.isToolAvailable(CHIP_CURE)) {
-      useChip(CHIP_CURE)
-      myInjuries = getTotalLife() - getLife()
-    }
-    if(myInjuries >= 30 && meRound.isToolAvailable(CHIP_BANDAGE)) {
-      useChip(CHIP_BANDAGE)
-      myInjuries = getTotalLife() - getLife()
-    }
-    return setPrepareMode()
-  }
-  
-  /**
-   * E.b -> on se cache en restant au plus pret de l enemy et le plus au
-   * centre possible et on se prepare pour le prochain tour 
-   * (buff de tire  buff de protection) (fin)
-   **/
-  static boolean setPrepareMode() {
-    while(count(neutralMoveCell) > 1) {
-      // TODO: choisir le bon hide
-      pop(neutralMoveCell)
-    }
-    MoveCell soluce = neutralMoveCell[0];
-    integer simRemainingMP = mapFirstKey(neutralMoveCell[0].shooters) as integer;
-    soluce.execute(simRemainingMP)
-    useChip(CHIP_MOTIVATION) // 4-2 PT 
-    useChip(CHIP_PROTEIN) // 3 PT
-    useChip(CHIP_HELMET) // 3 PT
-    useChip(CHIP_WALL) // 3PT
-    prepareMode = true
-    currentRound.update()
-    return true
-  }
-  
-  /**
-   * isFightable
-   **/
-  static booelan isFightable() {
-    return !isEmpty(fightMoveCell)
-  }
-
-  /**
-   * F - enfin on va sur la case de max degat on tire puis on va sur la case
-   * de min degat
-   **/
-  static boolean attack() {
-    if(usedAntidote) {
-      // TODO: refaire les calcul de score apres l utilisation d antidote
-    }
-    while(count(fightMoveCell) > 1) {
-      // TODO: choisir le bon fight en calculant les degat fait par l enemy
-      pop(fightMoveCell)
-    }
-    MoveCell soluce = fightMoveCell[0];
-    integer simRemainingMP = mapFirstKey(fightMoveCell[0].shooters) as integer;
-    soluce.execute(simRemainingMP) // TODO: je dois aussi choisir un escape
-    prepareMode = false
-    return true
-  }
-  
-  /**
-   * moveAway
-   * TODO: a voir quoi faire
-   **/
-  static boolean moveAway() {
-    moveToward(enemyId)
-    useChip(CHIP_MOTIVATION) 
-    useChip(CHIP_HELMET)
-    useChip(CHIP_WALL)
-    currentRound.update()
-  }
-
-  /**
+   /**
    * simulation
    * cree les differente simulation pour l algo
    **/
@@ -441,5 +278,183 @@ class BasicStrategy extends Strategy {
     }
     GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"Colorisation")
   }
+
+  /**
+   * B - si on peut insta kill
+   **/
+  static boolean isInstaKill() {
+    return instaKillScore <= 0
+  }
+  
+  /**
+   * B - si on peut insta kill -> on le fait (fin)
+   **/
+  static boolean instaKill() {
+    instaKillMc.execute(instaKillMc.instaKillSim)
+    return true
+  }
+
+  /**
+   * C - si on est empoisonne
+   **/
+  static boolean isPoisonned() {
+    return (mapContainsKey(meRound.appliedEffectCategories[CATEGORY_DAMAGE]!, EFFECT_POISON))
+  }
+
+  /**
+   * C - si on est empoisonne -> on se soigne
+   **/
+  static void antidote() {
+    if(mapContainsKey(meRound.toolsRound, CHIP_ANTIDOTE)) {
+      useChip(CHIP_ANTIDOTE)
+      currentRound.update()
+      usedAntidote = true
+    } 
+  }
+
+  /**
+   * D - si on peut tirer sans se blaisser et qu il ne peut pas se soigner plus qu on ne le blaisse
+   **/
+  static boolean isShootNRun() {
+    return !isEmpty(hitNRunMoveCell)
+  }
+
+  /**
+   * D -> on tire et on se cache (fin)
+   **/
+  static boolean shootNRun() {
+    GameDebug.add(BASIC_STRATEGY_DEBUG,"shootNRun","mode")
+    prepareMode = false
+    if(usedAntidote) {
+      // TODO: refaire les calcul de score apres l utilisation d antidote
+    }
+    integer distanceToCenter = Integer.MAX_VALUE
+    Array<MoveCell> selectedMC
+    Array<integer> selectedRemainingMP
+    // on choisi cell qui est la plus au centre
+    for(integer index : MoveCell mc in hitNRunMoveCell) { 
+      if(mc.distanceToCenter < distanceToCenter) {
+        selectedMC = [mc]
+        selectedRemainingMP = [hitNRunRemainingMP[index]]
+      } else if(mc.distanceToCenter == distanceToCenter) {
+        push(selectedMC, mc)
+        push(selectedRemainingMP, hitNRunRemainingMP[index])
+      }
+    }
+    MoveCell soluce = hitNRunMoveCell[0];
+    integer simRemainingMP = hitNRunRemainingMP[0];
+    // je vire les escape qui pointe vers des cell ou il peut m attaquer
+    Map<integer, MoveCell> esc = soluce.escapes[simRemainingMP]!
+    Array<MoveCell> esc2 = []
+    for(MoveCell mc in esc) { 
+      if(mapIsEmpty(mc.myRelativeCells)) push(esc2, mc)
+    }
+    while(count(esc2) > 1) {
+      // TODO: on choisi un escape
+      pop(esc2)
+    }
+    if(mapIsEmpty(soluce.myRelativeCells)) {
+      // TODO: je dois choisir entre rester la et escapes
+    } else {
+      soluce.execute(simRemainingMP,esc2[0].id)
+    }
+    return true
+  }
+
+  /**
+   * E - si on peut se cacher
+   **/
+  static boolean isHideable() {
+    return !isEmpty(neutralMoveCell)
+  }
+
+  /**
+   * E.a - si on est blaisse a plus de 50% et qu'il est moins mal en point qque nous
+   **/
+  static boolean isInjured() {
+    return (myLifeRatio < 0.5) || (myLifeRatio < 1) && isEmpty(fightMoveCell)
+  }
+
+  /**
+   * E.a -> on se cache en restant le plus pret de l enemy et au centre, 
+   *        on se soigne et on se protege (fin)
+   **/
+  static boolean hideHealNProtect() {
+    GameDebug.add(BASIC_STRATEGY_DEBUG,"hideHealNProtect","mode")
+    if(myInjuries >= 50 && meRound.isToolAvailable(CHIP_CURE)) {
+      useChip(CHIP_CURE)
+      myInjuries = getTotalLife() - getLife()
+    }
+    if(myInjuries >= 30 && meRound.isToolAvailable(CHIP_BANDAGE)) {
+      useChip(CHIP_BANDAGE)
+      myInjuries = getTotalLife() - getLife()
+    }
+    return setPrepareMode()
+  }
+  
+  /**
+   * E.b -> on se cache en restant au plus pret de l enemy et le plus au
+   * centre possible et on se prepare pour le prochain tour 
+   * (buff de tire  buff de protection) (fin)
+   **/
+  static boolean setPrepareMode() {
+    GameDebug.add(BASIC_STRATEGY_DEBUG,"setPrepareMode","mode")
+    while(count(neutralMoveCell) > 1) {
+      // TODO: choisir le bon hide
+      pop(neutralMoveCell)
+    }
+    MoveCell soluce = neutralMoveCell[0];
+    integer simRemainingMP = mapFirstKey(neutralMoveCell[0].shooters) as integer;
+    soluce.execute(simRemainingMP)
+    useChip(CHIP_MOTIVATION) // 4-2 PT 
+    useChip(CHIP_PROTEIN) // 3 PT
+    useChip(CHIP_HELMET) // 3 PT
+    useChip(CHIP_WALL) // 3PT
+    prepareMode = true
+    currentRound.update()
+    return true
+  }
+  
+  /**
+   * isFightable
+   **/
+  static booelan isFightable() {
+    return !isEmpty(fightMoveCell)
+  }
+
+  /**
+   * F - enfin on va sur la case de max degat on tire puis on va sur la case
+   * de min degat
+   **/
+  static boolean attack() {
+    GameDebug.add(BASIC_STRATEGY_DEBUG,"attack","mode")
+    if(usedAntidote) {
+      // TODO: refaire les calcul de score apres l utilisation d antidote
+    }
+    while(count(fightMoveCell) > 1) {
+      // TODO: choisir le bon fight en calculant les degat fait par l enemy
+      pop(fightMoveCell)
+    }
+    MoveCell soluce = fightMoveCell[0];
+    integer simRemainingMP = mapFirstKey(fightMoveCell[0].shooters) as integer;
+    soluce.execute(simRemainingMP) // TODO: je dois aussi choisir un escape
+    prepareMode = false
+    return true
+  }
+  
+  /**
+   * moveAway
+   * TODO: a voir quoi faire
+   **/
+  static boolean moveAway() {
+    GameDebug.add(BASIC_STRATEGY_DEBUG,"moveAway","mode")
+    moveToward(enemyId)
+    useChip(CHIP_MOTIVATION) 
+    useChip(CHIP_HELMET)
+    useChip(CHIP_WALL)
+    currentRound.update()
+  }
+
+ 
 }
 
