@@ -1,23 +1,21 @@
 @startuml
 
 abstract class Action {
-  void execute()
+  +execute()
+  +simulate(LeekRound leek)
 }
 class SetWeaponAction {
   -integer toolId
   +constructor(integer toolId)
-  +execute()
 }
 class MoveAction {
   -integer cellId
   +constructor(integer cellId)
-  +execute()
 }
 class ToolAction {
   -integer toolId
   -integer targetCell
   +constructor(integer toolId, integer targetCell)
-  +execute()
 }
 entity Talk {
   {static} +string context;

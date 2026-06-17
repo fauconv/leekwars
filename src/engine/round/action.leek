@@ -20,7 +20,8 @@ class Action extends Objects {
   
   /**
    * simulate
-   **/
+   * @param _leek le shooter dans lequel on veut simuler l action
+   */
   void simulate(LeekRound _leek) {
   }
 
