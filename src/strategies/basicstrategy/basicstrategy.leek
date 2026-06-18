@@ -331,30 +331,33 @@ class BasicStrategy extends Strategy {
     integer distanceToCenter = Integer.MAX_VALUE
     Array<MoveCell> selectedMC
     Array<integer> selectedRemainingMP
-    // on choisi cell qui est la plus au centre
+    // on choisi cell qui est la plus au centre (TODO: reflechir a mieux)
     for(integer index : MoveCell mc in hitNRunMoveCell) { 
       if(mc.distanceToCenter < distanceToCenter) {
         selectedMC = [mc]
         selectedRemainingMP = [hitNRunRemainingMP[index]]
+        distanceToCenter = mc.distanceToCenter
       } else if(mc.distanceToCenter == distanceToCenter) {
         push(selectedMC, mc)
         push(selectedRemainingMP, hitNRunRemainingMP[index])
       }
     }
-    MoveCell soluce = hitNRunMoveCell[0];
-    integer simRemainingMP = hitNRunRemainingMP[0];
+    MoveCell soluce = selectedMC[0];
+    integer simRemainingMP = selectedRemainingMP[0];
     // je vire les escape qui pointe vers des cell ou il peut m attaquer
+    // et j essai de rester proche de lui
     Map<integer, MoveCell> esc = soluce.escapes[simRemainingMP]!
     Array<MoveCell> esc2 = []
+    integer distanceToEnemy = Integer.MAX_VALUE
     for(MoveCell mc in esc) { 
-      if(mapIsEmpty(mc.myRelativeCells)) push(esc2, mc)
-    }
-    while(count(esc2) > 1) {
-      // TODO: on choisi un escape
-      pop(esc2)
+      if(mapIsEmpty(mc.myRelativeCells)) {
+        if(mc.distanceToEnemy < distanceToEnemy) esc2 = [mc]
+        else if(mc.distanceToEnemy == distanceToEnemy) push(esc2, mc)
+      }
     }
     if(mapIsEmpty(soluce.myRelativeCells)) {
-      // TODO: je dois choisir entre rester la et escapes
+      if(soluce.distanceToEnemy < distanceToEnemy) soluce.execute(simRemainingMP)
+      else soluce.execute(simRemainingMP,esc2[0].id)
     } else {
       soluce.execute(simRemainingMP,esc2[0].id)
     }
@@ -399,12 +402,19 @@ class BasicStrategy extends Strategy {
    **/
   static boolean setPrepareMode() {
     GameDebug.add(BASIC_STRATEGY_DEBUG,"setPrepareMode","mode")
-    while(count(neutralMoveCell) > 1) {
-      // TODO: choisir le bon hide
-      pop(neutralMoveCell)
+    integer distanceToEnemy = Integer.MAX_VALUE
+    Array<MoveCell> selectedMC
+    for(MoveCell mc in neutralMoveCell) { 
+      if(mc.distanceToEnemy < distanceToEnemy) {
+        selectedMC = [mc]
+        distanceToEnemy = mc.distanceToEnemy
+      } else if(mc.distanceToEnemy == distanceToEnemy) {
+        push(selectedMC, mc)
+      }
     }
-    MoveCell soluce = neutralMoveCell[0];
-    integer simRemainingMP = mapFirstKey(neutralMoveCell[0].shooters) as integer;
+    // TODO: selectionner la sim qui utilise le moins de PT
+    MoveCell soluce = selectedMC[0];
+    integer simRemainingMP = mapFirstKey(soluce.shooters) as integer;
     soluce.execute(simRemainingMP)
     useChip(CHIP_MOTIVATION) // 4-2 PT 
     useChip(CHIP_PROTEIN) // 3 PT
@@ -448,7 +458,20 @@ class BasicStrategy extends Strategy {
    **/
   static boolean moveAway() {
     GameDebug.add(BASIC_STRATEGY_DEBUG,"moveAway","mode")
-    moveToward(enemyId)
+    integer distanceToEnemy = Integer.MAX_VALUE
+    Array<MoveCell> selectedMC
+    for(MoveCell mc in neutralMoveCell) { 
+      if(mc.distanceToEnemy < distanceToEnemy) {
+        selectedMC = [mc]
+        distanceToEnemy = mc.distanceToEnemy
+      } else if(mc.distanceToEnemy == distanceToEnemy) {
+        push(selectedMC, mc)
+      }
+    }
+    // TODO: selectionner la sim qui utilise le moins de PT
+    MoveCell soluce = selectedMC[0];
+    integer simRemainingMP = mapFirstKey(soluce.shooters) as integer;
+    soluce.execute(simRemainingMP)
     useChip(CHIP_MOTIVATION) 
     useChip(CHIP_HELMET)
     useChip(CHIP_WALL)
