@@ -51,7 +51,6 @@ class BasicStrategy extends Strategy {
   public static integer instaKillScore
   public static integer hitNRunScore
   public static MoveCell instaKillMc
-  public static boolean usedAntidote
   
   /**
    * isValide
@@ -87,7 +86,6 @@ class BasicStrategy extends Strategy {
     hurtMoveCell = []
     instaKillScore = Integer.MAX_VALUE
     hitNRunScore = Integer.MAX_VALUE
-    usedAntidote = false
 
     GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"init board");
     
@@ -95,10 +93,17 @@ class BasicStrategy extends Strategy {
     simulation()
     if(isInstaKill()) return instaKill()
     if(isPoisonned()) antidote()
-    if(isShootNRun()) return shootNRun()
+    if(isShootNRun()) {
+      prepareMode = false
+      shootNRun()
+      healNProtect()
+      return setPrepareMode()
+    }
     if(isHideable()) {
-      if(isInjured()) return hideHealNProtect()
-      if(!prepareMode) return setPrepareMode()
+      hide()
+      if(isInjured()) healNProtect()
+      prepareMode = true
+      return setPrepareMode()
     }
     if(isFightable()) return attack()
     return moveAway()
@@ -308,7 +313,7 @@ class BasicStrategy extends Strategy {
     if(mapContainsKey(meRound.toolsRound, CHIP_ANTIDOTE)) {
       useChip(CHIP_ANTIDOTE)
       currentRound.update()
-      usedAntidote = true
+      // TODO: refaire les calcul de score apres l utilisation d antidote
     } 
   }
 
@@ -322,22 +327,18 @@ class BasicStrategy extends Strategy {
   /**
    * D -> on tire et on se cache (fin)
    **/
-  static boolean shootNRun() {
+  static void shootNRun() {
     GameDebug.add(BASIC_STRATEGY_DEBUG,"shootNRun","mode")
-    prepareMode = false
-    if(usedAntidote) {
-      // TODO: refaire les calcul de score apres l utilisation d antidote
-    }
-    integer distanceToCenter = Integer.MAX_VALUE
+    integer distanceToEnemy = Integer.MAX_VALUE
     Array<MoveCell> selectedMC
     Array<integer> selectedRemainingMP
     // on choisi cell qui est la plus au centre (TODO: reflechir a mieux)
     for(integer index : MoveCell mc in hitNRunMoveCell) { 
-      if(mc.distanceToCenter < distanceToCenter) {
+      if(mc.distanceToEnemy < distanceToEnemy) {
         selectedMC = [mc]
         selectedRemainingMP = [hitNRunRemainingMP[index]]
-        distanceToCenter = mc.distanceToCenter
-      } else if(mc.distanceToCenter == distanceToCenter) {
+        distanceToEnemy = mc.distanceToEnemy
+      } else if(mc.distanceToEnemy == distanceToEnemy) {
         push(selectedMC, mc)
         push(selectedRemainingMP, hitNRunRemainingMP[index])
       }
@@ -345,23 +346,47 @@ class BasicStrategy extends Strategy {
     MoveCell soluce = selectedMC[0];
     integer simRemainingMP = selectedRemainingMP[0];
     // je vire les escape qui pointe vers des cell ou il peut m attaquer
-    // et j essai de rester proche de lui
+    // et j essai de rester proche de lui et le plus proche du centre (TODO: peut mieux faire)
     Map<integer, MoveCell> esc = soluce.escapes[simRemainingMP]!
     Array<MoveCell> esc2 = []
-    integer distanceToEnemy = Integer.MAX_VALUE
+    distanceToEnemy = Integer.MAX_VALUE
     for(MoveCell mc in esc) { 
       if(mapIsEmpty(mc.myRelativeCells)) {
-        if(mc.distanceToEnemy < distanceToEnemy) esc2 = [mc]
-        else if(mc.distanceToEnemy == distanceToEnemy) push(esc2, mc)
+        if(mc.distanceToEnemy < distanceToEnemy) {
+          esc2 = [mc]
+          distanceToEnemy = mc.distanceToEnemy
+        } else if(mc.distanceToEnemy == distanceToEnemy) push(esc2, mc)
       }
     }
-    if(mapIsEmpty(soluce.myRelativeCells)) {
-      if(soluce.distanceToEnemy < distanceToEnemy) soluce.execute(simRemainingMP)
-      else soluce.execute(simRemainingMP,esc2[0].id)
-    } else {
-      soluce.execute(simRemainingMP,esc2[0].id)
+    Array<MoveCell> esc3 = []
+    integer distanceToCenter = Integer.MAX_VALUE
+    for(MoveCell mc in esc2) { 
+      if(mapIsEmpty(mc.myRelativeCells)) {
+        if(mc.distanceToCenter < distanceToCenter) {
+          esc3 = [mc]
+          distanceToCenter = mc.distanceToCenter
+        } else if(mc.distanceToCenter == distanceToCenter) push(esc3, mc)
+      }
     }
-    return true
+    if(mapIsEmpty(soluce.myRelativeCells) && (soluce.distanceToEnemy < distanceToEnemy)) 
+      soluce.execute(simRemainingMP)
+    else
+      soluce.execute(simRemainingMP,esc3[0].id)
+  }
+
+  /**
+   * healNProtect
+   **/
+  static void healNProtect() {
+    GameDebug.add(BASIC_STRATEGY_DEBUG,"healNProtect","mode")
+    if(myInjuries >= 50 && meRound.isToolAvailable(CHIP_CURE)) {
+      useChip(CHIP_CURE)
+      myInjuries = getTotalLife() - getLife()
+    }
+    if(myInjuries >= 30 && meRound.isToolAvailable(CHIP_BANDAGE)) {
+      useChip(CHIP_BANDAGE)
+      myInjuries = getTotalLife() - getLife()
+    }
   }
 
   /**
@@ -377,31 +402,12 @@ class BasicStrategy extends Strategy {
   static boolean isInjured() {
     return (myLifeRatio < 0.5) || (myLifeRatio < 1) && isEmpty(fightMoveCell)
   }
-
-  /**
-   * E.a -> on se cache en restant le plus pret de l enemy et au centre, 
-   *        on se soigne et on se protege (fin)
-   **/
-  static boolean hideHealNProtect() {
-    GameDebug.add(BASIC_STRATEGY_DEBUG,"hideHealNProtect","mode")
-    if(myInjuries >= 50 && meRound.isToolAvailable(CHIP_CURE)) {
-      useChip(CHIP_CURE)
-      myInjuries = getTotalLife() - getLife()
-    }
-    if(myInjuries >= 30 && meRound.isToolAvailable(CHIP_BANDAGE)) {
-      useChip(CHIP_BANDAGE)
-      myInjuries = getTotalLife() - getLife()
-    }
-    return setPrepareMode()
-  }
   
   /**
-   * E.b -> on se cache en restant au plus pret de l enemy et le plus au
-   * centre possible et on se prepare pour le prochain tour 
-   * (buff de tire  buff de protection) (fin)
+   * hide
    **/
-  static boolean setPrepareMode() {
-    GameDebug.add(BASIC_STRATEGY_DEBUG,"setPrepareMode","mode")
+  static boolean hide() {
+    GameDebug.add(BASIC_STRATEGY_DEBUG,"hide","mode")
     integer distanceToEnemy = Integer.MAX_VALUE
     Array<MoveCell> selectedMC
     for(MoveCell mc in neutralMoveCell) { 
@@ -416,11 +422,19 @@ class BasicStrategy extends Strategy {
     MoveCell soluce = selectedMC[0];
     integer simRemainingMP = mapFirstKey(soluce.shooters) as integer;
     soluce.execute(simRemainingMP)
+  }
+
+  /**
+   * E.b -> on se cache en restant au plus pret de l enemy et le plus au
+   * centre possible et on se prepare pour le prochain tour 
+   * (buff de tire  buff de protection) (fin)
+   **/
+  static boolean setPrepareMode() {
+    GameDebug.add(BASIC_STRATEGY_DEBUG,"setPrepareMode","mode")
     useChip(CHIP_MOTIVATION) // 4-2 PT 
     useChip(CHIP_PROTEIN) // 3 PT
     useChip(CHIP_HELMET) // 3 PT
     useChip(CHIP_WALL) // 3PT
-    prepareMode = true
     currentRound.update()
     return true
   }
@@ -438,9 +452,6 @@ class BasicStrategy extends Strategy {
    **/
   static boolean attack() {
     GameDebug.add(BASIC_STRATEGY_DEBUG,"attack","mode")
-    if(usedAntidote) {
-      // TODO: refaire les calcul de score apres l utilisation d antidote
-    }
     while(count(fightMoveCell) > 1) {
       // TODO: choisir le bon fight en calculant les degat fait par l enemy
       pop(fightMoveCell)
