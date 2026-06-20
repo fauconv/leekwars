@@ -6,17 +6,6 @@ include("basicstrategyconst.leek")
 include("basicstrategyfunctions.leek")
 /****************************************************************************
  * BasicStrategy
- *
- * Algo : 
-      A - si on est au premier tour -> on va au centre et on choisi l'arme par defaut (fin)
-      B - si on peut insta kill -> on le fait (fin)
-      C - si on est empoisonne -> on se soigne
-      D - si on peut tirer sans se blaisser et qu il ne peut pas se soigner plus qu on ne le blaisse -> on tire et on se cache (fin)
-      E - si on peut se cacher ->
-          E.a - si on est blaisse a plus de 50% et qu'il est moins mal en point qque nous -> on se cache en restant le plus pret de l enemy et au centre, on se soigne et on se protege (fin)
-          E.b - si on etait pas en mode preparer -> on se cache en restant au plus pret de l enemy et le plus au centre possible et on se prepare pour le prochain tour (buff de tire  buff de protection) (fin)
-      F - enfin on va sur la case de max degat on tire puis on va sur la case de min degat
- *
  ***************************************************************************/
 class BasicStrategy extends Strategy {
   
@@ -38,7 +27,6 @@ class BasicStrategy extends Strategy {
   public static real myLifeRatio;
   public static real enemyLifeRatio;
   public static integer myInjuries;
-  public static boolean prepareMode = false
   public static integer currentStrategy = STRATEGY_UNKNOWN
 
   public static Array<MoveCell> fightMoveCell
@@ -89,30 +77,40 @@ class BasicStrategy extends Strategy {
 
     GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"init board");
     
-    if(gFirstRound) return firstRound()
+    if(gFirstRound) {
+      firstRound()
+      return true
+    }
     simulation()
-    if(isInstaKill()) return instaKill()
+    if(isInstaKill()) {
+      instaKill()
+      return true
+    }
     if(isPoisonned()) antidote()
     if(isShootNRun()) {
-      prepareMode = false
       shootNRun()
-      healNProtect()
-      return setPrepareMode()
+      heal()
+      setPrepareMode()
+      return true
     }
-    if(isHideable()) {
-      hide()
-      if(isInjured()) healNProtect()
-      prepareMode = true
-      return setPrepareMode()
+    if(isFightable()) {
+      if(isHideable() && (!isPrepared() || isInjured())) {
+        hide()
+        heal()
+        setPrepareMode()
+        return true
+      }
+      attack()
+      return true
     }
-    if(isFightable()) return attack()
-    return moveAway()
+    moveAway()
+    return true
   }
   
   /**
    * A -> on va au centre et on choisi l'arme par defaut (fin)
    **/
-  static boolean firstRound() {
+  static void firstRound() {
     integer weaponId = WEAPON_MAGNUM
     if(me.maxAOERange > enemy.maxAOERange) {
       if(enemy.maxAOERange < 5 && mapContainsKey(me.tools, WEAPON_SHOTGUN)) 
@@ -131,8 +129,6 @@ class BasicStrategy extends Strategy {
       setRegister(error, me.weapons);
     }
     moveTowardCell(meRound.getRelativeCenter())
-    currentRound.update()
-    return true
   }
   
    /**
@@ -145,6 +141,7 @@ class BasicStrategy extends Strategy {
     // phase 1 : on determine les mouvements possibles de mon poireau et 
     // du poireau adverse
     //
+    MoveCell.cache = [:] // vidage du cache en debut de simulation
     myMoveCells    = BasicStrategyTools.getMoveCells(meRound, enemyCurrentCellId)  
     enemyMoveCells = BasicStrategyTools.getMoveCells(enemyRound, myCurrentCellId)
     GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"phase 1")
@@ -294,9 +291,8 @@ class BasicStrategy extends Strategy {
   /**
    * B - si on peut insta kill -> on le fait (fin)
    **/
-  static boolean instaKill() {
+  static void instaKill() {
     instaKillMc.execute(instaKillMc.instaKillSim)
-    return true
   }
 
   /**
@@ -377,7 +373,7 @@ class BasicStrategy extends Strategy {
   /**
    * healNProtect
    **/
-  static void healNProtect() {
+  static void heal() {
     GameDebug.add(BASIC_STRATEGY_DEBUG,"healNProtect","mode")
     if(myInjuries >= 50 && meRound.isToolAvailable(CHIP_CURE)) {
       useChip(CHIP_CURE)
@@ -397,6 +393,14 @@ class BasicStrategy extends Strategy {
   }
 
   /**
+   * isPrepared
+   **/
+  static boolean isPrepared() {
+    GameDebug.add(true,meRound.appliedEffectCategories,"appliedEffect");
+    return (mapSize(meRound.appliedEffectCategories[CATEGORY_PROTECTION]!) > 0)
+  }
+
+  /**
    * E.a - si on est blaisse a plus de 50% et qu'il est moins mal en point qque nous
    **/
   static boolean isInjured() {
@@ -406,7 +410,7 @@ class BasicStrategy extends Strategy {
   /**
    * hide
    **/
-  static boolean hide() {
+  static void hide() {
     GameDebug.add(BASIC_STRATEGY_DEBUG,"hide","mode")
     integer distanceToEnemy = Integer.MAX_VALUE
     Array<MoveCell> selectedMC
@@ -429,20 +433,19 @@ class BasicStrategy extends Strategy {
    * centre possible et on se prepare pour le prochain tour 
    * (buff de tire  buff de protection) (fin)
    **/
-  static boolean setPrepareMode() {
+  static void setPrepareMode() {
     GameDebug.add(BASIC_STRATEGY_DEBUG,"setPrepareMode","mode")
-    useChip(CHIP_MOTIVATION) // 4-2 PT 
-    useChip(CHIP_PROTEIN) // 3 PT
-    useChip(CHIP_HELMET) // 3 PT
-    useChip(CHIP_WALL) // 3PT
-    currentRound.update()
-    return true
+    useChip(CHIP_MOTIVATION) // 4-2PT / 6T
+    useChip(CHIP_PROTEIN) // 3PT / 3T
+    useChip(CHIP_HELMET) // 3PT / 3T
+    useChip(CHIP_STRETCHING) // 3PT / 3T
+    useChip(CHIP_WALL) // 3PT / 3T
   }
   
   /**
    * isFightable
    **/
-  static booelan isFightable() {
+  static boolean isFightable() {
     return !isEmpty(fightMoveCell)
   }
 
@@ -450,7 +453,7 @@ class BasicStrategy extends Strategy {
    * F - enfin on va sur la case de max degat on tire puis on va sur la case
    * de min degat
    **/
-  static boolean attack() {
+  static void attack() {
     GameDebug.add(BASIC_STRATEGY_DEBUG,"attack","mode")
     while(count(fightMoveCell) > 1) {
       // TODO: choisir le bon fight en calculant les degat fait par l enemy
@@ -459,34 +462,48 @@ class BasicStrategy extends Strategy {
     MoveCell soluce = fightMoveCell[0];
     integer simRemainingMP = mapFirstKey(fightMoveCell[0].shooters) as integer;
     soluce.execute(simRemainingMP) // TODO: je dois aussi choisir un escape
-    prepareMode = false
-    return true
   }
   
   /**
    * moveAway
    * TODO: a voir quoi faire
    **/
-  static boolean moveAway() {
+  static void moveAway() {
     GameDebug.add(BASIC_STRATEGY_DEBUG,"moveAway","mode")
-    integer distanceToEnemy = Integer.MAX_VALUE
+    // je selectionne celle qui utilise le moins de pt
+    integer tp = 0
     Array<MoveCell> selectedMC
-    for(MoveCell mc in neutralMoveCell) { 
-      if(mc.distanceToEnemy < distanceToEnemy) {
-        selectedMC = [mc]
-        distanceToEnemy = mc.distanceToEnemy
-      } else if(mc.distanceToEnemy == distanceToEnemy) {
-        push(selectedMC, mc)
+    Array<integer> simRemainingMP
+    for(MoveCell mc in neutralMoveCell) {
+      for(integer remainingMP : LeekRound shooter in mc.shooters) {
+        if(shooter.maxTP > tp) {
+          selectedMC = [mc]
+          tp = shooter.maxTP
+          simRemainingMP = [remainingMP]
+        } else if(shooter.maxTP == tp) {
+          push(selectedMC, mc)
+          push(simRemainingMP, remainingMP)
+        }
       }
     }
-    // TODO: selectionner la sim qui utilise le moins de PT
-    MoveCell soluce = selectedMC[0];
-    integer simRemainingMP = mapFirstKey(soluce.shooters) as integer;
-    soluce.execute(simRemainingMP)
+    // je selectionne la plus proche de l ennemy
+    integer distanceToEnemy = Integer.MAX_VALUE
+    Array<MoveCell> selectedMC2
+    Array<integer> simRemainingMP2
+    for(integer index : MoveCell mc in selectedMC) { 
+      if(mc.distanceToEnemy < distanceToEnemy) {
+        selectedMC2 = [mc]
+        distanceToEnemy = mc.distanceToEnemy
+        simRemainingMP2 = [simRemainingMP[index]]
+      } else if(mc.distanceToEnemy == distanceToEnemy) {
+        push(selectedMC2, mc)
+        push(simRemainingMP2, simRemainingMP[index])
+      }
+    }
+    selectedMC2[0].execute(simRemainingMP2[0])
     useChip(CHIP_MOTIVATION) 
     useChip(CHIP_HELMET)
     useChip(CHIP_WALL)
-    currentRound.update()
   }
 
  

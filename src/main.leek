@@ -37,6 +37,7 @@ if(!gBoardInit) {
  * main
  *******************************************************/
 gStrategy.apply()
+Board.currentRound.update()
 Board.clean()
 end()
 
