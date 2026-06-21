@@ -66,5 +66,6 @@ class BasicStrategyTools {
     push(actions, a)
     shooter.simulateActions()
   }
+
 }
 

@@ -321,7 +321,7 @@ class BasicStrategy extends Strategy {
     Array<integer> selectedRemainingMP
     // on choisi cell qui fait le plus mal
     for(integer index : MoveCell mc in hitNRunMoveCell) {
-      GameDebug.add((mc.id == 171 || mc.id == 136), mc.instaKillScore, "mc #"+ mc.id)
+      // GameDebug.add((mc.id == 171 || mc.id == 136), mc.instaKillScore, "mc #"+ mc.id)
       integer score = mc.instaKillScore[hitNRunRemainingMP[index]]!
       if(score < hitNRunScore) {
         selectedMC = [mc]
@@ -507,11 +507,20 @@ class BasicStrategy extends Strategy {
         push(simRemainingMP2, simRemainingMP[index])
       }
     }
-    selectedMC2[0].execute(simRemainingMP2[0])
-    if(!isEmpty(fightMoveCell) || !isEmpty(hurtMoveCell)) { // je n active les puce que si je suis assez pret
-      useChip(CHIP_MOTIVATION) 
-      useChip(CHIP_HELMET)
-      useChip(CHIP_WALL)
+    // je selectionne celle qui ne sont pas des deadEnd
+    selectedMC = []
+    simRemainingMP = []
+    for(integer index : MoveCell mc in selectedMC2) { 
+      if(!mc.myCell.isDeadEnd) {
+        push(selectedMC, mc)
+        push(simRemainingMP, simRemainingMP2[index])
+      }
+    }
+    if(!isEmpty(selectedMC)) selectedMC[0].execute(simRemainingMP[0])
+    else selectedMC2[0].execute(simRemainingMP2[0])
+    // je n active les puce que si je suis assez pret
+    if(!isEmpty(fightMoveCell) || !isEmpty(hurtMoveCell)) { 
+      setPrepareMode()
     }
   }
 
