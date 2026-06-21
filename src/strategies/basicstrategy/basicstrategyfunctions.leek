@@ -13,7 +13,6 @@ function spark(LeekRound shooter, RelativeCell rc) => Array<any> {
 }
 
 function magnum_shotgun_ice_pebble_rock_spark(LeekRound shooter, RelativeCell rc) => Array<any> {
-  GameDebug.add((shooter.currentCellId == 171), shooter.minTP, "171")
   Array<Action> actions = []
   Map<integer, Tool> toolsList = rc.toolsList
   if(mapContainsKey(toolsList, WEAPON_SHOTGUN)) {
