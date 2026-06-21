@@ -14,7 +14,6 @@ class BasicStrategy extends Strategy {
   public static integer STRATEGY_SHORT_RANGE     = 2
   public static integer STRATEGY_LONG_RANGE_LONG = 3
   public static integer STRATEGY_SPARK           = 4
-  public static integer NO_ESCAPE = -1
   public static Me me;
   public static Enemy enemy;    
   public static integer myId;
@@ -31,8 +30,9 @@ class BasicStrategy extends Strategy {
   public static integer currentStrategy = STRATEGY_UNKNOWN
 
   public static Array<MoveCell> fightMoveCell
+  public static Array<integer>  fightRemainingMP
   public static Array<MoveCell> hitNRunMoveCell
-  public static Array<integer> hitNRunRemainingMP // l id de la sim qui va avec hitNRunMoveCell
+  public static Array<integer>  hitNRunRemainingMP
   public static Array<MoveCell> neutralMoveCell
   public static Array<MoveCell> hurtMoveCell
   public static Map<integer,MoveCell> myMoveCells  
@@ -68,6 +68,7 @@ class BasicStrategy extends Strategy {
     enemyLifeRatio = enemyRound.maxLife / enemyRound.maxTotalLife
     myInjuries = meRound.maxTotalLife - meRound.maxLife;
     fightMoveCell = []
+    fightRemainingMP = []
     hitNRunMoveCell = []
     hitNRunRemainingMP = []
     neutralMoveCell = []
@@ -246,11 +247,18 @@ class BasicStrategy extends Strategy {
               }
             }
           }
-          (color == COLOR_ORANGE) and (push(fightMoveCell, mc))
+          if(color == COLOR_ORANGE) {
+            for(integer simRemaingMP : LeekRound _shooter in mc.shooters) {
+              push(fightMoveCell, mc)
+              push(fightRemainingMP, simRemaingMP)
+            }
+          }
         } else {
           color = COLOR_GREEN // je fight mais pas lui
-          push(hitNRunMoveCell, mc)
-          push(hitNRunRemainingMP, NO_ESCAPE)
+          for(integer simRemaingMP : LeekRound _shooter in mc.shooters) {
+            push(hitNRunMoveCell, mc)
+            push(hitNRunRemainingMP, simRemaingMP)
+          }
         }
       } else {
         if(!mapIsEmpty(mc.myRelativeCells)) {
@@ -462,12 +470,24 @@ class BasicStrategy extends Strategy {
    **/
   static void attack() {
     GameDebug.add(BASIC_STRATEGY_DEBUG,"attack","mode")
-    while(count(fightMoveCell) > 1) {
-      // TODO: choisir le bon fight en calculant les degat fait par l enemy
-      pop(fightMoveCell)
+    integer fightScore = Integer.MAX_VALUE
+    Array<MoveCell> selectedMC
+    Array<integer> selectedRemainingMP
+    // on choisi cell qui fait le plus mal
+    for(integer index : MoveCell mc in fightMoveCell) {
+      // GameDebug.add((mc.id == 171 || mc.id == 136), mc.instaKillScore, "mc #"+ mc.id)
+      integer score = mc.instaKillScore[fightRemainingMP[index]]!
+      if(score < fightScore) {
+        selectedMC = [mc]
+        selectedRemainingMP = [fightRemainingMP[index]]
+        fightScore = score
+      } else if(score == fightScore) {
+        push(selectedMC, mc)
+        push(selectedRemainingMP, fightRemainingMP[index])
+      }
     }
-    MoveCell soluce = fightMoveCell[0];
-    integer simRemainingMP = mapFirstKey(fightMoveCell[0].shooters) as integer;
+    MoveCell soluce = selectedMC[0];
+    integer simRemainingMP = selectedRemainingMP[0];
     soluce.execute(simRemainingMP) // TODO: je dois aussi choisir un escape
   }
   
