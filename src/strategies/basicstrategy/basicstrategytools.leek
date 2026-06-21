@@ -67,5 +67,77 @@ class BasicStrategyTools {
     shooter.simulateActions()
   }
 
+ /**
+  * filterBestScore
+  * on choisi cell qui fait le plus mal
+  * @param mcs (in)
+  * @param rmps (in)
+  * @param selectedMC (out)
+  * @param selectedRMP (out)
+  **/
+  public static void filterBestScore(Array<MoveCell> mcs, Array<integer> rmps, 
+                                     Array<MoveCell> selectedMC, Array<integer> selectedRMP) {
+    integer fightScore = Integer.MAX_VALUE
+    for(integer index : MoveCell mc in mcs) {
+      // GameDebug.add((mc.id == 171 || mc.id == 136), mc.instaKillScore, "mc #"+ mc.id)
+      integer rmp = rmps[index]
+      integer score = mc.instaKillScore[rmp]!
+      if(score < fightScore) {
+        arrayClear(selectedMC)
+        arrayClear(selectedRMP)
+        push(selectedMC, mc)
+        push(selectedRMP, rmp)
+        fightScore = score
+      } else if(score == fightScore) {
+        push(selectedMC, mc)
+        push(selectedRMP, rmp)
+      }
+    }
+  }
+
+  /**
+  * filterNearestEnemy
+  * on choisi cell qui est la plus pret de l enemy
+  * @param mcs (in)
+  * @param rmps (in)
+  * @param selectedMC (out)
+  * @param selectedRMP (out)
+  **/
+  public static void filterNearestEnemy(Array<MoveCell> mcs, Array<integer> rmps, 
+                                        Array<MoveCell> selectedMC, Array<integer> selectedRMP) {
+    integer distanceToEnemy = Integer.MAX_VALUE
+    for(integer index : MoveCell mc in mcs) {
+      // GameDebug.add((mc.id == 171 || mc.id == 136), mc.instaKillScore, "mc #"+ mc.id)
+      if(mc.distanceToEnemy < distanceToEnemy) {
+        arrayClear(selectedMC)
+        arrayClear(selectedRMP)
+        push(selectedMC, mc)
+        push(selectedRMP, rmps[index])
+        distanceToEnemy = mc.distanceToEnemy
+      } else if(mc.distanceToEnemy == distanceToEnemy) {
+        push(selectedMC, mc)
+        push(selectedRMP, rmps[index])
+      }
+    }
+  }
+
+  /**
+  * filterDeadEnd
+  * on choisi cell qui ne sont pas des cul de sac
+  * @param mcs (in)
+  * @param rmps (in)
+  * @param selectedMC (out)
+  * @param selectedRMP (out)
+  **/
+  public static void filterDeadEnd(Array<MoveCell> mcs, Array<integer> rmps, 
+                                        Array<MoveCell> selectedMC, Array<integer> selectedRMP) {
+    for(integer index : MoveCell mc in mcs) { 
+      if(!mc.myCell.isDeadEnd) {
+        push(selectedMC, mc)
+        push(selectedRMP, rmps[index])
+      }
+    }
+  }
+
 }
 

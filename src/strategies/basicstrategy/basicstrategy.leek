@@ -324,43 +324,19 @@ class BasicStrategy extends Strategy {
    **/
   static void hitNRun() {
     GameDebug.add(BASIC_STRATEGY_DEBUG,"shootNRun","mode")
-    integer hitNRunScore = Integer.MAX_VALUE
-    Array<MoveCell> selectedMC
-    Array<integer> selectedRemainingMP
-    // on choisi cell qui fait le plus mal
-    for(integer index : MoveCell mc in hitNRunMoveCell) {
-      // GameDebug.add((mc.id == 171 || mc.id == 136), mc.instaKillScore, "mc #"+ mc.id)
-      integer score = mc.instaKillScore[hitNRunRemainingMP[index]]!
-      if(score < hitNRunScore) {
-        selectedMC = [mc]
-        selectedRemainingMP = [hitNRunRemainingMP[index]]
-        hitNRunScore = score
-      } else if(score == hitNRunScore) {
-        push(selectedMC, mc)
-        push(selectedRemainingMP, hitNRunRemainingMP[index])
-      }
-    }
-    integer distanceToEnemy = Integer.MAX_VALUE
-    Array<MoveCell> selectedMC2
-    Array<integer> selectedRemainingMP2
-    // on choisi cell qui est la plus pret de l enemy (TODO: reflechir a mieux)
-    for(integer index : MoveCell mc in selectedMC) { 
-      if(mc.distanceToEnemy < distanceToEnemy) {
-        selectedMC2 = [mc]
-        selectedRemainingMP2 = [selectedRemainingMP[index]]
-        distanceToEnemy = mc.distanceToEnemy
-      } else if(mc.distanceToEnemy == distanceToEnemy) {
-        push(selectedMC2, mc)
-        push(selectedRemainingMP2, selectedRemainingMP[index])
-      }
-    }
+    Array<MoveCell> selectedMC = [], selectedMC2 = []
+    Array<integer> selectedRMP = [], selectedRMP2 = []
+    // on choisi cell qui fait le plus mals
+    BasicStrategyTools.filterBestScore(hitNRunMoveCell, hitNRunRemainingMP, selectedMC, selectedRMP)
+    // on choisi cell qui est la plus pret de l enemy
+    BasicStrategyTools.filterNearestEnemy(selectedMC, selectedRMP, selectedMC2, selectedRMP2)
     MoveCell soluce = selectedMC2[0];
-    integer simRemainingMP = selectedRemainingMP2[0];
+    integer simRemainingMP = selectedRMP2[0];
     // je vire les escape qui pointe vers des cell ou il peut m attaquer
     // et j essai de rester proche de lui et le plus proche du centre (TODO: eviter les cul de sac)
     Map<integer, MoveCell> esc = soluce.escapes[simRemainingMP]!
     Array<MoveCell> esc2 = []
-    distanceToEnemy = Integer.MAX_VALUE
+    integer distanceToEnemy = Integer.MAX_VALUE
     for(MoveCell mc in esc) { 
       if(mapIsEmpty(mc.myRelativeCells)) {
         if(mc.distanceToEnemy < distanceToEnemy) {
@@ -470,24 +446,12 @@ class BasicStrategy extends Strategy {
    **/
   static void attack() {
     GameDebug.add(BASIC_STRATEGY_DEBUG,"attack","mode")
-    integer fightScore = Integer.MAX_VALUE
-    Array<MoveCell> selectedMC
-    Array<integer> selectedRemainingMP
+    Array<MoveCell> selectedMC = []
+    Array<integer> selectedRMP = []
     // on choisi cell qui fait le plus mal
-    for(integer index : MoveCell mc in fightMoveCell) {
-      // GameDebug.add((mc.id == 171 || mc.id == 136), mc.instaKillScore, "mc #"+ mc.id)
-      integer score = mc.instaKillScore[fightRemainingMP[index]]!
-      if(score < fightScore) {
-        selectedMC = [mc]
-        selectedRemainingMP = [fightRemainingMP[index]]
-        fightScore = score
-      } else if(score == fightScore) {
-        push(selectedMC, mc)
-        push(selectedRemainingMP, fightRemainingMP[index])
-      }
-    }
+    BasicStrategyTools.filterBestScore(fightMoveCell, fightRemainingMP, selectedMC, selectedRMP)
     MoveCell soluce = selectedMC[0];
-    integer simRemainingMP = selectedRemainingMP[0];
+    integer simRemainingMP = selectedRMP[0];
     soluce.execute(simRemainingMP) // TODO: je dois aussi choisir un escape
   }
   
@@ -499,45 +463,28 @@ class BasicStrategy extends Strategy {
     GameDebug.add(BASIC_STRATEGY_DEBUG,"moveAway","mode")
     // je selectionne celle qui utilise le moins de pt
     integer tp = 0
-    Array<MoveCell> selectedMC
-    Array<integer> simRemainingMP
+    Array<MoveCell> selectedMC, selectedMC2 = []
+    Array<integer> selectedRMP, selectedRMP2 = []
     for(MoveCell mc in neutralMoveCell) {
       for(integer remainingMP : LeekRound shooter in mc.shooters) {
         if(shooter.maxTP > tp) {
           selectedMC = [mc]
           tp = shooter.maxTP
-          simRemainingMP = [remainingMP]
+          selectedRMP = [remainingMP]
         } else if(shooter.maxTP == tp) {
           push(selectedMC, mc)
-          push(simRemainingMP, remainingMP)
+          push(selectedRMP, remainingMP)
         }
       }
     }
     // je selectionne la plus proche de l ennemy
-    integer distanceToEnemy = Integer.MAX_VALUE
-    Array<MoveCell> selectedMC2
-    Array<integer> simRemainingMP2
-    for(integer index : MoveCell mc in selectedMC) { 
-      if(mc.distanceToEnemy < distanceToEnemy) {
-        selectedMC2 = [mc]
-        distanceToEnemy = mc.distanceToEnemy
-        simRemainingMP2 = [simRemainingMP[index]]
-      } else if(mc.distanceToEnemy == distanceToEnemy) {
-        push(selectedMC2, mc)
-        push(simRemainingMP2, simRemainingMP[index])
-      }
-    }
+    BasicStrategyTools.filterNearestEnemy(selectedMC, selectedRMP, selectedMC2, selectedRMP2)
     // je selectionne celle qui ne sont pas des deadEnd
     selectedMC = []
-    simRemainingMP = []
-    for(integer index : MoveCell mc in selectedMC2) { 
-      if(!mc.myCell.isDeadEnd) {
-        push(selectedMC, mc)
-        push(simRemainingMP, simRemainingMP2[index])
-      }
-    }
-    if(!isEmpty(selectedMC)) selectedMC[0].execute(simRemainingMP[0])
-    else selectedMC2[0].execute(simRemainingMP2[0])
+    selectedRMP = []
+    BasicStrategyTools.filterDeadEnd(selectedMC2, selectedRMP2, selectedMC, selectedRMP)
+    if(!isEmpty(selectedMC)) selectedMC[0].execute(selectedRMP[0])
+    else selectedMC2[0].execute(selectedRMP2[0])
     // je n active les puce que si je suis assez pret
     if(!isEmpty(fightMoveCell) || !isEmpty(hurtMoveCell)) { 
       setPrepareMode()
