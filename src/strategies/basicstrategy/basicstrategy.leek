@@ -14,6 +14,7 @@ class BasicStrategy extends Strategy {
   public static integer STRATEGY_SHORT_RANGE     = 2
   public static integer STRATEGY_LONG_RANGE_LONG = 3
   public static integer STRATEGY_SPARK           = 4
+  public static integer NO_ESCAPE = -1
   public static Me me;
   public static Enemy enemy;    
   public static integer myId;
@@ -37,7 +38,6 @@ class BasicStrategy extends Strategy {
   public static Map<integer,MoveCell> myMoveCells  
   public static Map<integer,MoveCell> enemyMoveCells
   public static integer instaKillScore
-  public static integer hitNRunScore
   public static MoveCell instaKillMc
   
   /**
@@ -73,7 +73,6 @@ class BasicStrategy extends Strategy {
     neutralMoveCell = []
     hurtMoveCell = []
     instaKillScore = Integer.MAX_VALUE
-    hitNRunScore = Integer.MAX_VALUE
 
     GameDebug.addOperation(BASIC_STRATEGY_DEBUG,"init board");
     
@@ -87,8 +86,8 @@ class BasicStrategy extends Strategy {
       return true
     }
     if(isPoisonned()) antidote()
-    if(isShootNRun()) {
-      shootNRun()
+    if(isHitNRun()) {
+      hitNRun()
       heal()
       setPrepareMode()
       return true
@@ -241,14 +240,8 @@ class BasicStrategy extends Strategy {
             for(MoveCell esc in escs) {
               if(mapIsEmpty(esc.myRelativeCells)) {
                 color = COLOR_YELLOW // je hit and run
-                if(hitNRunScore == mc.instaKillScore[simRemaingMP]) {
-                  push(hitNRunMoveCell, mc)
-                  push(hitNRunRemainingMP, simRemaingMP)
-                }
-                else if(hitNRunScore > mc.instaKillScore[simRemaingMP]) {
-                  hitNRunMoveCell = [mc]
-                  hitNRunRemainingMP = [simRemaingMP]
-                }
+                push(hitNRunMoveCell, mc)
+                push(hitNRunRemainingMP, simRemaingMP)
                 break
               }
             }
@@ -256,10 +249,8 @@ class BasicStrategy extends Strategy {
           (color == COLOR_ORANGE) and (push(fightMoveCell, mc))
         } else {
           color = COLOR_GREEN // je fight mais pas lui
-          if(hitNRunScore == score) push(hitNRunMoveCell, mc)
-          else if(hitNRunScore > score) {
-            hitNRunMoveCell = [mc]
-          }
+          push(hitNRunMoveCell, mc)
+          push(hitNRunRemainingMP, NO_ESCAPE)
         }
       } else {
         if(!mapIsEmpty(mc.myRelativeCells)) {
@@ -316,33 +307,49 @@ class BasicStrategy extends Strategy {
   /**
    * D - si on peut tirer sans se blaisser et qu il ne peut pas se soigner plus qu on ne le blaisse
    **/
-  static boolean isShootNRun() {
+  static boolean isHitNRun() {
     return !isEmpty(hitNRunMoveCell)
   }
 
   /**
    * D -> on tire et on se cache (fin)
    **/
-  static void shootNRun() {
+  static void hitNRun() {
     GameDebug.add(BASIC_STRATEGY_DEBUG,"shootNRun","mode")
-    integer distanceToEnemy = Integer.MAX_VALUE
+    integer hitNRunScore = Integer.MAX_VALUE
     Array<MoveCell> selectedMC
     Array<integer> selectedRemainingMP
-    // on choisi cell qui est la plus au centre (TODO: reflechir a mieux)
-    for(integer index : MoveCell mc in hitNRunMoveCell) { 
-      if(mc.distanceToEnemy < distanceToEnemy) {
+    // on choisi cell qui fait le plus mal
+    for(integer index : MoveCell mc in hitNRunMoveCell) {
+      GameDebug.add((mc.id == 171 || mc.id == 136), mc.instaKillScore, "mc #"+ mc.id)
+      integer score = mc.instaKillScore[hitNRunRemainingMP[index]]!
+      if(score < hitNRunScore) {
         selectedMC = [mc]
         selectedRemainingMP = [hitNRunRemainingMP[index]]
-        distanceToEnemy = mc.distanceToEnemy
-      } else if(mc.distanceToEnemy == distanceToEnemy) {
+        hitNRunScore = score
+      } else if(score == hitNRunScore) {
         push(selectedMC, mc)
         push(selectedRemainingMP, hitNRunRemainingMP[index])
       }
     }
-    MoveCell soluce = selectedMC[0];
-    integer simRemainingMP = selectedRemainingMP[0];
+    integer distanceToEnemy = Integer.MAX_VALUE
+    Array<MoveCell> selectedMC2
+    Array<integer> selectedRemainingMP2
+    // on choisi cell qui est la plus pret de l enemy (TODO: reflechir a mieux)
+    for(integer index : MoveCell mc in selectedMC) { 
+      if(mc.distanceToEnemy < distanceToEnemy) {
+        selectedMC2 = [mc]
+        selectedRemainingMP2 = [selectedRemainingMP[index]]
+        distanceToEnemy = mc.distanceToEnemy
+      } else if(mc.distanceToEnemy == distanceToEnemy) {
+        push(selectedMC2, mc)
+        push(selectedRemainingMP2, selectedRemainingMP[index])
+      }
+    }
+    MoveCell soluce = selectedMC2[0];
+    integer simRemainingMP = selectedRemainingMP2[0];
     // je vire les escape qui pointe vers des cell ou il peut m attaquer
-    // et j essai de rester proche de lui et le plus proche du centre (TODO: peut mieux faire)
+    // et j essai de rester proche de lui et le plus proche du centre (TODO: eviter les cul de sac)
     Map<integer, MoveCell> esc = soluce.escapes[simRemainingMP]!
     Array<MoveCell> esc2 = []
     distanceToEnemy = Integer.MAX_VALUE
@@ -396,7 +403,7 @@ class BasicStrategy extends Strategy {
    * isPrepared
    **/
   static boolean isPrepared() {
-    GameDebug.add(true,meRound.appliedEffectCategories,"appliedEffect");
+    // GameDebug.add(true,meRound.appliedEffectCategories,"appliedEffect");
     return (mapSize(meRound.appliedEffectCategories[CATEGORY_PROTECTION]!) > 0)
   }
 
@@ -501,9 +508,11 @@ class BasicStrategy extends Strategy {
       }
     }
     selectedMC2[0].execute(simRemainingMP2[0])
-    useChip(CHIP_MOTIVATION) 
-    useChip(CHIP_HELMET)
-    useChip(CHIP_WALL)
+    if(!isEmpty(fightMoveCell) || !isEmpty(hurtMoveCell)) { // je n active les puce que si je suis assez pret
+      useChip(CHIP_MOTIVATION) 
+      useChip(CHIP_HELMET)
+      useChip(CHIP_WALL)
+    }
   }
 
  
