@@ -536,8 +536,14 @@ class MeRound extends LeekRound {
    * execute toutes les actions du leek et mets a jour le currentround
    **/
   public void execute() {
-    for(Action a in simulatedActions) a.execute()
-    for(Action a in actionsStack) a.execute()
+    for(Action a in simulatedActions) {
+      a.execute()
+      if(isEmpty(getAliveEnemies())) return
+    }
+    for(Action a in actionsStack) {
+      a.execute()
+      if(isEmpty(getAliveEnemies())) return
+    }
     Board.currentRound.update()
   }
 
